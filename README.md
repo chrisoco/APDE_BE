@@ -41,6 +41,16 @@ npm install
 npm run dev
 ```
 
+# Static Code Analysis
+- `composer test`
+- `composer fix`
+- [PHPStan](https://phpstan.org) | [Larastan](https://github.com/larastan/larastan)
+- [Pest](https://pestphp.com)
+- [Pint](https://laravel.com/docs/master/pint)
+- [Rector](https://getrector.com)
+  - [Rector Laravel](https://github.com/driftingly/rector-laravel)
+  - [Laravel Rules](https://github.com/driftingly/rector-laravel/blob/main/docs/rector_rules_overview.md)
+
 ## 👥 Roles
 
 - **Marketing Team (Admins)**: Manage campaigns, view analytics
