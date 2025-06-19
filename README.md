@@ -52,3 +52,8 @@ npm run dev
 - https://laravel.com/docs/12.x
 - https://laravel.com/docs/12.x/pint
 - https://pestphp.com/docs/installation
+
+## MongoDB
+- https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/quick-start/
+- https://docs.orbstack.dev/quick-start
+- https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/#std-label-docker-mongodb-community-install
