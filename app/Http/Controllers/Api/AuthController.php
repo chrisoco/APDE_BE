@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 final class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
@@ -24,7 +24,7 @@ final class AuthController extends Controller
         }
 
         return response()->json([
-            'token' => $request->user()->createToken(
+            'token' => $request->user()?->createToken(
                 name: 'authToken',
                 abilities: ['*'],
                 expiresAt: now()->addMinutes(120)
@@ -32,9 +32,9 @@ final class AuthController extends Controller
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()?->currentAccessToken()->delete();
 
         return response()->json([
             'message' => 'Logged out successfully',

@@ -9,23 +9,24 @@ use Illuminate\Support\Facades\Auth;
 
 final class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(Request $request): \Illuminate\Http\JsonResponse
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (! Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+        if (is_array($credentials) && Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return response()->json(['message' => 'Logged in successfully']);
         }
 
-        $request->session()->regenerate();
+        return response()->json(['message' => 'Invalid credentials'], 401);
 
-        return response()->json(['message' => 'Logged in successfully']);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
         Auth::logout();
 

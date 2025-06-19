@@ -15,3 +15,7 @@ Route::middleware(['web', 'auth'])->group(function () {
         return App\Models\Movie::all();
     });
 });
+
+Route::get('/', function () {
+    return response('up');
+});

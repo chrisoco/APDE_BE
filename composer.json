@@ -17,6 +17,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.4",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
@@ -59,14 +60,12 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
         ],
+        "lint": "pint",
         "refactor": "rector",
         "test:type-coverage": "pest --type-coverage --min=100",
-        "test:lint": [
-            "pint --test",
-            "npm run test:lint"
-        ],
+        "test:lint": "pint --test",
         "test:unit": "pest --parallel --coverage --exactly=100.0",
-        "test:types": "phpstan",
+        "test:types": "phpstan analyse",
         "test:refactor": "rector --dry-run",
         "test": [
             "@test:type-coverage",
@@ -74,6 +73,11 @@
             "@test:lint",
             "@test:types",
             "@test:refactor"
+        ],
+        "fix": [
+            "@lint",
+            "@refactor",
+            "@test:types"
         ]
     },
     "extra": {

@@ -15,10 +15,11 @@ final class Movie extends Model
         'published_at' => 'datetime',
     ];
 
-    public function generateActors()
+    /**
+     * @return array<int, array<string, int|string>>
+     */
+    public function generateActors(): array
     {
-        $actors = [['name' => 'John Doe', 'age' => 30], ['name' => 'Jane Doe', 'age' => 25], ['name' => 'John Smith', 'age' => 35], ['name' => 'Jane Smith', 'age' => 30]];
-
-        return $actors;
+        return [['name' => 'John Doe', 'age' => 30], ['name' => 'Jane Doe', 'age' => 25], ['name' => 'John Smith', 'age' => 35], ['name' => 'Jane Smith', 'age' => 30]];
     }
 }
