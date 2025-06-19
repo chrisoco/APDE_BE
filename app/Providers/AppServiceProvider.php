@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\PersonalAccessToken;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->configureVite();
         $this->configureUrl();
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
 
     /**

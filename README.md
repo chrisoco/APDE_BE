@@ -57,3 +57,9 @@ npm run dev
 - https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/quick-start/
 - https://docs.orbstack.dev/quick-start
 - https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/#std-label-docker-mongodb-community-install
+
+## Authentication
+- https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/user-authentication/
+- https://laravel.com/docs/12.x/sanctum
+- (tbd) https://laravel.com/docs/12.x/sanctum#spa-authentication
+- (tbd) https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/user-authentication/#create-the-user-controller
