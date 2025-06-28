@@ -6,7 +6,6 @@ namespace App\Actions;
 
 use App\Enums\DataSource;
 use App\Models\Prospect;
-// use Illuminate\Support\Facades\DB;
 use Generator;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -18,17 +17,30 @@ final readonly class ImportErpProspects
      */
     public function handle(): void
     {
-        // DB::transaction(function () {
+        $fetchedExternalIds = [];
+
+        // Fetch and process all prospects
         foreach ($this->fetchAllProspects() as $prospect) {
-            // Prospect::where('source', 'ERP')->firstOrCreate([
             if ($prospect['email']) {
+                $externalId = $prospect['id'] ?? null;
+                if ($externalId) {
+                    $fetchedExternalIds[] = $externalId;
+                }
+
                 Prospect::firstOrCreate(
                     ['email' => $prospect['email']],
                     $this->mapApiProspect($prospect)
                 );
             }
         }
-        // });
+
+        // Soft delete prospects that weren't fetched but exist in the database
+        if ($fetchedExternalIds !== []) {
+            Prospect::where('source', DataSource::ERP)
+                ->whereNotNull('external_id')
+                ->whereNotIn('external_id', $fetchedExternalIds)
+                ->delete();
+        }
     }
 
     /**
