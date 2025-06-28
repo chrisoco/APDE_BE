@@ -25,24 +25,25 @@ final class ProspectResource extends JsonResource
 
         return [
             'id' => $prospect->id,
-            // Maybe not expose due tue security concerns / regulations.
             $this->mergeWhen($request->routeIs('prospects.show'), [
                 'firstName' => $prospect->first_name,
                 'lastName' => $prospect->last_name,
+                'email' => $prospect->email,
+                'phone' => $prospect->email,
             ]),
-            'age' => $prospect->age,
             'gender' => $prospect->gender,
+            'age' => $prospect->age,
             'birthDate' => $prospect->birth_date,
+            'image' => $prospect->image,
             'bloodGroup' => $prospect->blood_group,
             'height' => $prospect->height,
             'weight' => $prospect->weight,
             'eyeColor' => $prospect->eye_color,
             'hairColor' => $prospect->hair_color,
             'hairType' => $prospect->hair_type,
-            'university' => $prospect->university,
-            'role' => $prospect->role,
+            'address' => $prospect->address,
             $this->mergeWhen($request->routeIs('prospects.show'), [
-                'source' => $prospect->source?->label(),
+                'source' => $prospect->source->label(),
             ]),
         ];
     }

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum DataSource: string
+use App\Actions\ImportErpProspects;
+use App\Actions\ImportKuebaProspects;
+
+enum ProspectDataSource: string
 {
     case ERP = 'erp';
-    case KUBA = 'kuba';
+    case KUEBA = 'kueba';
 
     /**
      * @return array<int, string>
@@ -29,7 +32,20 @@ enum DataSource: string
     {
         return match ($this) {
             self::ERP => 'ERP',
-            self::KUBA => 'Küba',
+            self::KUEBA => 'Küba',
+        };
+    }
+
+    /**
+     * Get the import action class name for the data source.
+     *
+     * @return class-string
+     */
+    public function importAction(): string
+    {
+        return match ($this) {
+            self::ERP => ImportErpProspects::class,
+            self::KUEBA => ImportKuebaProspects::class,
         };
     }
 }

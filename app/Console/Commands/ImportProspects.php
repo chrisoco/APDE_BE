@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Actions\ImportErpProspects;
+use App\Actions\ImportKuebaProspects;
+use App\Enums\ProspectDataSource;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -30,9 +32,19 @@ final class ImportProspects extends Command
     public function handle(): int
     {
         try {
-            $this->info('Starting ERP prospects import...');
-            new ImportErpProspects()->handle();
-            $this->info('ERP prospects import completed successfully!');
+
+            foreach (ProspectDataSource::cases() as $source) {
+
+                $this->info("Starting {$source->label()} prospects import...");
+
+                /** @var ImportErpProspects|ImportKuebaProspects $importer */
+                $importer = new ($source->importAction());
+                $importer->handle();
+
+                $this->info("{$source->label()} prospects import completed successfully!");
+
+            }
+
         } catch (Exception $e) {
             $this->error('Failed to import ERP prospects: '.$e->getMessage());
 

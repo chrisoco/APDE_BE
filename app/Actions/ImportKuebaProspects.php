@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Data\Sources\ErpProspectData;
+use App\Data\Sources\KuebaProspectData;
 use App\Enums\ProspectDataSource;
 use App\Models\Prospect;
 use Generator;
@@ -12,13 +12,14 @@ use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use Spatie\LaravelData\Exceptions\CannotCreateData;
 
-final readonly class ImportErpProspects
+final readonly class ImportKuebaProspects
 {
     /**
      * Execute the action.
      */
     public function handle(): void
     {
+
         $fetchedExternalIds = [];
 
         // Fetch and process all prospects
@@ -34,7 +35,7 @@ final readonly class ImportErpProspects
 
         // Soft delete prospects that weren't fetched but exist in the database
         if ($fetchedExternalIds !== []) {
-            Prospect::where('source', ProspectDataSource::ERP)
+            Prospect::where('source', ProspectDataSource::KUEBA)
                 ->whereNotNull('external_id')
                 ->whereNotIn('external_id', $fetchedExternalIds)
                 ->delete();
@@ -42,43 +43,37 @@ final readonly class ImportErpProspects
     }
 
     /**
-     * @return Generator<ErpProspectData>
+     * @return Generator<KuebaProspectData>
      */
     private function fetchAllProspects(): Generator
     {
-        $url = config('services.erp.prospects.url');
+        $url = config('services.kueba.prospects.url');
 
-        throw_unless(is_string($url), new RuntimeException('Invalid ERP prospects URL configuration.'));
+        throw_unless(is_string($url), new RuntimeException('Invalid Küba prospects URL configuration.'));
 
-        $limit = 10;
-        $skip = 0;
+        $response = Http::get($url, [
+            'nat' => 'ch',
+            'results' => 100,
+        ]);
 
-        do {
-            $response = Http::get($url, [
-                'limit' => $limit,
-                'skip' => $skip,
-            ]);
+        throw_unless($response->successful(), new RuntimeException('Failed to fetch Küba prospects from external API.'));
 
-            throw_unless($response->successful(), new RuntimeException('Failed to fetch ERP prospects from external API.'));
+        /** @var array<string, mixed> $data */
+        $data = $response->json();
 
-            /** @var array<string, mixed> $data */
-            $data = $response->json();
+        throw_if(! isset($data['results']) || ! is_array($data['results']), new RuntimeException('Invalid response structure from external API.'));
 
-            throw_if(! isset($data['users']) || ! is_array($data['users']), new RuntimeException('Invalid response structure from external API.'));
+        /** @var array<int, array<string, mixed>> $prospects */
+        $prospects = $data['results'];
 
-            /** @var array<int, array<string, mixed>> $prospects */
-            $prospects = $data['users'];
-            $total = $data['total'] ?? null;
-
+        foreach ($prospects as $prospect) {
             foreach ($prospects as $prospect) {
                 try {
-                    yield ErpProspectData::from($prospect);
+                    yield KuebaProspectData::from($prospect);
                 } catch (CannotCreateData) {
                     continue;
                 }
             }
-
-            $skip += $limit;
-        } while ($total !== null && $skip < $total);
+        }
     }
 }
