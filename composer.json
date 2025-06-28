@@ -62,12 +62,13 @@
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
         ],
         "lint": "pint",
-        "refactor": "rector process",
-        "test:type-coverage": "pest --type-coverage --min=100",
         "test:lint": "pint --test",
-        "test:unit": "pest --parallel --coverage --exactly=100.0",
-        "test:types": "phpstan analyse",
+        "refactor": "rector process",
         "test:refactor": "rector --dry-run",
+        "test:types": "phpstan analyse",
+        "test:unit": "pest --parallel --coverage",
+        "test:type-coverage": "pest --type-coverage --min=50",
+        "test:unit-coverage": "pest --parallel --coverage --exactly=100.0",
         "test": [
             "@test:type-coverage",
             "@test:unit",

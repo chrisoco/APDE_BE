@@ -37,4 +37,9 @@ return [
         ],
     ],
 
+    'erp' => [
+        'prospects' => [
+            'url' => env('ERP_PROSPECTS_URL', 'https://dummyjson.com/users'),
+        ],
+    ],
 ];
