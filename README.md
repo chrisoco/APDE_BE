@@ -41,7 +41,7 @@ npm install
 npm run dev
 ```
 
-# Static Code Analysis
+## Static Code Analysis
 - `composer test`
 - `composer fix`
 - [PHPStan](https://phpstan.org) | [Larastan](https://github.com/larastan/larastan)
@@ -73,3 +73,6 @@ npm run dev
 - https://laravel.com/docs/12.x/sanctum
 - (tbd) https://laravel.com/docs/12.x/sanctum#spa-authentication
 - (tbd) https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/user-authentication/#create-the-user-controller
+
+## DTO
+- https://spatie.be/docs/laravel-data/v4/introduction
