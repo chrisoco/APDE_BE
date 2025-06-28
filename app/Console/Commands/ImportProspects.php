@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Actions\ImportErpProspects;
-use App\Actions\ImportKuebaProspects;
+use App\Actions\Import\ImportErpProspects;
+use App\Actions\Import\ImportKuebaProspects;
 use App\Enums\ProspectDataSource;
 use Exception;
 use Illuminate\Console\Command;
