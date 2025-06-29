@@ -2,6 +2,379 @@
 
 The Prospects system manages customer/prospect data imported from multiple external sources and provides API access for retrieving prospect information. The system is built with a modular architecture that supports multiple data sources and provides a unified interface for prospect management.
 
+## System Architecture
+
+```mermaid
+graph TB
+    subgraph "External Sources"
+        ERP[ERP System API]
+        KUEBA[Küba API]
+    end
+    
+    subgraph "Import Layer"
+        ImportCmd[Import Command]
+        AbstractImport[AbstractImportProspectsAction]
+        ErpImport[ImportErpProspects]
+        KuebaImport[ImportKuebaProspects]
+    end
+    
+    subgraph "Data Layer"
+        DTOs[Data Transfer Objects]
+        ErpDTO[ErpProspectData]
+        KuebaDTO[KuebaProspectData]
+        AddressDTOs[Address DTOs]
+    end
+    
+    subgraph "Model Layer"
+        Prospect[Prospect Model]
+        SourceEnum[ProspectDataSource]
+    end
+    
+    subgraph "API Layer"
+        Controller[ProspectController]
+        Resource[ProspectResource]
+        Routes[API Routes]
+    end
+    
+    subgraph "Database"
+        MongoDB[(MongoDB)]
+    end
+    
+    ERP --> ErpImport
+    KUEBA --> KuebaImport
+    ImportCmd --> AbstractImport
+    AbstractImport --> ErpImport
+    AbstractImport --> KuebaImport
+    ErpImport --> ErpDTO
+    KuebaImport --> KuebaDTO
+    ErpDTO --> AddressDTOs
+    KuebaDTO --> AddressDTOs
+    DTOs --> Prospect
+    Prospect --> SourceEnum
+    Prospect --> MongoDB
+    Controller --> Prospect
+    Controller --> Resource
+    Routes --> Controller
+    
+    style ERP fill:#e3f2fd
+    style KUEBA fill:#e3f2fd
+    style AbstractImport fill:#f3e5f5
+    style Prospect fill:#e8f5e8
+    style MongoDB fill:#fff3e0
+```
+
+## Import Process Flow
+
+```mermaid
+sequenceDiagram
+    participant User as User/System
+    participant Cmd as Import Command
+    participant Enum as ProspectDataSource
+    participant Import as Import Action
+    participant API as External API
+    participant DTO as Data DTO
+    participant Model as Prospect Model
+    participant DB as MongoDB
+
+    User->>Cmd: php artisan app:import-prospects
+    Cmd->>Enum: cases()
+    Enum-->>Cmd: [ERP, KUEBA]
+    
+    loop For each data source
+        Cmd->>Import: Create importer instance
+        Import->>Import: getDataSource()
+        Import->>Import: getBaseUrl()
+        
+        Import->>API: Fetch prospects data
+        Note over Import,API: GET /prospects with pagination
+        
+        API-->>Import: Raw API response
+        
+        Import->>Import: transformData()
+        Note over Import: Convert to DTOs
+        
+        loop For each prospect
+            Import->>DTO: Create DTO instance
+            DTO->>DTO: Map and validate data
+            DTO-->>Import: Validated prospect data
+            
+            Import->>Model: upsert()
+            Model->>DB: Create or update record
+            DB-->>Model: Saved prospect
+            Model-->>Import: Prospect instance
+        end
+        
+        Import->>Import: handleSoftDeletes()
+        Note over Import: Remove prospects not in source
+        
+        Import-->>Cmd: Import completed
+    end
+    
+    Cmd-->>User: All imports completed
+```
+
+## Data Import Architecture
+
+```mermaid
+classDiagram
+    class AbstractImportProspectsAction {
+        <<abstract>>
+        +handle() void
+        +fetchData() array
+        +transformData() array
+        +upsertRecords() void
+        +handleSoftDeletes() void
+        +getDataSource() ProspectDataSource*
+        +getBaseUrl() string*
+        +getPaginationParams() array*
+    }
+    
+    class ImportErpProspects {
+        +getDataSource() ProspectDataSource
+        +getBaseUrl() string
+        +getPaginationParams() array
+        +transformData() array
+    }
+    
+    class ImportKuebaProspects {
+        +getDataSource() ProspectDataSource
+        +getBaseUrl() string
+        +getPaginationParams() array
+        +transformData() array
+    }
+    
+    class ProspectDataSource {
+        <<enum>>
+        ERP
+        KUEBA
+        +importAction() string
+    }
+    
+    class ErpProspectData {
+        +string $external_id
+        +string $first_name
+        +string $last_name
+        +string $email
+        +ErpAddressData $address
+        +ProspectDataSource $source
+    }
+    
+    class KuebaProspectData {
+        +string $external_id
+        +string $first_name
+        +string $last_name
+        +string $email
+        +KuebaAddressData $address
+        +ProspectDataSource $source
+    }
+    
+    AbstractImportProspectsAction <|-- ImportErpProspects
+    AbstractImportProspectsAction <|-- ImportKuebaProspects
+    ImportErpProspects --> ErpProspectData
+    ImportKuebaProspects --> KuebaProspectData
+    ProspectDataSource --> AbstractImportProspectsAction
+```
+
+## API Request Flow
+
+```mermaid
+sequenceDiagram
+    participant Client as API Client
+    participant Route as /api/prospects
+    participant Auth as Sanctum Auth
+    participant Controller as ProspectController
+    participant Model as Prospect Model
+    participant Resource as ProspectResource
+    participant DB as MongoDB
+
+    Client->>Route: GET /api/prospects
+    Route->>Auth: auth:sanctum middleware
+    Auth-->>Route: Authenticated user
+    
+    Route->>Controller: index()
+    Controller->>Model: paginate(10)
+    Model->>DB: Query prospects
+    DB-->>Model: Paginated results
+    Model-->>Controller: Collection
+    
+    Controller->>Resource: toResourceCollection()
+    Resource->>Resource: Transform data
+    Note over Resource: Apply conditional field inclusion
+    
+    Resource-->>Controller: Formatted response
+    Controller-->>Route: JSON response
+    Route-->>Client: 200 OK + prospects data
+```
+
+## Data Transformation Flow
+
+```mermaid
+flowchart TD
+    A[External API Response] --> B{Data Source?}
+    
+    B -->|ERP| C[ErpProspectData DTO]
+    B -->|Küba| D[KuebaProspectData DTO]
+    
+    C --> E[Map ERP Fields]
+    D --> F[Map Küba Fields]
+    
+    E --> G[Validate Data]
+    F --> G
+    
+    G --> H{Valid?}
+    H -->|No| I[Skip Record]
+    H -->|Yes| J[Create/Update Prospect]
+    
+    J --> K[Store in MongoDB]
+    K --> L[Apply Soft Deletes]
+    L --> M[Import Complete]
+    
+    style A fill:#e3f2fd
+    style C fill:#f3e5f5
+    style D fill:#f3e5f5
+    style K fill:#e8f5e8
+    style I fill:#ffebee
+    style M fill:#e8f5e8
+```
+
+## Upsert Process
+
+```mermaid
+sequenceDiagram
+    participant Import as Import Action
+    participant Model as Prospect Model
+    participant DB as MongoDB
+
+    Import->>Model: upsert()
+    
+    loop For each prospect DTO
+        Import->>Model: where('external_id', $dto->external_id)
+        Model->>DB: Find existing prospect
+        DB-->>Model: Existing prospect or null
+        
+        alt Prospect exists
+            Import->>Model: update()
+            Model->>DB: Update record
+            Note over Import,DB: Update with new data from source
+        else New prospect
+            Import->>Model: create()
+            Model->>DB: Insert new record
+            Note over Import,DB: Create new prospect
+        end
+        
+        DB-->>Model: Saved prospect
+        Model-->>Import: Prospect instance
+    end
+    
+    Import->>Import: handleSoftDeletes()
+    Note over Import: Remove prospects not in current import
+```
+
+## Address Data Mapping
+
+```mermaid
+graph LR
+    subgraph "ERP Address"
+        ErpAddr[address]
+        ErpCity[city]
+        ErpState[state]
+        ErpPlz[postalCode]
+        ErpCountry[country]
+        ErpLat[coordinates.lat]
+        ErpLng[coordinates.lng]
+    end
+    
+    subgraph "Küba Address"
+        KuebaStreet[street.name + street.number]
+        KuebaCity[city]
+        KuebaState[state]
+        KuebaPlz[postal_code]
+        KuebaCountry[country]
+        KuebaLat[coordinates.latitude]
+        KuebaLng[coordinates.longitude]
+    end
+    
+    subgraph "Unified Address"
+        UnifiedAddr[address]
+        UnifiedCity[city]
+        UnifiedState[state]
+        UnifiedPlz[plz]
+        UnifiedCountry[country]
+        UnifiedLat[latitude]
+        UnifiedLng[longitude]
+    end
+    
+    ErpAddr --> UnifiedAddr
+    ErpCity --> UnifiedCity
+    ErpState --> UnifiedState
+    ErpPlz --> UnifiedPlz
+    ErpCountry --> UnifiedCountry
+    ErpLat --> UnifiedLat
+    ErpLng --> UnifiedLng
+    
+    KuebaStreet --> UnifiedAddr
+    KuebaCity --> UnifiedCity
+    KuebaState --> UnifiedState
+    KuebaPlz --> UnifiedPlz
+    KuebaCountry --> UnifiedCountry
+    KuebaLat --> UnifiedLat
+    KuebaLng --> UnifiedLng
+    
+    style ErpAddr fill:#e3f2fd
+    style KuebaStreet fill:#e3f2fd
+    style UnifiedAddr fill:#e8f5e8
+```
+
+## Scheduled Import Flow
+
+```mermaid
+gantt
+    title Scheduled Prospect Imports
+    dateFormat  HH:mm
+    axisFormat %H:%M
+    
+    section Daily Schedule
+    Morning Import    :07:00, 07:30
+    Afternoon Import  :13:00, 13:30
+    
+    section Import Process
+    ERP Import        :07:00, 07:15
+    Küba Import       :07:15, 07:30
+    ERP Import        :13:00, 13:15
+    Küba Import       :13:15, 13:30
+```
+
+## Error Handling Flow
+
+```mermaid
+flowchart TD
+    A[Import Process] --> B{Configuration Valid?}
+    B -->|No| C[Configuration Error]
+    B -->|Yes| D[API Request]
+    
+    D --> E{API Response OK?}
+    E -->|No| F[API Error]
+    E -->|Yes| G[Data Validation]
+    
+    G --> H{Data Valid?}
+    H -->|No| I[Validation Error]
+    H -->|Yes| J[Database Operation]
+    
+    J --> K{DB Success?}
+    K -->|No| L[Database Error]
+    K -->|Yes| M[Continue Import]
+    
+    M --> N{More Records?}
+    N -->|Yes| G
+    N -->|No| O[Import Complete]
+    
+    style C fill:#ffebee
+    style F fill:#ffebee
+    style I fill:#ffebee
+    style L fill:#ffebee
+    style O fill:#e8f5e8
+```
+
 ## Overview
 
 The Prospects system consists of several key components:

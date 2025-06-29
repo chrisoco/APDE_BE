@@ -76,3 +76,6 @@ npm run dev
 
 ## DTO
 - https://spatie.be/docs/laravel-data/v4/introduction
+
+## Diagrams
+- https://mermaid.js.org/

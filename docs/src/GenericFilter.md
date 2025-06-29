@@ -6,6 +6,254 @@ The GenericFilter system is a flexible, reusable filtering solution for Laravel 
 
 The system is specifically designed to work with MongoDB using the `mongodb/laravel` package and provides comprehensive filtering capabilities for both simple and complex data structures.
 
+## System Architecture
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        Client[API Client]
+    end
+    
+    subgraph "API Layer"
+        Route[Route: /api/{model}/filter]
+        Controller[GenericFilterController]
+    end
+    
+    subgraph "Model Layer"
+        Model[Filterable Model]
+        Trait[HasFilterable Trait]
+        Casts[Model Casts]
+    end
+    
+    subgraph "Database Layer"
+        MongoDB[(MongoDB)]
+        Indexes[Database Indexes]
+    end
+    
+    Client --> Route
+    Route --> Controller
+    Controller --> Model
+    Model --> Trait
+    Model --> Casts
+    Trait --> MongoDB
+    MongoDB --> Indexes
+    
+    style Controller fill:#e1f5fe
+    style Trait fill:#f3e5f5
+    style MongoDB fill:#e8f5e8
+```
+
+## Filter Processing Flow
+
+```mermaid
+sequenceDiagram
+    participant Client as API Client
+    participant Route as /api/{model}/filter
+    participant Controller as GenericFilterController
+    participant Model as Filterable Model
+    participant Trait as HasFilterable Trait
+    participant DB as MongoDB
+
+    Client->>Route: GET /api/{model}/filter?gender=male&min_age=25
+    Route->>Controller: filter($model)
+    
+    Controller->>Controller: resolveModel($model)
+    Note over Controller: Validates model exists and is filterable
+    
+    Controller->>Model: scopeApplyFilters($query, $filters)
+    Model->>Trait: scopeApplyFilters()
+    
+    loop For each filter parameter
+        Trait->>Trait: Parse filter type
+        Note over Trait: Determine if enum, range, or array filter
+        
+        alt Enum Filter
+            Trait->>DB: where(field, '=', value)
+        else Range Filter (min_)
+            Trait->>DB: where(field, '>=', value)
+        else Range Filter (max_)
+            Trait->>DB: where(field, '<=', value)
+        else Array Filter (_in)
+            Trait->>DB: whereIn(field, values)
+        else Array Filter (_not_in)
+            Trait->>DB: whereNotIn(field, values)
+        end
+    end
+    
+    Trait->>DB: Execute query with pagination
+    DB-->>Trait: Filtered results
+    Trait-->>Model: Query with filters applied
+    Model-->>Controller: Paginated collection
+    Controller-->>Route: JSON response with data
+    Route-->>Client: 200 OK + filtered data
+```
+
+## Search Criteria Generation Flow
+
+```mermaid
+sequenceDiagram
+    participant Client as API Client
+    participant Route as /api/{model}/search-criteria
+    participant Controller as GenericFilterController
+    participant Model as Filterable Model
+    participant Trait as HasFilterable Trait
+    participant DB as MongoDB
+
+    Client->>Route: GET /api/{model}/search-criteria
+    Route->>Controller: searchCriteria($model)
+    
+    Controller->>Controller: resolveModel($model)
+    Controller->>Model: searchCriteria()
+    Model->>Trait: searchCriteria()
+    
+    Trait->>Trait: getFilterableAttributes()
+    Note over Trait: Get filter configuration from model
+    
+    loop For each filterable attribute
+        Trait->>Trait: Determine filter type
+        
+        alt Enum Filter
+            Trait->>DB: distinct(field)
+            DB-->>Trait: Unique values
+            Trait->>Trait: Format as array
+        else Range Filter
+            Trait->>DB: min(field), max(field)
+            DB-->>Trait: Min/max values
+            Trait->>Trait: Format as {min: x, max: y}
+        end
+    end
+    
+    Trait-->>Model: Complete search criteria
+    Model-->>Controller: Search criteria object
+    Controller-->>Route: JSON response
+    Route-->>Client: 200 OK + search criteria
+```
+
+## Filter Types and Operations
+
+```mermaid
+graph LR
+    subgraph "Filter Types"
+        Enum[Enum Filters]
+        Range[Range Filters]
+        Array[Array Filters]
+    end
+    
+    subgraph "Enum Operations"
+        E1[= Exact Match]
+        E2[in Multiple Values]
+        E3[not_in Exclude Values]
+    end
+    
+    subgraph "Range Operations"
+        R1[min_ >= Value]
+        R2[max_ <= Value]
+    end
+    
+    subgraph "Array Operations"
+        A1[_in Include Array]
+        A2[_not_in Exclude Array]
+    end
+    
+    Enum --> E1
+    Enum --> E2
+    Enum --> E3
+    Range --> R1
+    Range --> R2
+    Array --> A1
+    Array --> A2
+    
+    style Enum fill:#e3f2fd
+    style Range fill:#f1f8e9
+    style Array fill:#fff3e0
+```
+
+## Model Integration Example
+
+```mermaid
+classDiagram
+    class Prospect {
+        +string $id
+        +string $external_id
+        +string $first_name
+        +string $last_name
+        +string $email
+        +string $gender
+        +int $age
+        +Carbon $birth_date
+        +string $blood_group
+        +float $height
+        +float $weight
+        +array $address
+        +ProspectDataSource $source
+        +getFilterableAttributes() array
+        +scopeApplyFilters() void
+        +searchCriteria() array
+    }
+    
+    class HasFilterable {
+        <<trait>>
+        +scopeApplyFilters($query, $filters) void
+        +searchCriteria() array
+        -parseFilterType($key) array
+        -castValue($value, $type) mixed
+    }
+    
+    class GenericFilterController {
+        +filter($model) JsonResponse
+        +searchCriteria($model) JsonResponse
+        -resolveModel($slug) string
+        -validateModel($modelClass) bool
+    }
+    
+    class MongoDB {
+        <<database>>
+        +prospects collection
+        +personal_access_tokens collection
+        +users collection
+    }
+    
+    Prospect --> HasFilterable : uses
+    GenericFilterController --> Prospect : filters
+    Prospect --> MongoDB : stores data
+```
+
+## Data Flow for Complex Filtering
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B{Parse Query Parameters}
+    B --> C[Extract Filters]
+    C --> D[Validate Model]
+    D --> E{Model Exists?}
+    
+    E -->|No| F[Return 404 Error]
+    E -->|Yes| G[Get Filterable Attributes]
+    
+    G --> H[Process Each Filter]
+    H --> I{Filter Type?}
+    
+    I -->|Enum| J[Apply Enum Filter]
+    I -->|Range| K[Apply Range Filter]
+    I -->|Array| L[Apply Array Filter]
+    
+    J --> M[Build Query]
+    K --> M
+    L --> M
+    
+    M --> N[Execute MongoDB Query]
+    N --> O[Apply Pagination]
+    O --> P[Format Response]
+    P --> Q[Return JSON]
+    
+    style A fill:#e8f5e8
+    style F fill:#ffebee
+    style Q fill:#e8f5e8
+    style J fill:#e3f2fd
+    style K fill:#f1f8e9
+    style L fill:#fff3e0
+```
+
 ## Architecture
 
 ### Core Components
