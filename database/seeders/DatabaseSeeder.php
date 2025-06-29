@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Campaign;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,5 +24,7 @@ final class DatabaseSeeder extends Seeder
             'email' => 'john@doe.com',
             'password' => Hash::make('1234'),
         ]);
+
+        Campaign::factory()->count(20)->create();
     }
 }
