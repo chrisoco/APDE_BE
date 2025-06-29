@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Campaign;
+use App\Models\Landingpage;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,6 +26,8 @@ final class DatabaseSeeder extends Seeder
             'password' => Hash::make('1234'),
         ]);
 
-        Campaign::factory()->count(20)->create();
+        Campaign::factory()->count(20)
+            ->has(Landingpage::factory()->count(1))
+            ->create();
     }
 }

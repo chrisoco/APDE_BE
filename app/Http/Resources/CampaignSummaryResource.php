@@ -7,7 +7,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-final class CampaignResource extends JsonResource
+final class CampaignSummaryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,13 +21,9 @@ final class CampaignResource extends JsonResource
 
         return [
             'id' => $campaign->id,
-            'title' => $campaign->title,
-            'description' => $campaign->description,
             'status' => $campaign->status->label(),
             'start_date' => $campaign->start_date,
             'end_date' => $campaign->end_date,
-            'prospect_filter' => $campaign->prospect_filter,
-            'landingpage' => new LandingpageResource($campaign->landingpage),
         ];
     }
 }

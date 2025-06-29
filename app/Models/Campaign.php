@@ -37,4 +37,12 @@ final class Campaign extends Model
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
+
+    /**
+     * Get the landingpage associated with the campaign.
+     */
+    public function landingpage()
+    {
+        return $this->hasOne(Landingpage::class);
+    }
 }
