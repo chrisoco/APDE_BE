@@ -15,7 +15,8 @@ final class ErpAddressData extends Data
         public string $address,
         public string $city,
         public string $state,
-        public string $postal_code,
+        #[MapInputName('postalCode')]
+        public string $plz,
         public string $country,
         #[MapInputName('coordinates.lat')]
         public float $latitude,

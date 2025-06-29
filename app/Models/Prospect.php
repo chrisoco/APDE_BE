@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ProspectDataSource;
+use App\Traits\HasFilterable;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Eloquent\SoftDeletes;
 
@@ -33,7 +34,7 @@ use MongoDB\Laravel\Eloquent\SoftDeletes;
  */
 final class Prospect extends Model
 {
-    use SoftDeletes;
+    use HasFilterable, SoftDeletes;
 
     protected $fillable = [
         'id',
@@ -64,10 +65,36 @@ final class Prospect extends Model
         'birth_date' => 'date',
         'height' => 'float',
         'weight' => 'float',
-        'address' => 'array',
+        // 'address' => 'array', !Laravel Serializes to JSON string and therefor breaks dot "." notation.
+        'address.latitude' => 'float',
+        'address.longitude' => 'float',
         'source' => ProspectDataSource::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    public static function getFilterableAttributes(): array
+    {
+        return [
+            'source' => 'enum',
+            'gender' => 'enum',
+            'age' => 'range',
+            'birth_date' => 'range',
+            'blood_group' => 'enum',
+            'height' => 'range',
+            'weight' => 'range',
+            'eye_color' => 'enum',
+            'hair_color' => 'enum',
+            'address.city' => 'enum',
+            'address.state' => 'enum',
+            'address.country' => 'enum',
+            'address.plz' => 'range',
+            'address.latitude' => 'range',
+            'address.longitude' => 'range',
+        ];
+    }
 }

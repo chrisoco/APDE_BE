@@ -26,7 +26,7 @@ final class KuebaAddressData extends Data
         public string $city,
         public string $state,
         #[MapInputName('postcode')]
-        public string $postal_code,
+        public string $plz,
         public string $country,
         #[MapInputName('coordinates.latitude')]
         public float $latitude,

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Prospect;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 final class ProspectController extends Controller
@@ -21,7 +22,7 @@ final class ProspectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Prospect $prospect): \Illuminate\Http\Resources\Json\JsonResource
+    public function show(Prospect $prospect): JsonResource
     {
         return $prospect->toResource();
     }

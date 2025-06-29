@@ -148,7 +148,7 @@ GET /api/prospects
         "address": "123 Main St",
         "city": "Zurich",
         "state": "ZH",
-        "postal_code": "8001",
+        "plz": "8001",
         "country": "Switzerland",
         "latitude": 47.3769,
         "longitude": 8.5417
@@ -202,7 +202,7 @@ GET /api/prospects/{id}
       "address": "123 Main St",
       "city": "Zurich",
       "state": "ZH",
-      "postal_code": "8001",
+      "plz": "8001",
       "country": "Switzerland",
       "latitude": 47.3769,
       "longitude": 8.5417
@@ -408,6 +408,7 @@ The import command provides real-time feedback:
 Comprehensive prospect data from ERP system:
 
 ```php
+#[MapInputName(CamelCaseMapper::class)]
 final class ErpProspectData extends Data
 {
     public ProspectDataSource $source = ProspectDataSource::ERP;
@@ -442,6 +443,7 @@ final class ErpProspectData extends Data
 Basic prospect data from Küba API:
 
 ```php
+#[MapInputName(CamelCaseMapper::class)]
 final class KuebaProspectData extends Data
 {
     public ProspectDataSource $source = ProspectDataSource::KUEBA;
@@ -474,13 +476,15 @@ final class KuebaProspectData extends Data
 #### ErpAddressData
 
 ```php
+#[MapInputName(CamelCaseMapper::class)]
 final class ErpAddressData extends Data
 {
     public function __construct(
         public string $address,
         public string $city,
         public string $state,
-        public string $postal_code,
+        #[MapInputName('postalCode')]
+        public string $plz,
         public string $country,
         #[MapInputName('coordinates.lat')]
         public float $latitude,
@@ -493,6 +497,7 @@ final class ErpAddressData extends Data
 #### KuebaAddressData
 
 ```php
+#[MapInputName(CamelCaseMapper::class)]
 final class KuebaAddressData extends Data
 {
     #[Computed]
@@ -507,8 +512,8 @@ final class KuebaAddressData extends Data
         public int $street_number,
         public string $city,
         public string $state,
-        #[MapInputName('postcode')]
-        public string $postal_code,
+        #[MapInputName('postal_code')]
+        public string $plz,
         public string $country,
         #[MapInputName('coordinates.latitude')]
         public float $latitude,
