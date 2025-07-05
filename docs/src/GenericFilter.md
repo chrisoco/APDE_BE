@@ -15,7 +15,7 @@ graph TB
     end
     
     subgraph "API Layer"
-        Route[Route: /api/{model}/filter]
+        Route[Route: /api/model/filter]
         Controller[GenericFilterController]
     end
     
