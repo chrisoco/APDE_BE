@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\Campaign;
 use App\Models\Landingpage;
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,6 +25,7 @@ final class DatabaseSeeder extends Seeder
             'name' => 'John Doe',
             'email' => 'john@doe.com',
             'password' => Hash::make('1234'),
+            'role' => UserRole::SUPER_ADMIN,
         ]);
 
         Campaign::factory()->count(20)
