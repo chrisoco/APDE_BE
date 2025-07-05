@@ -337,7 +337,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://randomuser.me/api/?nat=ch&results=1",
+							"raw": "https://randomuser.me/api/?nat=ch&results=10",
 							"protocol": "https",
 							"host": [
 								"randomuser",
@@ -354,7 +354,7 @@
 								},
 								{
 									"key": "results",
-									"value": "1"
+									"value": "10"
 								}
 							]
 						}
@@ -417,13 +417,19 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/prospects",
+							"raw": "{{URL}}/api/prospects?page=2",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"prospects"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								}
 							]
 						}
 					},
@@ -544,6 +550,433 @@
 								"api",
 								"prospects",
 								"search-criteria"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Campaign",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/campaigns",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/campaigns/686933c550bf1412b8089f75",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"686933c550bf1412b8089f75"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/campaigns",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Update 2\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/campaigns/68694fffeb63af2b6f000812",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"68694fffeb63af2b6f000812"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/campaigns/68614c7f545a1386e80c3ca2",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"68614c7f545a1386e80c3ca2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Landingpage",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/landingpages",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"landingpages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/landingpages/68614c7f545a1386e80c3ca3",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"landingpages",
+								"68614c7f545a1386e80c3ca3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show Slug",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/landingpages/voluptas-et-blanditiis",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"landingpages",
+								"voluptas-et-blanditiis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"LP2\",\n    \"headline\": \"This is an Amazing LP.\",\n    \"subline\": \"\",\n    \"campaign_id\": \"686931f450bf1412b8089f73\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/landingpages",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"landingpages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"LP2\",\n    \"headline\": \"This is an Amazing LP.\",\n    \"subline\": \"\",\n    \"campaign_id\": \"686931f450bf1412b8089f73\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/landingpages/68614c7f545a1386e80c3ca3",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"landingpages",
+								"68614c7f545a1386e80c3ca3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/landingpages/68693c1f08bf9771230e6d65",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"landingpages",
+								"68693c1f08bf9771230e6d65"
 							]
 						}
 					},
