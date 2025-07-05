@@ -16,12 +16,12 @@ final class LandingpageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        /** @var \App\Models\Landingpage $campaign */
+        /** @var \App\Models\Landingpage $landingpage */
         $landingpage = $this->resource;
 
         return [
             'id' => $landingpage->id,
-            'campaign' => new CampaignSummaryResource($landingpage->campaign),
+            'campaign' => new CampaignResource($this->whenLoaded('campaign')),
             'title' => $landingpage->title,
             'slug' => $landingpage->slug,
             'headline' => $landingpage->headline,

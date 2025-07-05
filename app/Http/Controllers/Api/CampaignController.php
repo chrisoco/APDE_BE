@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CampaignRequest;
 use App\Models\Campaign;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -17,15 +17,15 @@ final class CampaignController extends Controller
      */
     public function index(): ResourceCollection
     {
-        return Campaign::paginate(10)->toResourceCollection();
+        return Campaign::with('landingpage')->paginate(10)->toResourceCollection();
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): void
+    public function store(CampaignRequest $request): JsonResource
     {
-        //
+        return Campaign::create($request->validated())->toResource();
     }
 
     /**
@@ -33,22 +33,26 @@ final class CampaignController extends Controller
      */
     public function show(Campaign $campaign): JsonResource
     {
-        return $campaign->toResource();
+        return $campaign->load('landingpage')->toResource();
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Campaign $campaign): void
+    public function update(CampaignRequest $request, Campaign $campaign): JsonResource
     {
-        //
+        $campaign->update($request->validated());
+
+        return $campaign->load('landingpage')->toResource();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Campaign $campaign): void
+    public function destroy(Campaign $campaign): JsonResource
     {
-        //
+        $campaign->delete();
+
+        return $campaign->load('landingpage')->toResource();
     }
 }

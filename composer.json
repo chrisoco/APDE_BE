@@ -74,8 +74,8 @@
             "@test:type-coverage",
             "@test:unit",
             "@test:lint",
-            "@test:types",
-            "@test:refactor"
+            "@test:refactor",
+            "@test:types"
         ],
         "fix": [
             "@lint",

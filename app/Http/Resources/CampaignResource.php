@@ -26,8 +26,8 @@ final class CampaignResource extends JsonResource
             'status' => $campaign->status->label(),
             'start_date' => $campaign->start_date,
             'end_date' => $campaign->end_date,
-            'prospect_filter' => $campaign->prospect_filter,
-            'landingpage' => new LandingpageResource($campaign->landingpage),
+            'prospect_filter' => $campaign->prospect_filter ?? [],
+            'landingpage' => new LandingpageResource($this->whenLoaded('landingpage')),
         ];
     }
 }
