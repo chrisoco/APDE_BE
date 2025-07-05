@@ -26,7 +26,7 @@ final class GenericFilterController extends Controller
 
         /** @var ResourceCollection $filtered_collection */
         /** @phpstan-ignore-next-line */
-        $filtered_collection = $modelClass::applyFilters($filters)->paginate(10)->toResourceCollection();
+        $filtered_collection = $modelClass::applyFilters($filters)->paginate(request()->integer('per_page', 10))->toResourceCollection();
 
         return $filtered_collection;
     }

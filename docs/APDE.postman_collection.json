@@ -64,7 +64,7 @@
 					"response": []
 				},
 				{
-					"name": "Movies",
+					"name": "Campaigns",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -85,13 +85,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/movies",
+							"raw": "{{URL}}/api/campaigns",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
-								"movies"
+								"campaigns"
 							]
 						}
 					},
@@ -977,6 +977,39 @@
 								"api",
 								"landingpages",
 								"68693c1f08bf9771230e6d65"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "public",
+			"item": [
+				{
+					"name": "lp show",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/lp/voluptas-et-blanditiis",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"lp",
+								"voluptas-et-blanditiis"
 							]
 						}
 					},

@@ -19,7 +19,7 @@ final class ProspectController extends Controller
     {
         Gate::authorize('viewAny', Prospect::class);
 
-        return Prospect::paginate(10)->toResourceCollection();
+        return Prospect::paginate(request()->integer('per_page', 10))->toResourceCollection();
     }
 
     /**

@@ -20,7 +20,7 @@ final class CampaignController extends Controller
     {
         Gate::authorize('viewAny', Campaign::class);
 
-        return Campaign::with('landingpage')->paginate(10)->toResourceCollection();
+        return Campaign::with('landingpage')->paginate(request()->integer('per_page', 10))->toResourceCollection();
     }
 
     /**

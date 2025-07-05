@@ -21,7 +21,7 @@ final class LandingpageController extends Controller
     {
         Gate::authorize('viewAny', Landingpage::class);
 
-        return Landingpage::with('campaign')->paginate(10)->toResourceCollection();
+        return Landingpage::with('campaign')->paginate(request()->integer('per_page', 10))->toResourceCollection();
     }
 
     /**
