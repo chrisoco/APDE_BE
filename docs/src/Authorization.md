@@ -124,6 +124,7 @@ enum UserRole: string
 | View Prospects | ❌ | ❌ | ✅ | ✅ |
 | View Campaigns | ❌ | ✅ | ✅ | ✅ |
 | View Landing Pages | ❌ | ✅ | ✅ | ✅ |
+| View LP (public) | ✅ | ✅ | ✅ | ✅ |
 | Create Prospects | ❌ | ❌ | ❌ | ✅ |
 | Create Campaigns | ❌ | ❌ | ✅ | ✅ |
 | Create Landing Pages | ❌ | ❌ | ✅ | ✅ |

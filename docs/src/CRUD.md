@@ -280,13 +280,32 @@ The landing page can be identified by either:
 ```php
 public function show($identifier): JsonResource
 {
-    if (! $landingpage = Landingpage::find($identifier)) {
-        $landingpage = Landingpage::where('slug', $identifier)->firstOrFail();
+    if ($landingpage = Landingpage::find($identifier)) {
+        Gate::authorize('view', $landingpage);
+    } else {
+        $landingpage = Landingpage::with('campaign')
+            ->where('slug', $identifier)
+            ->whereHas('campaign', function ($query): void {
+                $query->where('status', CampaignStatus::ACTIVE)
+                    ->where(function ($q): void {
+                        $q->whereNull('start_date')
+                            ->orWhere('start_date', '<=', now());
+                    })
+                    ->where(function ($q): void {
+                        $q->whereNull('end_date')
+                            ->orWhere('end_date', '>=', now());
+                    });
+            })
+            ->firstOrFail();
     }
-
+    
     return $landingpage->load('campaign')->toResource();
 }
 ```
+
+**Access Control:**
+- **UUID Access**: Requires authentication and proper authorization via Laravel Gates
+- **Slug Access**: Public access with campaign validation (active status and valid date range)
 
 **Response:**
 ```json
@@ -337,6 +356,97 @@ public function show($identifier): JsonResource
 **Description:** Soft delete a landing page (sets `deleted_at` timestamp).
 
 **Response:** Returns the deleted landing page.
+
+## Public Landing Page Access
+
+### Public Landing Page Endpoint (GET /api/lp/{identifier})
+
+**Description:** Public access to landing pages via slug only. This endpoint is designed for external/public consumption and has different access controls and response formatting compared to the authenticated endpoint.
+
+**Access Control:**
+- **No Authentication Required**: This endpoint is publicly accessible
+- **Slug-Only Access**: Only supports slug-based identification (not UUID)
+- **Campaign Validation**: Only returns landing pages associated with active campaigns within valid date ranges
+
+**Campaign Validation Logic:**
+```php
+$landingpage = Landingpage::with('campaign')
+    ->where('slug', $identifier)
+    ->whereHas('campaign', function ($query): void {
+        $query->where('status', CampaignStatus::ACTIVE)
+            ->where(function ($q): void {
+                $q->whereNull('start_date')
+                    ->orWhere('start_date', '<=', now());
+            })
+            ->where(function ($q): void {
+                $q->whereNull('end_date')
+                    ->orWhere('end_date', '>=', now());
+            });
+    })
+    ->firstOrFail();
+```
+
+**Campaign Resource Restrictions:**
+When accessed via the public endpoint, the campaign resource exposes only a limited set of attributes for security and privacy reasons:
+
+**Public Campaign Attributes:**
+- `id` - Campaign identifier
+- `title` - Campaign title
+- `status` - Campaign status (always "active" for public access)
+
+**Excluded Campaign Attributes (Private):**
+- `description` - Campaign description
+- `start_date` - Campaign start date
+- `end_date` - Campaign end date
+- `prospect_filter` - Campaign prospect filtering rules
+- `created_at` - Creation timestamp
+- `updated_at` - Last update timestamp
+- `deleted_at` - Soft delete timestamp
+
+**Example Public Response:**
+```json
+{
+  "data": {
+    "id": "landingpage-uuid",
+    "campaign_id": "campaign-uuid",
+    "title": "Summer Sale Landing Page",
+    "slug": "summer-sale-landing-page",
+    "headline": "Get 50% Off This Summer!",
+    "subline": "Limited time offer on selected items",
+    "sections": [
+      {
+        "text": "Welcome to our amazing summer sale!",
+        "image_url": "https://picsum.photos/800/400?random=1",
+        "cta_text": "Get Started",
+        "cta_url": "https://example.com/signup"
+      }
+    ],
+    "form_fields": null,
+    "created_at": "2024-06-01T10:00:00.000000Z",
+    "updated_at": "2024-06-01T10:00:00.000000Z",
+    "campaign": {
+      "id": "campaign-uuid",
+      "title": "Summer Sale Campaign",
+      "status": "active"
+    }
+  }
+}
+```
+
+**Error Responses:**
+- **404 Not Found**: Landing page not found or associated campaign is inactive/expired
+- **500 Internal Server Error**: Server-side errors
+
+**Usage Examples:**
+```bash
+# Public access via slug
+GET /api/lp/summer-sale-landing-page
+
+# This will return the landing page only if:
+# 1. The slug exists
+# 2. The associated campaign is active
+# 3. The campaign is within its valid date range (or has no date restrictions)
+```
 
 ## Input Validation
 
@@ -455,15 +565,21 @@ GET /api/landingpages/summer-sale-2024
 - `PATCH /api/landingpages/{id}` - Update landing page (partial)
 - `DELETE /api/landingpages/{id}` - Delete landing page
 
+### Public Landing Page Endpoints
+- `GET /api/lp/{identifier}` - Public access to landing page (slug only, no authentication required)
+
 ### Authentication
-All endpoints require authentication via Laravel Sanctum. Include the Bearer token in the Authorization header:
+Most endpoints require authentication via Laravel Sanctum. Include the Bearer token in the Authorization header:
 ```
 Authorization: Bearer {your-token}
 ```
 
+**Public Endpoints:**
+- `GET /api/lp/{identifier}` - No authentication required
+
 ### Error Responses
-- **401 Unauthorized**: Invalid or missing authentication token
-- **404 Not Found**: Resource not found
+- **401 Unauthorized**: Invalid or missing authentication token (for authenticated endpoints)
+- **404 Not Found**: Resource not found or campaign inactive/expired (for public endpoint)
 - **422 Unprocessable Entity**: Validation errors
 - **500 Internal Server Error**: Server-side errors
 

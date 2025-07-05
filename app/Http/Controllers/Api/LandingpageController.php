@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\CampaignStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LandingpageRequest;
 use App\Models\Landingpage;
@@ -40,11 +41,25 @@ final class LandingpageController extends Controller
      */
     public function show($identifier): JsonResource
     {
-        if (! $landingpage = Landingpage::find($identifier)) {
-            $landingpage = Landingpage::where('slug', $identifier)->firstOrFail();
-        }
+        if ($landingpage = Landingpage::find($identifier)) {
+            Gate::authorize('view', $landingpage);
+        } else {
 
-        Gate::authorize('view', $landingpage);
+            $landingpage = Landingpage::with('campaign')
+                ->where('slug', $identifier)
+                ->whereHas('campaign', function ($query): void {
+                    $query->where('status', CampaignStatus::ACTIVE)
+                        ->where(function ($q): void {
+                            $q->whereNull('start_date')
+                                ->orWhere('start_date', '<=', now());
+                        })
+                        ->where(function ($q): void {
+                            $q->whereNull('end_date')
+                                ->orWhere('end_date', '>=', now());
+                        });
+                })
+                ->firstOrFail();
+        }
 
         return $landingpage->load('campaign')->toResource();
     }
