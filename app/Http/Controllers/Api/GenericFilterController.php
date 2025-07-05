@@ -9,6 +9,7 @@ use App\Models\Prospect;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 final class GenericFilterController extends Controller
 {
@@ -17,6 +18,9 @@ final class GenericFilterController extends Controller
         $modelClass = $this->resolveModel($model);
 
         abort_if(! class_exists($modelClass) || ! method_exists($modelClass, 'scopeApplyFilters'), 404, 'Model not found or not filterable');
+
+        // Authorize access to the model
+        Gate::authorize('viewAny', $modelClass);
 
         $filters = $request->all();
 
@@ -32,6 +36,9 @@ final class GenericFilterController extends Controller
         $modelClass = $this->resolveModel($model);
 
         abort_if(! class_exists($modelClass) || ! method_exists($modelClass, 'searchCriteria'), 404, 'Model not found or not filterable');
+
+        // Authorize access to the model
+        Gate::authorize('viewAny', $modelClass);
 
         return response()->json($modelClass::searchCriteria());
     }

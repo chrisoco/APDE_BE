@@ -19,6 +19,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/{model}/search-criteria', [GenericFilterController::class, 'searchCriteria']);
 
     Route::apiResource('prospects', ProspectController::class)->only(['index', 'show']);
+
     Route::apiResource('campaigns', CampaignController::class);
     Route::apiResource('landingpages', LandingpageController::class);
 

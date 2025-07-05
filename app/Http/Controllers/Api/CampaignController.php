@@ -9,6 +9,7 @@ use App\Http\Requests\CampaignRequest;
 use App\Models\Campaign;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 final class CampaignController extends Controller
 {
@@ -17,6 +18,8 @@ final class CampaignController extends Controller
      */
     public function index(): ResourceCollection
     {
+        Gate::authorize('viewAny', Campaign::class);
+
         return Campaign::with('landingpage')->paginate(10)->toResourceCollection();
     }
 
@@ -25,6 +28,8 @@ final class CampaignController extends Controller
      */
     public function store(CampaignRequest $request): JsonResource
     {
+        Gate::authorize('create', Campaign::class);
+
         return Campaign::create($request->validated())->toResource();
     }
 
@@ -33,6 +38,8 @@ final class CampaignController extends Controller
      */
     public function show(Campaign $campaign): JsonResource
     {
+        Gate::authorize('view', $campaign);
+
         return $campaign->load('landingpage')->toResource();
     }
 
@@ -41,6 +48,8 @@ final class CampaignController extends Controller
      */
     public function update(CampaignRequest $request, Campaign $campaign): JsonResource
     {
+        Gate::authorize('update', $campaign);
+
         $campaign->update($request->validated());
 
         return $campaign->load('landingpage')->toResource();
@@ -51,6 +60,8 @@ final class CampaignController extends Controller
      */
     public function destroy(Campaign $campaign): JsonResource
     {
+        Gate::authorize('delete', $campaign);
+
         $campaign->delete();
 
         return $campaign->load('landingpage')->toResource();

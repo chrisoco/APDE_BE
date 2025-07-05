@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Prospect;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 final class ProspectController extends Controller
 {
@@ -16,6 +17,8 @@ final class ProspectController extends Controller
      */
     public function index(): ResourceCollection
     {
+        Gate::authorize('viewAny', Prospect::class);
+
         return Prospect::paginate(10)->toResourceCollection();
     }
 
@@ -24,6 +27,8 @@ final class ProspectController extends Controller
      */
     public function show(Prospect $prospect): JsonResource
     {
+        Gate::authorize('view', $prospect);
+
         return $prospect->toResource();
     }
 }

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ProspectDataSource;
+use App\Policies\ProspectPolicy;
 use App\Traits\HasFilterable;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Eloquent\SoftDeletes;
 
@@ -32,9 +35,10 @@ use MongoDB\Laravel\Eloquent\SoftDeletes;
  * @property \Carbon\Carbon|null $updated_at
  * @property \Carbon\Carbon|null $deleted_at
  */
+#[UsePolicy(ProspectPolicy::class)]
 final class Prospect extends Model
 {
-    use HasFilterable, SoftDeletes;
+    use AuthorizesRequests, HasFilterable, SoftDeletes;
 
     protected $fillable = [
         'id',

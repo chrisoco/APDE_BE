@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\CampaignStatus;
+use App\Policies\CampaignPolicy;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use MongoDB\Laravel\Eloquent\Model;
@@ -22,6 +24,7 @@ use MongoDB\Laravel\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property array<string, mixed>|null $prospect_filter
  */
+#[UsePolicy(CampaignPolicy::class)]
 final class Campaign extends Model
 {
     /** @use HasFactory<\Database\Factories\CampaignFactory> */

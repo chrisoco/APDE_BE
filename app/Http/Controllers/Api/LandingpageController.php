@@ -9,6 +9,7 @@ use App\Http\Requests\LandingpageRequest;
 use App\Models\Landingpage;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 final class LandingpageController extends Controller
 {
@@ -17,6 +18,8 @@ final class LandingpageController extends Controller
      */
     public function index(): ResourceCollection
     {
+        Gate::authorize('viewAny', Landingpage::class);
+
         return Landingpage::with('campaign')->paginate(10)->toResourceCollection();
     }
 
@@ -25,6 +28,8 @@ final class LandingpageController extends Controller
      */
     public function store(LandingpageRequest $request): JsonResource
     {
+        Gate::authorize('create', Landingpage::class);
+
         return Landingpage::create($request->validated())->toResource();
     }
 
@@ -39,6 +44,8 @@ final class LandingpageController extends Controller
             $landingpage = Landingpage::where('slug', $identifier)->firstOrFail();
         }
 
+        Gate::authorize('view', $landingpage);
+
         return $landingpage->load('campaign')->toResource();
     }
 
@@ -47,6 +54,8 @@ final class LandingpageController extends Controller
      */
     public function update(LandingpageRequest $request, Landingpage $landingpage): JsonResource
     {
+        Gate::authorize('update', $landingpage);
+
         $landingpage->update($request->validated());
 
         return $landingpage->load('campaign')->toResource();
@@ -57,6 +66,8 @@ final class LandingpageController extends Controller
      */
     public function destroy(Landingpage $landingpage): JsonResource
     {
+        Gate::authorize('delete', $landingpage);
+
         $landingpage->delete();
 
         return $landingpage->load('campaign')->toResource();
