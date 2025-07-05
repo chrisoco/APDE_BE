@@ -231,9 +231,9 @@ For fine-grained permissions beyond roles, use Sanctum token abilities:
 $token = $user->createToken('api-token', ['view-prospects', 'create-campaigns']);
 
 // Check abilities in routes
-Route::get('/movies', function () {
-    return response()->json(App\Models\Movie::all());
-})->middleware(['abilities:view-movies']);
+Route::get('/cp-cookie', function () {
+    return response()->json(App\Models\Campaign::all());
+})->middleware(['abilities:view-cp']);
 ```
 
 ## Error Responses

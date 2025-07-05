@@ -11,8 +11,8 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/movies', function () {
-        return App\Models\Movie::all();
+    Route::get('/cp-cookie', function () {
+        return App\Models\Campaign::all();
     });
 });
 

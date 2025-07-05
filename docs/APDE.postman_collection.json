@@ -232,7 +232,7 @@
 					"response": []
 				},
 				{
-					"name": "Movies",
+					"name": "Campaign with Cookie",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -246,19 +246,19 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/movies",
+							"raw": "{{URL}}/cp-cookie",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"movies"
+								"cp-cookie"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Movies from API with Cookie Auth",
+					"name": "Campaign from API with Cookie Auth",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -283,13 +283,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/movies",
+							"raw": "{{URL}}/api/cp-cookie",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
-								"movies"
+								"cp-cookie"
 							]
 						}
 					},
@@ -695,7 +695,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Test Update 2\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
+							"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -220,8 +220,8 @@ Web routes are protected with the `web` and `auth` middleware:
 ```php
 Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/movies', function () {
-        return App\Models\Movie::all();
+    Route::get('/cp-cookie', function () {
+        return App\Models\Campaign::all();
     });
 });
 ```
@@ -230,14 +230,14 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 The application supports token abilities for fine-grained access control:
 
-### Example: Movies Endpoint
+### Example: CP-Cookie Endpoint
 ```php
-Route::get('/movies', function () {
-    return response()->json(App\Models\Movie::all());
-})->middleware(['abilities:view-movies']);
+Route::get('/cp-cookie', function () {
+    return response()->json(App\Models\Campaign::all());
+})->middleware(['abilities:view-cp']);
 ```
 
-This endpoint requires a token with the `view-movies` ability or the global `*` ability.
+This endpoint requires a token with the `view-cp` ability or the global `*` ability.
 
 ## Models
 

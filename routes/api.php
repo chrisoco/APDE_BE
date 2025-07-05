@@ -19,12 +19,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/{model}/search-criteria', [GenericFilterController::class, 'searchCriteria']);
 
     Route::apiResource('prospects', ProspectController::class)->only(['index', 'show']);
-
     Route::apiResource('campaigns', CampaignController::class);
     Route::apiResource('landingpages', LandingpageController::class);
 
-    Route::get('/movies', function () {
-        // Token has ability "view-movies" or global "*"
-        return response()->json(App\Models\Movie::all());
-    })->middleware(['abilities:view-movies']);
+    Route::get('/cp-cookie', function () {
+        // Token has ability "view-cp" or global "*"
+        return response()->json(App\Models\Campaign::all());
+    })->middleware(['abilities:view-cp']);
+
 });
