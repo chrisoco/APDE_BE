@@ -45,27 +45,26 @@ final class LandingpageController extends Controller
     {
         if ($landingpage = Landingpage::find($identifier)) {
             Gate::authorize('view', $landingpage);
-        } else {
 
-            $landingpage = Landingpage::with('campaign')
-                ->where('slug', $identifier)
-                ->whereHas('campaign', function ($query): void {
-                    $query->where('status', CampaignStatus::ACTIVE)
-                        ->where(function ($q): void {
-                            $q->whereNull('start_date')
-                                ->orWhere('start_date', '<=', now());
-                        })
-                        ->where(function ($q): void {
-                            $q->whereNull('end_date')
-                                ->orWhere('end_date', '>=', now());
-                        });
-                })
-                ->firstOrFail();
-
-            /** @phpstan-ignore-next-line */
-            $campaignTrackingService->trackVisit($request, $landingpage->campaign?->id, $landingpage->id);
-
+            return $landingpage->load('campaign')->toResource();
         }
+
+        $landingpage = Landingpage::with('campaign')
+            ->where('slug', $identifier)
+            ->whereHas('campaign', function ($query): void {
+                $query->where('status', CampaignStatus::ACTIVE)
+                    ->where(function ($q): void {
+                        $q->whereNull('start_date')
+                            ->orWhere('start_date', '<=', now());
+                    })
+                    ->where(function ($q): void {
+                        $q->whereNull('end_date')
+                            ->orWhere('end_date', '>=', now());
+                    });
+            })
+            ->firstOrFail();
+
+        $campaignTrackingService->trackLandingPageVisit($request, $landingpage);
 
         return $landingpage->load('campaign')->toResource();
     }

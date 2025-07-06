@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\CampaignTracking;
+use App\Models\Landingpage;
 use Illuminate\Http\Request;
 
 final class CampaignTrackingService
@@ -12,16 +13,18 @@ final class CampaignTrackingService
     /**
      * Track a new visit with UTM parameters.
      */
-    public function trackVisit(Request $request, ?string $campaignId = null, ?string $landingpageId = null): CampaignTracking
+    public function trackLandingPageVisit(Request $request, Landingpage $landingpage): CampaignTracking
     {
-
-        // TODO: Implement Prospect Resolving
+        // TODO: Validate Signed URL: create RequestValidator?
+        // if($request->has('prospect') && ! $request->hasValidSignature()) {
+        //     return null;
+        // }
 
         // Create new tracking record
         return CampaignTracking::create([
-            'campaign_id' => $campaignId,
-            'landingpage_id' => $landingpageId,
-            'prospect_id' => '',
+            'campaign_id' => $landingpage->campaign_id,
+            'landingpage_id' => $landingpage->id,
+            'prospect_id' => $request->get('prospect'),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'referrer' => $request->header('referer'),
