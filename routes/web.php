@@ -19,13 +19,3 @@ Route::middleware(['web', 'auth'])->group(function () {
 Route::get('/', function () {
     return response('up');
 });
-
-Route::get('/docs/openapi/', function () {
-    return view('docs.openapi.index');
-});
-
-Route::get('/docs/openapi/openapi.yaml', function () {
-    return response()->file(base_path('docs/openapi/openapi.yaml'), [
-        'Content-Type' => 'application/x-yaml',
-    ]);
-});

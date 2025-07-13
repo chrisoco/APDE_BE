@@ -51,7 +51,7 @@ php artisan serve
 # OR use Laravel Herd: https://herd.laravel.com/
 
 # Visit API documentation
-# http://localhost:8000/docs/openapi/
+# http://localhost:8000/api/docs/openapi/
 
 # Import Postman collection and run Token Based > Token Login to generate auth token
 ```

@@ -11,12 +11,12 @@ This directory contains the OpenAPI/Swagger documentation for the APDE (Applicat
 You have **2 different ways** to view the API documentation:
 
 ### Option 1: Local View (Recommended)
-- **URL**: `http://localhost:8000/docs/openapi/`
+- **URL**: `http://localhost:8000/api/docs/openapi/`
 - **Method**: Uses Laravel Blade view at `resources/views/docs/openapi/index.blade.php`
 - **Benefits**: Clean separation, easy to maintain and customize
 
 ### Option 2: Raw OpenAPI Specification
-- **URL**: `http://localhost:8000/docs/openapi/openapi.yaml`
+- **URL**: `http://localhost:8000/api/docs/openapi/openapi.yaml`
 - **Method**: Serves the YAML file directly
 - **Benefits**: Can be imported into other tools (Postman, Swagger Editor, etc.)
 
@@ -32,7 +32,7 @@ You can also use the OpenAPI specification with external tools:
 ### Postman
 1. Open Postman
 2. Click "Import"
-3. Select "Link" and paste: `http://localhost:8000/docs/openapi/openapi.yaml`
+3. Select "Link" and paste: `http://localhost:8000/api/docs/openapi/openapi.yaml`
 4. Or select "File" and upload the `openapi.yaml` file
 
 ## API Overview
