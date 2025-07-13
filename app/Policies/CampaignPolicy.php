@@ -84,4 +84,15 @@ final class CampaignPolicy
     {
         return $user->role === UserRole::SUPER_ADMIN;
     }
+
+    /**
+     * Determine whether the user can send emails for the model.
+     */
+    public function sendEmails(User $user): bool
+    {
+        return in_array($user->role, [
+            UserRole::ADMIN,
+            UserRole::SUPER_ADMIN,
+        ]);
+    }
 }

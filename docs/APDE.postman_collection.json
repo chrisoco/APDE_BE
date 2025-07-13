@@ -497,7 +497,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/prospects/filter?address.plz=1012&age=32",
+							"raw": "{{URL}}/api/prospects/filter?age=40",
 							"host": [
 								"{{URL}}"
 							],
@@ -509,11 +509,139 @@
 							"query": [
 								{
 									"key": "address.plz",
-									"value": "1012"
+									"value": "1012",
+									"disabled": true
+								},
+								{
+									"key": "source",
+									"value": "erp",
+									"description": "erp | kueba",
+									"disabled": true
+								},
+								{
+									"key": "gender",
+									"value": "female",
+									"description": "female | male",
+									"disabled": true
 								},
 								{
 									"key": "age",
-									"value": "32"
+									"value": "40"
+								},
+								{
+									"key": "min_age",
+									"value": "38",
+									"disabled": true
+								},
+								{
+									"key": "max_age",
+									"value": "70",
+									"disabled": true
+								},
+								{
+									"key": "birth_date",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "blood_group",
+									"value": "B+",
+									"disabled": true
+								},
+								{
+									"key": "height",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "weight",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "eye_color",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "hair_color",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "address.city",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "address.state",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "address.country",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "address.plz",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "address.latitude",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "address.longitude",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "prospects/filter Array",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/prospects/filter?blood_group_in[]=AB-&blood_group_in[]=O-",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"prospects",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "blood_group_in[]",
+									"value": "AB-"
+								},
+								{
+									"key": "blood_group_in[]",
+									"value": "O-"
 								}
 							]
 						}
@@ -582,13 +710,19 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/campaigns",
+							"raw": "{{URL}}/api/campaigns?per_page=2",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"campaigns"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "2"
+								}
 							]
 						}
 					},
@@ -754,6 +888,47 @@
 			]
 		},
 		{
+			"name": "Campaign E-Mail Notifications",
+			"item": [
+				{
+					"name": "send-emails",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/campaigns/686a3affca7748f6b807cbee/send-emails",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"686a3affca7748f6b807cbee",
+								"send-emails"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Landingpage",
 			"item": [
 				{
@@ -812,14 +987,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/landingpages/68614c7f545a1386e80c3ca3",
+							"raw": "{{URL}}/api/landingpages/686a3affca7748f6b807cbed",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"landingpages",
-								"68614c7f545a1386e80c3ca3"
+								"686a3affca7748f6b807cbed"
 							]
 						}
 					},
@@ -1002,14 +1177,76 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/lp/voluptas-et-blanditiis",
+							"raw": "{{URL}}/api/lp/tempora-sint-doloribus",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"lp",
-								"voluptas-et-blanditiis"
+								"tempora-sint-doloribus"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "lp tracking",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/lp/tempora-sint-doloribus?prospect=686a3afeca7748f6b807cb48&utm_source=mail&utm_medium=web&utm_campaign=686a3affca7748f6b807cbec&utm_content=none&utm_term=none&gclid=12&fbclid=13",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"lp",
+								"tempora-sint-doloribus"
+							],
+							"query": [
+								{
+									"key": "prospect",
+									"value": "686a3afeca7748f6b807cb48"
+								},
+								{
+									"key": "utm_source",
+									"value": "mail"
+								},
+								{
+									"key": "utm_medium",
+									"value": "web"
+								},
+								{
+									"key": "utm_campaign",
+									"value": "686a3affca7748f6b807cbec"
+								},
+								{
+									"key": "utm_content",
+									"value": "none"
+								},
+								{
+									"key": "utm_term",
+									"value": "none"
+								},
+								{
+									"key": "gclid",
+									"value": "12"
+								},
+								{
+									"key": "fbclid",
+									"value": "13"
+								}
 							]
 						}
 					},
