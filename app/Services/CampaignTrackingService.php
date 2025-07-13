@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Campaign;
 use App\Models\CampaignTracking;
 use App\Models\Landingpage;
+use App\Models\Prospect;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 final class CampaignTrackingService
 {
@@ -40,25 +43,27 @@ final class CampaignTrackingService
     }
 
     /**
-     * Generate UTM tracking URL for a campaign.
+     * Generate UTM tracking URL for a campaign email.
      */
-    // public function generateTrackingUrl(Campaign $campaign, Landingpage $landingpage, array $utmParams = []): string
-    // {
-    //     $baseUrl = config('app.url').'/landing/'.$landingpage->slug;
+    public function generateCampaignEmailUrl(Campaign $campaign, Prospect $prospect): string
+    {
+        throw_unless($campaign->landingpage, new InvalidArgumentException('Campaign must have an associated landing page'));
 
-    //     $defaultParams = [
-    //         'utm_source' => $utmParams['utm_source'] ?? 'direct',
-    //         'utm_medium' => $utmParams['utm_medium'] ?? 'web',
-    //         'utm_campaign' => $utmParams['utm_campaign'] ?? Str::slug($campaign->title),
-    //         'utm_content' => $utmParams['utm_content'] ?? null,
-    //         'utm_term' => $utmParams['utm_term'] ?? null,
-    //     ];
+        $params = [
+            'identifier' => $campaign->landingpage->slug,
+            'prospect' => $prospect->id,
+            'utm_source' => 'mail',
+            'utm_medium' => 'web',
+            'utm_campaign' => $campaign->title,
+            // 'utm_content' => 'none',
+            // 'utm_term' => 'none',
+            // 'gclid' => 'none',
+            // 'fbclid' => 'none',
+        ];
 
-    //     // Filter out null values
-    //     $params = array_filter($defaultParams, fn ($value): bool => $value !== null);
-
-    //     return $baseUrl.'?'.http_build_query($params);
-    // }
+        // return \Illuminate\Support\Facades\URL::signedRoute('lp.show', $params);
+        return route('lp.show', $params);
+    }
 
     /**
      * Get campaign analytics.

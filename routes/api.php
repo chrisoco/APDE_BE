@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CampaignController;
+use App\Http\Controllers\Api\CampaignEmailController;
 use App\Http\Controllers\Api\GenericFilterController;
 use App\Http\Controllers\Api\LandingpageController;
 use App\Http\Controllers\Api\ProspectController;
@@ -22,6 +23,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('prospects', ProspectController::class)->only(['index', 'show']);
     Route::apiResource('campaigns', CampaignController::class);
     Route::apiResource('landingpages', LandingpageController::class);
+
+    Route::post('/campaigns/{campaign}/send-emails', [CampaignEmailController::class, 'send']);
 
     Route::get('/cp-cookie', function () {
         // Token has ability "view-cp" or global "*"
