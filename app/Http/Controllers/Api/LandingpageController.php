@@ -8,6 +8,8 @@ use App\Enums\CampaignStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LandingpageRequest;
 use App\Models\Landingpage;
+use App\Services\CampaignTrackingService;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Gate;
@@ -39,27 +41,30 @@ final class LandingpageController extends Controller
      *
      * @param  string  $identifier  The landingpage identifier (can be uuid or slug)
      */
-    public function show($identifier): JsonResource
+    public function show(Request $request, CampaignTrackingService $campaignTrackingService, $identifier): JsonResource
     {
         if ($landingpage = Landingpage::find($identifier)) {
             Gate::authorize('view', $landingpage);
-        } else {
 
-            $landingpage = Landingpage::with('campaign')
-                ->where('slug', $identifier)
-                ->whereHas('campaign', function ($query): void {
-                    $query->where('status', CampaignStatus::ACTIVE)
-                        ->where(function ($q): void {
-                            $q->whereNull('start_date')
-                                ->orWhere('start_date', '<=', now());
-                        })
-                        ->where(function ($q): void {
-                            $q->whereNull('end_date')
-                                ->orWhere('end_date', '>=', now());
-                        });
-                })
-                ->firstOrFail();
+            return $landingpage->load('campaign')->toResource();
         }
+
+        $landingpage = Landingpage::with('campaign')
+            ->where('slug', $identifier)
+            ->whereHas('campaign', function ($query): void {
+                $query->where('status', CampaignStatus::ACTIVE)
+                    ->where(function ($q): void {
+                        $q->whereNull('start_date')
+                            ->orWhere('start_date', '<=', now());
+                    })
+                    ->where(function ($q): void {
+                        $q->whereNull('end_date')
+                            ->orWhere('end_date', '>=', now());
+                    });
+            })
+            ->firstOrFail();
+
+        $campaignTrackingService->trackLandingPageVisit($request, $landingpage);
 
         return $landingpage->load('campaign')->toResource();
     }
