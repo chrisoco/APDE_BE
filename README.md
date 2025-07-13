@@ -32,13 +32,28 @@ A modern, responsive web application for managing and analyzing targeted email c
 # Clone repository
 git clone https://github.com/your-repo/hotel-campaign-system.git
 
+# Setup MongoDB with Docker
+docker pull mongodb/mongodb-community-server:latest
+docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest
+
 # Install Laravel dependencies
 composer install
-php artisan migrate
 
-# Install frontend dependencies (tbd)
-npm install
-npm run dev
+# Configure environment
+cp .env.example .env
+php artisan key:generate
+
+# Run migrations and seeders
+php artisan migrate:fresh --seed
+
+# Start development server
+php artisan serve
+# OR use Laravel Herd: https://herd.laravel.com/
+
+# Visit API documentation
+# http://localhost:8000/docs/openapi/
+
+# Import Postman collection and run Token Based > Token Login to generate auth token
 ```
 
 ## Static Code Analysis

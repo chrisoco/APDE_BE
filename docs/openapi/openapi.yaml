@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: APDE API
   description: |
@@ -460,6 +460,97 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /campaigns/{campaign}/send-emails:
+    post:
+      tags:
+        - Campaigns
+      summary: Send campaign emails
+      description: |
+        Send personalized emails to prospects matching the campaign's filter criteria.
+        
+        ## Requirements
+        - Campaign must have an associated landing page
+        - Campaign must have prospect filters defined
+        - User must have ADMIN or SUPER_ADMIN role
+        
+        ## Local Development
+        In local development environment, only 1 email is sent instead of sending to all matching prospects.
+        
+        ## Example Response
+        ```json
+        {
+          "message": "Campaign emails queued successfully. 5 emails sent to prospects.",
+          "emails_sent": 5,
+          "total_prospects": 10
+        }
+        ```
+      operationId: sendCampaignEmails
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: campaign
+          in: path
+          required: true
+          description: Campaign ID or UUID
+          schema:
+            type: string
+          example: "507f1f77bcf86cd799439011"
+      responses:
+        '200':
+          description: Campaign emails sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                    example: "Campaign emails queued successfully. 5 emails sent to prospects."
+                  emails_sent:
+                    type: integer
+                    description: Number of emails sent
+                    example: 5
+                  total_prospects:
+                    type: integer
+                    description: Total number of prospects matching filters
+                    example: 10
+                required:
+                  - message
+                  - emails_sent
+                  - total_prospects
+        '400':
+          description: Campaign requirements not met
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: "Campaign must have an associated landing page to send emails."
+                required:
+                  - message
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - missing required permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Campaign not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /landingpages:
     get:
       tags:
@@ -688,7 +779,39 @@ paths:
       tags:
         - Generic Filters
       summary: Filter model data
-      description: Apply filters to a specific model and return paginated results
+      description: |
+        Apply filters to a specific model and return paginated results.
+        
+        ## Filter Examples
+        
+        ### Exact Value Filters
+        ```
+        GET /api/prospects/filter?source=erp&gender=female
+        GET /api/prospects/filter?age=40
+        GET /api/prospects/filter?blood_group=A+
+        GET /api/prospects/filter?address.city=Zurich
+        ```
+        
+        ### Range Filters (min_* and max_*)
+        ```
+        GET /api/prospects/filter?min_age=38&max_age=70
+        GET /api/prospects/filter?min_height=160&max_height=180
+        GET /api/prospects/filter?min_address.latitude=50.0&max_address.latitude=60.0
+        ```
+        
+        ### Array Filters (*_in and *_not_in)
+        ```
+        GET /api/prospects/filter?blood_group_in[]=AB-&blood_group_in[]=O-
+        GET /api/prospects/filter?gender_in[]=male&gender_in[]=female
+        GET /api/prospects/filter?source_not_in[]=kueba
+        GET /api/prospects/filter?address.city_in[]=Berlin&address.city_in[]=Munich
+        ```
+        
+        ### Complex Filters (Combining Multiple Types)
+        ```
+        GET /api/prospects/filter?source=erp&gender=female&min_age=25&max_age=50&address.city=Berlin
+        GET /api/prospects/filter?gender_in[]=male&gender_in[]=female&min_age=30&source=erp
+        ```
       operationId: filterModel
       security:
         - bearerAuth: []
@@ -718,38 +841,34 @@ paths:
             maximum: 100
             default: 10
           example: 10
+        # Exact value filters
         - name: source
           in: query
-          description: Filter by prospect source
+          description: Filter by prospect source (erp, kueba)
           schema:
             type: string
             enum: [erp, kueba]
           example: "erp"
         - name: gender
           in: query
-          description: Filter by gender
+          description: Filter by gender (male, female)
           schema:
             type: string
+            enum: [male, female]
           example: "male"
-        - name: age_min
+        - name: age
           in: query
-          description: Minimum age filter
+          description: Exact age filter
           schema:
             type: integer
             minimum: 0
-          example: 18
-        - name: age_max
-          in: query
-          description: Maximum age filter
-          schema:
-            type: integer
-            minimum: 0
-          example: 65
+          example: 40
         - name: blood_group
           in: query
           description: Filter by blood group
           schema:
             type: string
+            enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
           example: "A+"
         - name: eye_color
           in: query
@@ -768,7 +887,7 @@ paths:
           description: Filter by city
           schema:
             type: string
-          example: "Berlin"
+          example: "Zurich"
         - name: address.state
           in: query
           description: Filter by state
@@ -801,6 +920,166 @@ paths:
             type: number
             format: float
           example: 13.4050
+        
+        # Range filters (min_* and max_*)
+        - name: min_age
+          in: query
+          description: Minimum age filter
+          schema:
+            type: integer
+            minimum: 0
+          example: 38
+        - name: max_age
+          in: query
+          description: Maximum age filter
+          schema:
+            type: integer
+            minimum: 0
+          example: 70
+        - name: min_height
+          in: query
+          description: Minimum height filter
+          schema:
+            type: number
+            format: float
+          example: 160.0
+        - name: max_height
+          in: query
+          description: Maximum height filter
+          schema:
+            type: number
+            format: float
+          example: 180.0
+        - name: min_weight
+          in: query
+          description: Minimum weight filter
+          schema:
+            type: number
+            format: float
+          example: 60.0
+        - name: max_weight
+          in: query
+          description: Maximum weight filter
+          schema:
+            type: number
+            format: float
+          example: 80.0
+        - name: min_address.latitude
+          in: query
+          description: Minimum latitude filter
+          schema:
+            type: number
+            format: float
+          example: 50.0
+        - name: max_address.latitude
+          in: query
+          description: Maximum latitude filter
+          schema:
+            type: number
+            format: float
+          example: 60.0
+        - name: min_address.longitude
+          in: query
+          description: Minimum longitude filter
+          schema:
+            type: number
+            format: float
+          example: 10.0
+        - name: max_address.longitude
+          in: query
+          description: Maximum longitude filter
+          schema:
+            type: number
+            format: float
+          example: 20.0
+        
+        # Array filters (*_in and *_not_in)
+        - name: source_in[]
+          in: query
+          description: Filter by multiple sources
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [erp, kueba]
+          example: ["erp", "kueba"]
+        - name: source_not_in[]
+          in: query
+          description: Exclude multiple sources
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [erp, kueba]
+          example: ["kueba"]
+        - name: gender_in[]
+          in: query
+          description: Filter by multiple genders
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [male, female]
+          example: ["male", "female"]
+        - name: gender_not_in[]
+          in: query
+          description: Exclude multiple genders
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [male, female]
+          example: ["female"]
+        - name: blood_group_in[]
+          in: query
+          description: Filter by multiple blood groups
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
+          example: ["AB-", "O-"]
+        - name: blood_group_not_in[]
+          in: query
+          description: Exclude multiple blood groups
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [A+, A-, B+, B-, AB+, AB-, O+, O+, O-]
+          example: ["AB-"]
+        - name: eye_color_in[]
+          in: query
+          description: Filter by multiple eye colors
+          schema:
+            type: array
+            items:
+              type: string
+          example: ["blue", "green"]
+        - name: hair_color_in[]
+          in: query
+          description: Filter by multiple hair colors
+          schema:
+            type: array
+            items:
+              type: string
+          example: ["brown", "black"]
+        - name: address.city_in[]
+          in: query
+          description: Filter by multiple cities
+          schema:
+            type: array
+            items:
+              type: string
+          example: ["Berlin", "Munich"]
+        - name: address.country_in[]
+          in: query
+          description: Filter by multiple countries
+          schema:
+            type: array
+            items:
+              type: string
+          example: ["Germany", "Switzerland"]
       responses:
         '200':
           description: Filtered results
