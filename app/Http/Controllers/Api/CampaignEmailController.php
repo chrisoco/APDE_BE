@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use Exception;
+use App\Enums\CampaignStatus;
+use App\Http\Controllers\Controller;
+use App\Mail\CampaignEmail;
 use App\Models\Campaign;
 use App\Models\Prospect;
-use App\Mail\CampaignEmail;
-use Illuminate\Http\Request;
-use App\Enums\CampaignStatus;
+use App\Services\CampaignTrackingService;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
-use App\Services\CampaignTrackingService;
 
 final class CampaignEmailController extends Controller
 {
