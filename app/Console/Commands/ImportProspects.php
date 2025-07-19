@@ -45,8 +45,8 @@ final class ImportProspects extends Command
 
             }
 
-        } catch (Exception $e) {
-            $this->error('Failed to import ERP prospects: '.$e->getMessage());
+        } catch (Exception $exception) {
+            $this->error('Failed to import ERP prospects: '.$exception->getMessage());
 
             return 1;
         }
