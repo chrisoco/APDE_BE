@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Eloquent\SoftDeletes;
+use MongoDB\Laravel\Relations\HasMany;
 
 /**
  * @property string $id
@@ -100,5 +101,15 @@ final class Prospect extends Model
             'address.latitude' => 'range',
             'address.longitude' => 'range',
         ];
+    }
+
+    /**
+     * Get the campaigns associated with the prospect.
+     *
+     * @return HasMany<CampainProspect, Prospect>
+     */
+    public function prospectCampaigns(): HasMany
+    {
+        return $this->hasMany(CampainProspect::class);
     }
 }

@@ -26,10 +26,13 @@ The Campaign Mailing system allows authorized users to send personalized emails 
 
 **Endpoint:** `POST /api/campaigns/{campaign}/send-emails`
 
-**Description:** Sends personalized emails to prospects matching the campaign's filter criteria.
+**Description:** Sends personalized emails to prospects matching the campaign's filter criteria. Duplicate sends to the same prospect are prevented by default.
 
 **URL Parameters:**
 - `campaign` (string, required): Campaign ID or UUID
+
+**Query Parameters:**
+- `force` (boolean, optional): Force sending emails to prospects who have already been contacted. Default: `false`
 
 **Authentication:** Required (Bearer token)
 
@@ -88,7 +91,7 @@ if (! $campaign->prospect_filter) {
 
 ## Prospect Filtering
 
-The system uses the `applyFilters` method from the `HasFilterable` trait to filter prospects based on campaign criteria.
+The system uses the `applyFilters` method from the `HasFilterable` trait to filter prospects based on campaign criteria. The system automatically filters out prospects who have already been contacted for this campaign unless the `force` parameter is set to `true`. The system tracks each email send individually while using unique prospect IDs to prevent duplicates in default mode.
 
 ### Filter Structure
 
@@ -251,7 +254,9 @@ public function trackLandingPageVisit(Request $request, Landingpage $landingpage
 
 ## Local Development Behavior
 
-**Important:** In local development environment, the system only sends **1 email** instead of sending to all matching prospects. This is a safety feature to prevent accidental mass emails during development.
+**Important:** In local development environment, the system has safety features to prevent accidental mass emails:
+- **Default behavior:** Only sends **1 email** to the first matching prospect
+- **Force mode:** Sends up to **3 emails** to prevent excessive testing emails
 
 ```php
 foreach ($prospects as $prospect) {
@@ -264,8 +269,11 @@ foreach ($prospects as $prospect) {
 
         $emailsSent++;
 
-        if (app()->isLocal()) {
-            break; // Only send 1 email in local development
+        if (!$force && app()->isLocal()) {
+            break; // Only send 1 email in local development (default mode)
+        }
+        if($force && app()->isLocal() && $emailsSent >= 3) {
+            break; // Send up to 3 emails in local development (force mode)
         }
 
     } catch (Exception $e) {
@@ -309,11 +317,25 @@ catch (Exception $e) {
 **Success Response:**
 ```json
 {
-    "message": "Campaign emails queued successfully. 5 emails sent to prospects.",
-    "emails_sent": 5,
-    "total_prospects": 10
+    "message": "Campaign emails queued successfully. 1 emails sent to prospects.",
+    "emails_sent": 1,
+    "total_emails_sent": 6,
+    "notified_prospects": 5,
+    "available_prospects": 94,
+    "total_prospects": 100
 }
 ```
+
+### Response Fields
+
+The API response includes the following fields:
+
+- `message`: Success message with email count
+- `emails_sent`: Number of emails sent in this request
+- `total_emails_sent`: Total number of emails sent for this campaign (including all previous sends)
+- `notified_prospects`: Number of unique prospects that have received at least one email
+- `available_prospects`: Number of prospects that haven't been contacted yet
+- `total_prospects`: Total number of prospects matching the campaign filters
 
 **Error Responses:**
 ```json
@@ -330,7 +352,7 @@ catch (Exception $e) {
 
 ```json
 {
-    "message": "No prospects match the campaign filters."
+    "message": "No prospects match the campaign filters or all prospects have already been contacted."
 }
 ```
 
@@ -355,7 +377,13 @@ $campaign = Campaign::create([
 ### 2. Send Campaign Emails
 
 ```bash
+# Send emails to new prospects only (default behavior)
 curl -X POST "http://localhost:8000/api/campaigns/{campaign_id}/send-emails" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Accept: application/json"
+
+# Force send emails to all prospects (including already contacted)
+curl -X POST "http://localhost:8000/api/campaigns/{campaign_id}/send-emails?force=true" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Accept: application/json"
 ```
@@ -366,7 +394,10 @@ curl -X POST "http://localhost:8000/api/campaigns/{campaign_id}/send-emails" \
 {
     "message": "Campaign emails queued successfully. 1 emails sent to prospects.",
     "emails_sent": 1,
-    "total_prospects": 15
+    "total_emails_sent": 6,
+    "notified_prospects": 5,
+    "available_prospects": 94,
+    "total_prospects": 100
 }
 ```
 
@@ -485,18 +516,27 @@ sequenceDiagram
    - Validates campaign requirements
    - Manages email sending process
    - Implements local development safety
+   - Prevents duplicate notifications using unique prospect IDs
+   - Supports force parameter to override duplicate prevention
+   - Tracks each email send individually for complete history
 
-2. **CampaignEmail Mailable** (`app/Mail/CampaignEmail.php`)
+2. **CampainProspect Model** (`app/Models/CampainProspect.php`)
+   - Manages campaign-prospect associations
+   - Tracks each individual email send for complete history
+   - Provides relationship methods for campaigns and prospects
+   - Enables duplicate prevention using unique prospect IDs
+
+3. **CampaignEmail Mailable** (`app/Mail/CampaignEmail.php`)
    - Laravel mailable class for campaign emails
    - Uses markdown template for email content
    - Includes campaign, prospect, and tracking URL
 
-3. **CampaignTrackingService** (`app/Services/CampaignTrackingService.php`)
+4. **CampaignTrackingService** (`app/Services/CampaignTrackingService.php`)
    - Generates tracking URLs with UTM parameters
    - Tracks landing page visits
    - Extracts tracking data from requests
 
-4. **HasFilterable Trait** (`app/Traits/HasFilterable.php`)
+5. **HasFilterable Trait** (`app/Traits/HasFilterable.php`)
    - Provides filtering functionality for prospects
    - Supports enum and range filters
    - Handles automatic value casting
@@ -516,6 +556,7 @@ The system integrates with the landing page tracking system:
 - Click tracking via UTM parameters
 - Visit analytics stored in `campaign_trackings` collection
 - Device and browser detection
+- Prospect-campaign associations stored in `campain_prospects` collection for email tracking and duplicate prevention
 
 ## Best Practices
 
@@ -524,6 +565,8 @@ The system integrates with the landing page tracking system:
 3. **Use Local Development:** Always test in local environment first (sends only 1 email)
 4. **Validate Campaign Setup:** Ensure landing page and filters are properly configured
 5. **Review Analytics:** Monitor campaign performance through tracking data
+6. **Avoid Duplicate Sends:** Use the default behavior to prevent duplicate notifications
+7. **Use Force Parameter Carefully:** Only use `force=true` when you need to resend to all prospects
 
 ## Troubleshooting
 
@@ -534,6 +577,7 @@ The system integrates with the landing page tracking system:
 3. **Missing Landing Page:** Create and associate a landing page with the campaign
 4. **Filter Syntax Errors:** Verify filter structure matches expected format
 5. **Email Delivery Issues:** Check mail configuration and logs
+6. **All Prospects Already Contacted:** Use `force=true` parameter to resend to all prospects
 
 ### Debugging Steps
 
@@ -549,12 +593,19 @@ The system integrates with the landing page tracking system:
      -H "Authorization: Bearer YOUR_TOKEN"
    ```
 
-3. **Check Email Logs:**
+3. **Check Campaign-Prospect Associations:**
+   ```php
+   $campaign = Campaign::find($id);
+   dd($campaign->campaignProspects()->count()); // Total emails sent
+   dd($campaign->campaignProspects()->pluck('prospect_id')->unique()->count()); // Unique prospects notified
+   ```
+
+4. **Check Email Logs:**
    ```bash
    tail -f storage/logs/laravel.log
    ```
 
-4. **Verify Local Development:**
+5. **Verify Local Development:**
    ```php
    dd(app()->isLocal()); // Should return true in local environment
    ```

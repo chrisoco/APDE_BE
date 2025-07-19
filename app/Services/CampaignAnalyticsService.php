@@ -61,12 +61,12 @@ final class CampaignAnalyticsService
      */
     private function getStatistics(Campaign $campaign): array
     {
-        $emailsSent = $campaign->emails_sent ?? 0;
+        $totalProspectsNotified = $campaign->campaignProspects()->pluck('prospect_id')->unique()->count();
         $uniqueProspectVisits = $campaign->trackings()->whereNotNull('prospect_id')->distinct('prospect_id')->count();
-        $emailCtaClickRate = $uniqueProspectVisits > 0 && $emailsSent > 0 ? round(($uniqueProspectVisits / $emailsSent) * 100, 2) : 0;
+        $emailCtaClickRate = $uniqueProspectVisits > 0 && $totalProspectsNotified > 0 ? round(($uniqueProspectVisits / $totalProspectsNotified) * 100, 2) : 0;
 
         return [
-            'emails_sent' => $emailsSent,
+            'total_prospects_notified' => $totalProspectsNotified,
             'unique_prospect_visits' => $uniqueProspectVisits,
             'email_cta_click_rate' => $emailCtaClickRate,
         ];
