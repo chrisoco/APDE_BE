@@ -1,0 +1,570 @@
+{
+    "results": [
+        {
+            "gender": "female",
+            "name": {
+                "title": "Madame",
+                "first": "Mila",
+                "last": "Laurent"
+            },
+            "location": {
+                "street": {
+                    "number": 1718,
+                    "name": "Rue Principale"
+                },
+                "city": "Zielebach",
+                "state": "Appenzell Innerrhoden",
+                "country": "Switzerland",
+                "postcode": 8787,
+                "coordinates": {
+                    "latitude": "62.8884",
+                    "longitude": "30.6588"
+                },
+                "timezone": {
+                    "offset": "-7:00",
+                    "description": "Mountain Time (US & Canada)"
+                }
+            },
+            "email": "mila.laurent@example.com",
+            "login": {
+                "uuid": "b7a32ff1-9a64-445e-acfd-1409edd24d3a",
+                "username": "smallbutterfly380",
+                "password": "w4g8at",
+                "salt": "OBqqw67U",
+                "md5": "32abbc60785ae03db2d9379c9a9876e2",
+                "sha1": "6b21383e0347b5b5420fbea8ce17d3412759017e",
+                "sha256": "9ef6941e8ba0cfd825b55ee39ccc9de046e6c15d744fb186a69900e850e9090d"
+            },
+            "dob": {
+                "date": "1945-01-29T13:51:17.831Z",
+                "age": 80
+            },
+            "registered": {
+                "date": "2014-09-01T07:13:28.384Z",
+                "age": 10
+            },
+            "phone": "075 281 64 32",
+            "cell": "076 353 17 23",
+            "id": {
+                "name": "AVS",
+                "value": "756.9065.3875.90"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/86.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/86.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/86.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "female",
+            "name": {
+                "title": "Madame",
+                "first": "Judith",
+                "last": "Lacroix"
+            },
+            "location": {
+                "street": {
+                    "number": 5826,
+                    "name": "Cours Charlemagne"
+                },
+                "city": "Degersheim",
+                "state": "Nidwalden",
+                "country": "Switzerland",
+                "postcode": 6684,
+                "coordinates": {
+                    "latitude": "-3.4724",
+                    "longitude": "-63.5648"
+                },
+                "timezone": {
+                    "offset": "+2:00",
+                    "description": "Kaliningrad, South Africa"
+                }
+            },
+            "email": "judith.lacroix@example.com",
+            "login": {
+                "uuid": "456862c4-5e09-495d-88f1-1977989238e1",
+                "username": "goldenzebra214",
+                "password": "house",
+                "salt": "fCNbDkg1",
+                "md5": "69278063ab0ec13acaa5fc935d8b4b99",
+                "sha1": "159eb5b65235291fee6dfd7557313fcaf369242a",
+                "sha256": "48eb9d29f5d99f0e6d7cb3a74c61ddbbe2f4a6567daf92171b7e7a8e394f1bbe"
+            },
+            "dob": {
+                "date": "1963-12-03T19:11:48.926Z",
+                "age": 61
+            },
+            "registered": {
+                "date": "2011-09-27T19:09:48.203Z",
+                "age": 13
+            },
+            "phone": "078 632 56 38",
+            "cell": "075 829 00 37",
+            "id": {
+                "name": "AVS",
+                "value": "756.3368.0274.39"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/75.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/75.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/75.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "female",
+            "name": {
+                "title": "Mademoiselle",
+                "first": "Chantal",
+                "last": "Brun"
+            },
+            "location": {
+                "street": {
+                    "number": 1286,
+                    "name": "Avenue des Ternes"
+                },
+                "city": "Wislikofen",
+                "state": "Fribourg",
+                "country": "Switzerland",
+                "postcode": 1774,
+                "coordinates": {
+                    "latitude": "-7.0665",
+                    "longitude": "47.2971"
+                },
+                "timezone": {
+                    "offset": "+11:00",
+                    "description": "Magadan, Solomon Islands, New Caledonia"
+                }
+            },
+            "email": "chantal.brun@example.com",
+            "login": {
+                "uuid": "0721d75f-257c-48aa-a548-a6e2d4f005b5",
+                "username": "happyrabbit385",
+                "password": "asdzxc",
+                "salt": "eYOT5mFI",
+                "md5": "e082a362cc00d31a9a5350cfe625f3c3",
+                "sha1": "8910ba68c68ee1209d3c6563f095d3f332f73f9d",
+                "sha256": "5042f41f8d6f0ed6aa840d9ab01ca46b1273ef0f8c20483ac8616c811f388f8a"
+            },
+            "dob": {
+                "date": "1984-07-05T21:34:22.684Z",
+                "age": 40
+            },
+            "registered": {
+                "date": "2021-06-05T12:04:02.467Z",
+                "age": 4
+            },
+            "phone": "078 203 54 08",
+            "cell": "076 676 95 48",
+            "id": {
+                "name": "AVS",
+                "value": "756.3454.6393.66"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/68.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/68.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/68.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "female",
+            "name": {
+                "title": "Mademoiselle",
+                "first": "Elisa",
+                "last": "Girard"
+            },
+            "location": {
+                "street": {
+                    "number": 674,
+                    "name": "Rue de la Mairie"
+                },
+                "city": "Ormont-Dessous",
+                "state": "St. Gallen",
+                "country": "Switzerland",
+                "postcode": 2373,
+                "coordinates": {
+                    "latitude": "-20.0715",
+                    "longitude": "49.4653"
+                },
+                "timezone": {
+                    "offset": "+4:00",
+                    "description": "Abu Dhabi, Muscat, Baku, Tbilisi"
+                }
+            },
+            "email": "elisa.girard@example.com",
+            "login": {
+                "uuid": "c03b76ef-a219-4f20-b301-cabe38816c5b",
+                "username": "bigcat790",
+                "password": "darkange",
+                "salt": "nfT031d6",
+                "md5": "2991de0a8b66db3eea8e12242bbba3ce",
+                "sha1": "687e8f76ae95a938ef1f702c719a3b36040f94c1",
+                "sha256": "67e3bf7db15276fc4fc821eb6decb885e1d757e5a7f5988a08191dfdee8cc9a6"
+            },
+            "dob": {
+                "date": "1970-10-16T02:08:07.299Z",
+                "age": 54
+            },
+            "registered": {
+                "date": "2014-02-09T20:02:05.150Z",
+                "age": 11
+            },
+            "phone": "077 095 45 52",
+            "cell": "078 489 91 90",
+            "id": {
+                "name": "AVS",
+                "value": "756.5609.5345.73"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/96.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/96.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/96.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "female",
+            "name": {
+                "title": "Madame",
+                "first": "Nelli",
+                "last": "Henry"
+            },
+            "location": {
+                "street": {
+                    "number": 286,
+                    "name": "Rue du Bon-Pasteur"
+                },
+                "city": "Siselen",
+                "state": "Fribourg",
+                "country": "Switzerland",
+                "postcode": 1709,
+                "coordinates": {
+                    "latitude": "81.3911",
+                    "longitude": "72.4603"
+                },
+                "timezone": {
+                    "offset": "-12:00",
+                    "description": "Eniwetok, Kwajalein"
+                }
+            },
+            "email": "nelli.henry@example.com",
+            "login": {
+                "uuid": "61c41687-1c4b-4b9f-86d5-787a5f5a92e4",
+                "username": "sadostrich318",
+                "password": "cherries",
+                "salt": "t1jUYuze",
+                "md5": "16353003225ab3fd6af5b40c30342457",
+                "sha1": "2ab16ceba1276511876ae28b635ade204e83ba91",
+                "sha256": "428f538fb6942bda2d25315dee16695af0ecd00257b2ff38a820b7f27358286c"
+            },
+            "dob": {
+                "date": "1953-11-15T21:15:42.584Z",
+                "age": 71
+            },
+            "registered": {
+                "date": "2004-04-21T12:32:45.434Z",
+                "age": 21
+            },
+            "phone": "075 182 60 12",
+            "cell": "079 595 25 76",
+            "id": {
+                "name": "AVS",
+                "value": "756.8375.6906.14"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/0.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/0.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/0.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "female",
+            "name": {
+                "title": "Mademoiselle",
+                "first": "Yasmin",
+                "last": "Leroy"
+            },
+            "location": {
+                "street": {
+                    "number": 1,
+                    "name": "Rue des Chartreux"
+                },
+                "city": "Trin",
+                "state": "Solothurn",
+                "country": "Switzerland",
+                "postcode": 3619,
+                "coordinates": {
+                    "latitude": "-19.6413",
+                    "longitude": "-83.4392"
+                },
+                "timezone": {
+                    "offset": "-3:00",
+                    "description": "Brazil, Buenos Aires, Georgetown"
+                }
+            },
+            "email": "yasmin.leroy@example.com",
+            "login": {
+                "uuid": "91aab931-bfdd-40e4-92c7-9f6271e87884",
+                "username": "orangecat706",
+                "password": "dingdong",
+                "salt": "fMiycHMr",
+                "md5": "2a7bd0df489bae814ef9154e4b79c8ce",
+                "sha1": "c0823fcb94707794a7df751822c9ebf5fe064ed7",
+                "sha256": "5a95530e0f20181bac207ae918141e293114de9b0f96a78b7a31c34294b8188a"
+            },
+            "dob": {
+                "date": "1976-06-09T06:30:26.255Z",
+                "age": 49
+            },
+            "registered": {
+                "date": "2002-09-04T23:38:12.419Z",
+                "age": 22
+            },
+            "phone": "076 863 98 32",
+            "cell": "076 219 01 81",
+            "id": {
+                "name": "AVS",
+                "value": "756.3614.6550.02"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/29.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/29.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/29.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "female",
+            "name": {
+                "title": "Mademoiselle",
+                "first": "Seraina",
+                "last": "Perez"
+            },
+            "location": {
+                "street": {
+                    "number": 7471,
+                    "name": "Avenue de L'Abbé-Roussel"
+                },
+                "city": "Agno",
+                "state": "Fribourg",
+                "country": "Switzerland",
+                "postcode": 8775,
+                "coordinates": {
+                    "latitude": "49.5171",
+                    "longitude": "-30.7401"
+                },
+                "timezone": {
+                    "offset": "+6:00",
+                    "description": "Almaty, Dhaka, Colombo"
+                }
+            },
+            "email": "seraina.perez@example.com",
+            "login": {
+                "uuid": "dff1f08a-0f95-479c-919c-7200cd3f5d2c",
+                "username": "whiteelephant437",
+                "password": "beezer",
+                "salt": "hXWDlT1I",
+                "md5": "fd79eee1f1cd8e472b8c43208b1a5de3",
+                "sha1": "520c74b9ce27a610b4f184ed2831bd644412e17d",
+                "sha256": "464f85e30fcc7ca87709ca8baf28ad26abdff596de67574ad919adbdc7febd5a"
+            },
+            "dob": {
+                "date": "1950-09-24T22:45:23.445Z",
+                "age": 74
+            },
+            "registered": {
+                "date": "2002-07-30T12:12:44.906Z",
+                "age": 22
+            },
+            "phone": "078 510 58 66",
+            "cell": "079 165 16 74",
+            "id": {
+                "name": "AVS",
+                "value": "756.9040.3845.45"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/28.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/28.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/28.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "female",
+            "name": {
+                "title": "Madame",
+                "first": "Lina",
+                "last": "Dumas"
+            },
+            "location": {
+                "street": {
+                    "number": 631,
+                    "name": "Place de L'Église"
+                },
+                "city": "Bonfol",
+                "state": "Nidwalden",
+                "country": "Switzerland",
+                "postcode": 1331,
+                "coordinates": {
+                    "latitude": "56.6417",
+                    "longitude": "-62.5981"
+                },
+                "timezone": {
+                    "offset": "0:00",
+                    "description": "Western Europe Time, London, Lisbon, Casablanca"
+                }
+            },
+            "email": "lina.dumas@example.com",
+            "login": {
+                "uuid": "613ba321-0811-42d4-a033-e8f939cae6b9",
+                "username": "organicleopard212",
+                "password": "jordan1",
+                "salt": "BkRLqPxp",
+                "md5": "05031ab3e2497cc16ff8546854861e06",
+                "sha1": "4bd834d030bb81e99e1e852554061890ba30ed9f",
+                "sha256": "b09f86745d460e26b0a9c046aaefb7051389811310b0285db7ee50a34d2c9be0"
+            },
+            "dob": {
+                "date": "2000-01-27T20:59:39.934Z",
+                "age": 25
+            },
+            "registered": {
+                "date": "2017-07-12T18:08:00.179Z",
+                "age": 7
+            },
+            "phone": "075 409 56 68",
+            "cell": "078 254 79 82",
+            "id": {
+                "name": "AVS",
+                "value": "756.4781.2894.20"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/10.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/10.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/10.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "female",
+            "name": {
+                "title": "Mademoiselle",
+                "first": "Eva",
+                "last": "Bourgeois"
+            },
+            "location": {
+                "street": {
+                    "number": 2713,
+                    "name": "Rue de L'Abbé-De-L'Épée"
+                },
+                "city": "Täsch",
+                "state": "Jura",
+                "country": "Switzerland",
+                "postcode": 7568,
+                "coordinates": {
+                    "latitude": "27.8437",
+                    "longitude": "152.3311"
+                },
+                "timezone": {
+                    "offset": "-10:00",
+                    "description": "Hawaii"
+                }
+            },
+            "email": "eva.bourgeois@example.com",
+            "login": {
+                "uuid": "0a271ff9-050b-4db5-9926-0894492a8044",
+                "username": "heavyladybug323",
+                "password": "bianca",
+                "salt": "KiWEr7ip",
+                "md5": "82f7d4287926f30a187edeb394102622",
+                "sha1": "4956c0951d7ff89837b7662b0aea2630ca4ca9ce",
+                "sha256": "2d220491d5ca2e84450f503b0bc934c56c96cf260a2ab6a0ca1c1f0419d3f63c"
+            },
+            "dob": {
+                "date": "1985-01-29T04:31:10.763Z",
+                "age": 40
+            },
+            "registered": {
+                "date": "2008-08-16T01:39:17.248Z",
+                "age": 16
+            },
+            "phone": "077 717 90 12",
+            "cell": "079 223 00 35",
+            "id": {
+                "name": "AVS",
+                "value": "756.2672.2753.87"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/women/43.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/women/43.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/women/43.jpg"
+            },
+            "nat": "CH"
+        },
+        {
+            "gender": "male",
+            "name": {
+                "title": "Monsieur",
+                "first": "Yanick",
+                "last": "Fleury"
+            },
+            "location": {
+                "street": {
+                    "number": 3273,
+                    "name": "Avenue Debourg"
+                },
+                "city": "Essertines-sur-Rolle",
+                "state": "Appenzell Innerrhoden",
+                "country": "Switzerland",
+                "postcode": 9373,
+                "coordinates": {
+                    "latitude": "-37.6005",
+                    "longitude": "-89.0850"
+                },
+                "timezone": {
+                    "offset": "+5:30",
+                    "description": "Bombay, Calcutta, Madras, New Delhi"
+                }
+            },
+            "email": "yanick.fleury@example.com",
+            "login": {
+                "uuid": "cb4fe533-42f0-41d1-9936-a880030fdc2c",
+                "username": "angryostrich772",
+                "password": "blackjac",
+                "salt": "w1zhvzaK",
+                "md5": "272200b29abf0e577228e9f805b26fee",
+                "sha1": "f4c3f0469f7bad9cd5c0ac6a18cdd8b4e2f5c68c",
+                "sha256": "f2699459e4467fc810596d3485c667dc9b1e7a77dc48844cc5c2b0b434872177"
+            },
+            "dob": {
+                "date": "1999-09-11T11:05:13.305Z",
+                "age": 25
+            },
+            "registered": {
+                "date": "2016-06-11T22:02:59.123Z",
+                "age": 9
+            },
+            "phone": "077 954 07 04",
+            "cell": "079 204 09 07",
+            "id": {
+                "name": "AVS",
+                "value": "756.9695.3414.81"
+            },
+            "picture": {
+                "large": "https://randomuser.me/api/portraits/men/0.jpg",
+                "medium": "https://randomuser.me/api/portraits/med/men/0.jpg",
+                "thumbnail": "https://randomuser.me/api/portraits/thumb/men/0.jpg"
+            },
+            "nat": "CH"
+        }
+    ],
+    "info": {
+        "seed": "6ea013be504b9cb4",
+        "results": 10,
+        "page": 1,
+        "version": "1.4"
+    }
+}

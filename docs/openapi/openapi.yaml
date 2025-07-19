@@ -1,0 +1,2652 @@
+openapi: 3.1.1
+info:
+  title: APDE API
+  description: |
+    # APDE Campaign Management API
+    
+    The APDE API provides a comprehensive platform for managing marketing campaigns, prospects, and landing pages. 
+    This API enables you to create targeted email campaigns, track analytics, and manage landing pages for your marketing efforts.
+    
+    ## Key Features
+    
+    - **Prospect Management**: Import and filter prospects from multiple sources (ERP, Kueba)
+    - **Campaign Creation**: Design and manage marketing campaigns with advanced targeting
+    - **Landing Pages**: Create dynamic landing pages with tracking capabilities
+    - **Analytics**: Track campaign performance with detailed metrics
+    - **Email Automation**: Send targeted emails to filtered prospect lists
+    
+    ## Getting Started
+    
+    1. **Authentication**: Obtain an API token via `/api/login` or use cookie-based authentication
+    2. **Create a Campaign**: Define your campaign parameters and prospect filters
+    3. **Design Landing Page**: Create an engaging landing page for your campaign
+    4. **Send Emails**: Queue emails to your targeted prospect list
+    5. **Track Results**: Monitor campaign analytics and visitor behavior
+    
+    ## Base URL
+    
+    All API requests should be made to: `http://apde_be.test`
+    
+    ## Rate Limiting
+    
+    API requests are subject to rate limiting. Please refer to response headers for current limits.
+    
+    ## Support
+    
+    For API support, please contact: support@apde.test
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@apde.test
+  license:
+    name: Proprietary
+    url: https://apde.test/license
+
+servers:
+  - url: http://apde_be.test
+    description: Development server
+  - url: https://api.apde.com
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: |
+      ## Overview
+      The API supports two authentication methods:
+      
+      ### 1. Token-Based Authentication (Recommended)
+      - Use `/api/login` to obtain a bearer token
+      - Include token in `Authorization: Bearer {token}` header
+      - Tokens are long-lived but should be refreshed periodically
+      - Use `/api/logout` to invalidate tokens
+      
+      ### 2. Cookie-Based Authentication
+      - First get CSRF token via `/sanctum/csrf-cookie`
+      - Login via `/login` with CSRF token in headers
+      - Subsequent requests use session cookies
+      - Required for web-based integrations
+      
+      Choose token-based auth for API integrations and cookie-based for web applications.
+  - name: Prospects
+    description: |
+      ## Prospect Management
+      
+      Prospects are potential customers imported from various sources. The API supports:
+      
+      - **Listing**: Paginated prospect lists with detailed information
+      - **Filtering**: Advanced filtering by demographics, location, and attributes
+      - **Search Criteria**: Discover available filter options dynamically
+      
+      ### Data Sources
+      - **ERP**: Prospects from your enterprise resource planning system
+      - **Kueba**: External prospect data from randomuser.me integration
+      
+      ### Available Filters
+      - Demographics: age, gender, birth date
+      - Physical attributes: height, weight, eye color, hair color
+      - Medical: blood group
+      - Location: country, state, city, postal code, coordinates
+      - Source: ERP or Kueba
+  - name: Campaigns
+    description: |
+      ## Campaign Management
+      
+      Campaigns are marketing initiatives targeting specific prospect segments.
+      
+      ### Campaign Lifecycle
+      1. **Draft**: Initial creation and setup
+      2. **Active**: Currently running and sending emails
+      3. **Paused**: Temporarily stopped
+      4. **Completed**: Finished campaigns
+      
+      ### Features
+      - **Prospect Filtering**: Target specific demographics
+      - **Date Scheduling**: Set start and end dates
+      - **Email Automation**: Send personalized emails
+      - **Landing Page Integration**: Automatic landing page creation
+      
+      ### Best Practices
+      - Define clear prospect filters for targeted campaigns
+      - Set appropriate date ranges
+      - Monitor analytics regularly
+      - Test with small groups before full launch
+  - name: Landing Pages
+    description: |
+      ## Landing Page System
+      
+      Dynamic landing pages with tracking and personalization capabilities.
+      
+      ### Structure
+      - **Headline**: Primary message
+      - **Subline**: Supporting text
+      - **Sections**: Multiple content blocks with:
+        - Text content
+        - Optional images
+        - Call-to-action buttons
+      
+      ### Features
+      - **Slug-based URLs**: SEO-friendly URLs
+      - **UTM Tracking**: Full analytics integration
+      - **Prospect Tracking**: Link visits to specific prospects
+      - **A/B Testing Ready**: Create multiple variants
+      
+      ### Public Access
+      Landing pages are publicly accessible when campaigns are active.
+  - name: Analytics
+    description: |
+      ## Campaign Analytics
+      
+      Comprehensive analytics for campaign performance tracking.
+      
+      ### Metrics Tracked
+      - **Visit Analytics**: Total visits, unique visitors, IP tracking
+      - **Email Performance**: Send counts, click-through rates
+      - **Device Breakdown**: Desktop, mobile, tablet usage
+      - **Browser Statistics**: Chrome, Firefox, Safari, Edge
+      - **Geographic Data**: Language preferences
+      - **UTM Campaign Tracking**: Source and medium attribution
+      
+      ### Calculation Methods
+      - **Click Rate**: (Unique Visits / Emails Sent) × 100
+      - **Unique Visitors**: Deduplicated by IP and prospect ID
+      - **Device Detection**: User-agent based classification
+  - name: Public
+    description: |
+      ## Public Endpoints
+      
+      No authentication required. Used for:
+      
+      - Landing page display
+      - Visit tracking
+      - UTM parameter collection
+      - Prospect activity logging
+      
+      These endpoints support the public-facing campaign pages.
+
+security:
+  - bearerAuth: []
+
+paths:
+  # Authentication - Token Based
+  /api/login:
+    post:
+      tags:
+        - Authentication
+      summary: Token-based login
+      description: |
+        Authenticate using email and password to receive a bearer token.
+        
+        The returned token should be included in all subsequent requests using the 
+        `Authorization: Bearer {token}` header.
+        
+        ### Token Format
+        Tokens follow the format: `{id}|{token}` where:
+        - `{id}` is the user identifier
+        - `{token}` is the secure authentication token
+        
+        ### Security Notes
+        - Tokens expire after 1 hour and can also be revoked via logout
+        - Store tokens securely and never expose in client-side code
+        - Use HTTPS in production to prevent token interception
+      operationId: tokenLogin
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john@doe.com
+                password:
+                  type: string
+                  format: password
+                  example: "1234"
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "687bb3a68c6a6f3e8c058ac3|Ir26AFaFW0FPVxP8CLuSDINi9U5AmCVmBVhjTYjjebbba333"
+              examples:
+                success:
+                  value:
+                    token: "687bb3a68c6a6f3e8c058ac3|Ir26AFaFW0FPVxP8CLuSDINi9U5AmCVmBVhjTYjjebbba333"
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_credentials:
+                  value:
+                    message: "Invalid login credentials"
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                validation_failed:
+                  value:
+                    message: "The email field is required. (and 1 more error)"
+                    errors:
+                      email:
+                        - "The email field is required."
+                      password:
+                        - "The password field is required."
+
+  /api/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Token-based logout
+      operationId: tokenLogout
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+              examples:
+                success:
+                  value:
+                    message: "Logged out successfully"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthenticated:
+                  value:
+                    message: "Unauthenticated."
+
+  # Authentication - Cookie Based
+  /sanctum/csrf-cookie:
+    get:
+      tags:
+        - Authentication
+      summary: Generate CSRF cookie
+      operationId: generateCsrfCookie
+      security: []
+      responses:
+        '204':
+          description: CSRF cookie generated
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: XSRF-TOKEN and session cookies
+
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: Cookie-based login
+      operationId: cookieLogin
+      security: []
+      parameters:
+        - name: X-XSRF-TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+          description: XSRF token from cookie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged in successfully"
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Invalid credentials"
+        '419':
+          description: CSRF token mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "CSRF token mismatch."
+
+  /logout:
+    post:
+      tags:
+        - Authentication
+      summary: Cookie-based logout
+      operationId: cookieLogout
+      security: []
+      parameters:
+        - name: X-XSRF-TOKEN
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+        '419':
+          description: CSRF token mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Cookie-based authenticated endpoints
+  /cp-cookie:
+    get:
+      tags:
+        - Campaigns
+      summary: Get campaigns (cookie auth)
+      operationId: getCampaignsCookie
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignSummary'
+              examples:
+                success:
+                  value:
+                    - title: "Excepturi voluptatum aut voluptas."
+                      description: "Nemo et voluptas ut aut ipsam sed. Quas fugit ab perspiciatis. Aut unde fugiat autem dolores eum ex omnis."
+                      status: "draft"
+                      start_date: "2025-07-20T15:28:31.000000Z"
+                      end_date: "2025-09-18T02:24:40.000000Z"
+                      prospect_filter:
+                        max_age: 80
+                        gender: "female"
+                        source: "erp"
+                      emails_sent: 53
+                      updated_at: "2025-07-19T12:56:55.342000Z"
+                      created_at: "2025-07-19T12:56:55.342000Z"
+                      id: "687b96179895ea533e00101c"
+                    - title: "Rerum eveniet quidem dicta quis."
+                      description: "Corrupti nobis deserunt sint consectetur laboriosam similique cumque provident. Excepturi fugiat sit in similique ab cupiditate ea. Aperiam nostrum dicta debitis soluta aliquid."
+                      status: "active"
+                      start_date: "2025-07-22T17:00:18.000000Z"
+                      end_date: "2025-09-04T03:02:49.000000Z"
+                      prospect_filter:
+                        source: "erp"
+                      emails_sent: 11
+                      updated_at: "2025-07-19T12:56:55.387000Z"
+                      created_at: "2025-07-19T12:56:55.387000Z"
+                      id: "687b96179895ea533e00101e"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthenticated:
+                  value:
+                    message: "Unauthenticated."
+
+  /api/cp-cookie:
+    get:
+      tags:
+        - Campaigns
+      summary: Get campaigns via API (cookie auth)
+      operationId: getCampaignsApiCookie
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: Referer
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Prospects
+  /api/prospects:
+    get:
+      tags:
+        - Prospects
+      summary: List prospects
+      description: |
+        Retrieve a paginated list of all prospects in the system.
+        
+        ### Pagination
+        - Default page size: 10 items
+        - Results include navigation links and metadata
+        
+        ### Response Structure
+        - `data`: Array of prospect objects
+        - `links`: Navigation URLs (first, last, prev, next)
+        - `meta`: Pagination metadata including total count
+        
+        ### Use Cases
+        - Browse all available prospects
+        - Export prospect data
+        - Initial data exploration
+        
+        For filtered results, use `/api/prospects/filter` instead.
+      operationId: listProspects
+      parameters:
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Paginated list of prospects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProspectPaginatedResponse'
+              examples:
+                success:
+                  value:
+                    data:
+                      - id: "687b96159895ea533e000ef0"
+                        gender: "male"
+                        age: 33
+                        birthDate: "1991-02-12T00:00:00.000000Z"
+                        image: "https://dummyjson.com/icon/ethanm/128"
+                        bloodGroup: "AB+"
+                        height: 159.19
+                        weight: 68.81
+                        eyeColor: "Hazel"
+                        hairColor: "Purple"
+                        hairType: "Curly"
+                        address:
+                          address: "466 Pine Street"
+                          city: "San Antonio"
+                          state: "Louisiana"
+                          plz: "72360"
+                          country: "United States"
+                          latitude: 74.074918
+                          longitude: -25.312703
+                      - id: "687b96159895ea533e000ef1"
+                        gender: "female"
+                        age: 31
+                        birthDate: "1993-06-10T00:00:00.000000Z"
+                        image: "https://dummyjson.com/icon/isabellad/128"
+                        bloodGroup: "A-"
+                        height: 150.56
+                        weight: 50.1
+                        eyeColor: "Brown"
+                        hairColor: "Blonde"
+                        hairType: "Curly"
+                        address:
+                          address: "1964 Oak Street"
+                          city: "New York"
+                          state: "Utah"
+                          plz: "89352"
+                          country: "United States"
+                          latitude: 41.331324
+                          longitude: 151.782727
+                    links:
+                      first: "http://apde_be.test/api/prospects?page=1"
+                      last: "http://apde_be.test/api/prospects?page=154"
+                      prev: "http://apde_be.test/api/prospects?page=4"
+                      next: "http://apde_be.test/api/prospects?page=6"
+                    meta:
+                      current_page: 5
+                      from: 9
+                      last_page: 154
+                      path: "http://apde_be.test/api/prospects"
+                      per_page: 2
+                      to: 10
+                      total: 308
+                      links:
+                        - url: "http://apde_be.test/api/prospects?page=4"
+                          label: "&laquo; Previous"
+                          active: false
+                        - url: "http://apde_be.test/api/prospects?page=1"
+                          label: "1"
+                          active: false
+                        - url: "http://apde_be.test/api/prospects?page=5"
+                          label: "5"
+                          active: true
+                        - url: "http://apde_be.test/api/prospects?page=6"
+                          label: "Next &raquo;"
+                          active: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/prospects/{id}:
+    get:
+      tags:
+        - Prospects
+      summary: Get prospect details
+      description: |
+        Retrieve complete information about a specific prospect.
+        
+        ### Additional Fields
+        This endpoint returns more detailed information than the list endpoint:
+        - Full name (firstName, lastName)
+        - Contact information (email, phone)
+        - Data source attribution
+        
+        ### Use Cases
+        - Prospect profile views
+        - Pre-email verification
+        - Data quality checks
+        - Integration with CRM systems
+        
+        ### Privacy Considerations
+        - Personal data should be handled according to GDPR/privacy policies
+        - Email and phone data are for campaign use only
+        - Consider implementing audit logging for access
+      operationId: getProspect
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the prospect
+          example: "687b96159895ea533e000ef0"
+      responses:
+        '200':
+          description: Prospect details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProspectDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/prospects/filter:
+    get:
+      tags:
+        - Prospects
+      summary: Filter prospects
+      description: |
+        Search and filter prospects using multiple criteria. This is the primary endpoint 
+        for finding prospects that match your campaign targeting requirements.
+        
+        ### Filter Capabilities
+        
+        #### Demographics
+        - `age`: Exact age match
+        - `min_age`, `max_age`: Age range filtering
+        - `gender`: Filter by male/female
+        
+        #### Source
+        - `source`: Filter by data source (erp, kueba)
+        
+        #### Physical Attributes
+        - `height`: Exact height match
+        - `min_height`, `max_height`: Height range filtering
+        - `weight`: Exact weight match
+        - `min_weight`, `max_weight`: Weight range filtering
+        - `eye_color`: Exact eye color match
+        - `eye_color_in[]`: Multiple eye colors (array parameter)
+        - `eye_color_not_in[]`: Multiple eye colors (array parameter)
+        - `hair_color`: Exact hair color match
+        - `hair_color_in[]`: Multiple hair colors (array parameter)
+        - `hair_color_not_in[]`: Multiple hair colors (array parameter)
+        - `blood_group`: Single blood type
+        - `blood_group_in[]`: Multiple blood types (array parameter)
+        - `blood_group_not_in[]`: Multiple blood types (array parameter)
+        
+        #### Location
+        - `address.city`: City name
+        - `address.country`: Country name
+        - `address.plz`: Postal/ZIP code
+        - `address.state`: State name
+        - `address.latitude`: Latitude
+        - `min_address.latitude`, `max_address.latitude`: Latitude range
+        - `address.longitude`: Longitude
+        - `min_address.longitude`, `max_address.longitude`: Longitude range
+        
+        ### Parameter Naming Conventions
+        
+        The filter endpoint uses a consistent naming pattern for different types of filters:
+        
+        #### Exact Value Matching
+        Use the field name directly for exact matches:
+        ```
+        ?age=25&gender=female&blood_group=O+
+        ```
+        
+        #### Range Filtering
+        Use `min_` and `max_` prefixes for numeric ranges:
+        ```
+        ?min_age=18&max_age=65&min_height=150&max_height=180
+        ```
+        
+        #### Array Filtering
+        Use `_in[]` suffix for inclusion and `_not_in[]` for exclusion:
+        ```
+        ?blood_group_in[]=A+&blood_group_in[]=O+&eye_color_not_in[]=Blue
+        ```
+        
+        #### Mix and Match
+        All filter types can be combined in a single request:
+        ```
+        ?min_age=25&max_age=45&gender=female&blood_group_in[]=A+&blood_group_in[]=O+&address.city=Zurich
+        ```
+        
+        ### For more filter options, see the `search-criteria` endpoint.
+
+        ### Performance Tips
+        - Use specific filters to reduce result sets
+        - Combine filters for precise targeting
+        - Consider pagination for large result sets
+      operationId: filterProspects
+      parameters:
+        - name: source
+          in: query
+          schema:
+            type: string
+            enum: [erp, kueba]
+          description: Data source filter
+        - name: gender
+          in: query
+          schema:
+            type: string
+            enum: [male, female]
+          description: Gender filter
+        - name: age
+          in: query
+          schema:
+            type: integer
+          description: Exact age match
+        - name: min_age
+          in: query
+          schema:
+            type: integer
+          description: Minimum age (inclusive)
+        - name: max_age
+          in: query
+          schema:
+            type: integer
+          description: Maximum age (inclusive)
+        - name: height
+          in: query
+          schema:
+            type: number
+          description: Exact height match (in centimeters)
+        - name: min_height
+          in: query
+          schema:
+            type: number
+          description: Minimum height (inclusive, in centimeters)
+        - name: max_height
+          in: query
+          schema:
+            type: number
+          description: Maximum height (inclusive, in centimeters)
+        - name: weight
+          in: query
+          schema:
+            type: number
+          description: Exact weight match (in kilograms)
+        - name: min_weight
+          in: query
+          schema:
+            type: number
+          description: Minimum weight (inclusive, in kilograms)
+        - name: max_weight
+          in: query
+          schema:
+            type: number
+          description: Maximum weight (inclusive, in kilograms)
+        - name: eye_color
+          in: query
+          schema:
+            type: string
+          description: Exact eye color match
+        - name: eye_color_in[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Multiple eye colors filter
+        - name: eye_color_not_in[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Multiple eye colors exclusion filter
+        - name: hair_color
+          in: query
+          schema:
+            type: string
+          description: Exact hair color match
+        - name: hair_color_in[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Multiple hair colors filter
+        - name: hair_color_not_in[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Multiple hair colors exclusion filter
+        - name: blood_group
+          in: query
+          schema:
+            type: string
+          description: Single blood group filter
+        - name: blood_group_in[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Multiple blood groups filter
+        - name: blood_group_not_in[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Multiple blood groups exclusion filter
+        - name: address.city
+          in: query
+          schema:
+            type: string
+          description: City filter
+        - name: address.country
+          in: query
+          schema:
+            type: string
+          description: Country filter
+        - name: address.state
+          in: query
+          schema:
+            type: string
+          description: State filter
+        - name: address.plz
+          in: query
+          schema:
+            type: string
+          description: Postal code filter
+        - name: address.latitude
+          in: query
+          schema:
+            type: number
+          description: Exact latitude match
+        - name: min_address.latitude
+          in: query
+          schema:
+            type: number
+          description: Minimum latitude (inclusive)
+        - name: max_address.latitude
+          in: query
+          schema:
+            type: number
+          description: Maximum latitude (inclusive)
+        - name: address.longitude
+          in: query
+          schema:
+            type: number
+          description: Exact longitude match
+        - name: min_address.longitude
+          in: query
+          schema:
+            type: number
+          description: Minimum longitude (inclusive)
+        - name: max_address.longitude
+          in: query
+          schema:
+            type: number
+          description: Maximum longitude (inclusive)
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Filtered prospects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProspectPaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/prospects/search-criteria:
+    get:
+      tags:
+        - Prospects
+      summary: Get available search criteria
+      description: |
+        Discover all available filter options for prospect searches.
+        
+        ### Dynamic Filter Discovery
+        This endpoint returns the actual values present in the prospect database,
+        making it ideal for building dynamic filter interfaces.
+        
+        ### Response Structure
+        - **Arrays**: Lists of distinct values (e.g., cities, eye colors)
+        - **Objects with min/max**: Ranges for numeric or date fields
+        - **Nested paths**: Use dot notation for nested fields (e.g., `address.city`)
+        
+        ### Use Cases
+        - Building dynamic filter dropdowns
+        - Validating filter inputs
+        - Understanding data distribution
+        - Creating filter presets
+        
+        ### Performance Notes
+        - Large datasets may take longer to process
+        - Consider using this endpoint sparingly
+        
+        ### Integration Tips
+        - Call this endpoint when initializing filter interfaces
+        - Cache results client-side to reduce API calls
+        - Use returned values to validate user inputs
+      operationId: getSearchCriteria
+      responses:
+        '200':
+          description: Available search criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchCriteria'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Campaigns
+  /api/campaigns:
+    get:
+      tags:
+        - Campaigns
+      summary: List campaigns
+      description: |
+        Retrieve all campaigns with their associated landing pages.
+        
+        ### Response Includes
+        - Campaign details (title, description, dates, status)
+        - Prospect targeting filters
+        - Associated landing page information
+        - Email send statistics
+        
+        ### Sorting
+        Campaigns are returned in order of creation (newest first).
+        
+        ### Use Cases
+        - Dashboard overview
+        - Campaign management interface
+        - Performance monitoring
+      operationId: listCampaigns
+      parameters:
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Paginated list of campaigns
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignPaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    
+    post:
+      tags:
+        - Campaigns
+      summary: Create campaign
+      description: |
+        Create a new marketing campaign with prospect targeting filters.
+        
+        ### Campaign Creation Process
+        1. Define campaign metadata (title, description)
+        2. Set campaign status (usually starts as 'draft')
+        3. Configure prospect filters for targeting
+        4. Optionally set date ranges
+        5. Create associated landing page separately
+        
+        ### Prospect Filters
+        The `prospect_filter` object accepts any valid filter from the 
+        `/api/prospects/filter` endpoint. Common filters include:
+        - `min_age`, `max_age`: Age range
+        - `gender`: Target specific gender
+        - `source`: Target by data source
+        - `address.city`, `address.plz`: Location targeting
+        
+        ### Status Values
+        - `draft`: Initial state, no emails sent
+        - `active`: Campaign is running
+        - `paused`: Temporarily stopped
+        - `completed`: Campaign finished
+        
+        ### Important Notes
+        - Landing pages must be created separately
+        - Emails are not sent until explicitly triggered
+        - Filters are validated against available prospects
+      operationId: createCampaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignInput'
+      responses:
+        '201':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Campaign'
+              examples:
+                success:
+                  value:
+                    data:
+                      id: "687bb6a98c6a6f3e8c058ac5"
+                      title: "New Campaign 5"
+                      description: "This is a Test of the Input Validation."
+                      start_date: null
+                      end_date: null
+                      status: "Draft"
+                      prospect_filter:
+                        address.plz: 1012
+                        age: 32
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                validation_failed:
+                  value:
+                    message: "The title field is required. (and 1 more error)"
+                    errors:
+                      title:
+                        - "The title field is required."
+                      status:
+                        - "The status field is required."
+
+  /api/campaigns/{id}:
+    get:
+      tags:
+        - Campaigns
+      summary: Get campaign details
+      operationId: getCampaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Campaign details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CampaignDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags:
+        - Campaigns
+      summary: Update campaign
+      description: |
+        Update an existing campaign's details and settings.
+        
+        ### Updatable Fields
+        All fields from campaign creation can be updated, including:
+        - Title and description
+        - Status (with restrictions)
+        - Date ranges
+        - Prospect filters
+        
+        ### Status Change Rules
+        - `draft` → `active`: Allowed (starts campaign)
+        - `active` → `paused`: Allowed (temporarily stops)
+        - `paused` → `active`: Allowed (resumes campaign)
+        - `active/paused` → `completed`: Allowed (ends campaign)
+        - `completed` → any: Not allowed (campaigns cannot be restarted)
+        
+        ### Filter Updates
+        - Changing filters affects future email sends only
+        - Already sent emails are not affected
+        - New prospects matching updated filters become eligible
+        
+        ### Important Considerations
+        - Active campaigns: Changes take effect immediately
+        - Email queue: Pending emails use original filters
+        - Analytics: Historical data remains unchanged
+        - Landing pages: Must be updated separately
+        
+        ### Validation
+        - End date must be after start date
+        - At least one prospect must match new filters
+        - Status transitions follow the rules above
+      operationId: updateCampaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Campaign ID to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignInput'
+      responses:
+        '200':
+          description: Campaign updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CampaignDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    
+    delete:
+      tags:
+        - Campaigns
+      summary: Delete campaign
+      description: |
+        Permanently delete a campaign and its associated data.
+        
+        ### Deletion Scope
+        This operation removes:
+        - Campaign metadata
+        - Email send history
+        - Analytics data
+        - Campaign-prospect associations
+        
+        ### What Is NOT Deleted
+        - Landing pages (must be deleted separately)
+        - Prospects (remain in the system)
+        - Visit tracking data (retained for historical analysis)
+        
+        ### Prerequisites
+        - Campaign should be in 'completed' or 'draft' status
+        - Active campaigns should be stopped first
+        - No pending email queue
+        
+        ### Warning
+        **This operation cannot be undone!** Consider:
+        - Exporting analytics data before deletion
+        - Setting campaign to 'completed' instead of deleting
+        - Archiving campaign data for compliance
+        
+        ### Cascade Effects
+        - Email tracking links become invalid
+        - Analytics dashboards will exclude this campaign
+        - Historical reports may show gaps
+      operationId: deleteCampaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Campaign ID to delete
+      responses:
+        '200':
+          description: Campaign deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/campaigns/{id}/send-emails:
+    post:
+      tags:
+        - Campaigns
+      summary: Send campaign emails
+      description: |
+        Queue emails to be sent to prospects matching the campaign's filters with intelligent duplicate prevention and email tracking.
+        
+        ### Email Sending Process
+        1. System identifies all prospects matching campaign filters
+        2. **Default behavior**: Sends emails only to prospects who haven't been contacted yet (prevents duplicates)
+        3. **Force mode**: Sends emails to all matching prospects (allows resending to already contacted prospects)
+        4. Emails are queued for asynchronous sending
+        5. Response indicates number of emails queued and comprehensive statistics
+        
+        ### Prerequisites
+        - Campaign must have status 'active'
+        - Landing page must be associated with campaign
+        - At least one prospect must match filters
+        
+        ### Email Content
+        - Subject line derived from campaign title
+        - Body includes landing page link with tracking parameters
+        - Each email has unique tracking for analytics
+        
+        ### Tracking Parameters
+        Each email link includes:
+        - `prospect`: Unique prospect identifier
+        - `utm_campaign`: Campaign ID
+        - `utm_source`: Set to 'email'
+        - `utm_medium`: Set to 'campaign'
+        
+        ### Duplicate Prevention & Email Tracking
+        - **Default behavior**: Automatically excludes prospects who have already received emails for this campaign
+        - **Force mode**: Allows sending to all prospects, including those already contacted
+        - **Email tracking**: Each email send is recorded in `campain_prospects` collection
+        - **Complete history**: All email sends are tracked for analytics and reporting
+        - **Smart filtering**: Uses unique prospect IDs to prevent duplicates while tracking frequency
+        
+        ### Local Development Safety
+        - **Default mode**: Only sends 1 email to prevent accidental mass emails
+        - **Force mode**: Sends up to 3 emails for testing purposes
+        
+        ### Response Fields
+        - `emails_sent`: Number of emails sent in this request
+        - `total_emails_sent`: Total number of emails sent for this campaign (including all previous sends)
+        - `notified_prospects`: Number of unique prospects that have received at least one email
+        - `available_prospects`: Number of prospects that haven't been contacted yet
+        - `total_prospects`: Total prospects matching campaign filters
+        
+        ### Important Notes
+        - This action cannot be undone
+        - Default mode prevents duplicate sends to same prospect
+        - Force mode allows resending to already contacted prospects
+        - Check analytics for delivery statistics and email frequency analysis
+      operationId: sendCampaignEmails
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Campaign ID
+        - name: force
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Force sending emails to prospects who have already been contacted
+      responses:
+        '200':
+          description: Emails queued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  emails_sent:
+                    type: integer
+                    description: Number of emails sent in this request
+                  total_emails_sent:
+                    type: integer
+                    description: Total number of emails sent for this campaign (including all previous sends)
+                  notified_prospects:
+                    type: integer
+                    description: Number of unique prospects that have received at least one email for this campaign
+                  available_prospects:
+                    type: integer
+                    description: Number of prospects that haven't been contacted yet
+                  total_prospects:
+                    type: integer
+                    description: Total number of prospects matching the campaign filters
+              examples:
+                success:
+                  value:
+                    message: "Campaign emails queued successfully. 1 emails sent to prospects."
+                    emails_sent: 1
+                    total_emails_sent: 6
+                    notified_prospects: 5
+                    available_prospects: 94
+                    total_prospects: 100
+                force_example:
+                  value:
+                    message: "Campaign emails queued successfully. 3 emails sent to prospects."
+                    emails_sent: 3
+                    total_emails_sent: 12
+                    notified_prospects: 5
+                    available_prospects: 88
+                    total_prospects: 100
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/campaigns/{id}/analytics:
+    get:
+      tags:
+        - Analytics
+      summary: Get campaign analytics
+      description: |
+        Retrieve comprehensive analytics for a specific campaign.
+        
+        ### Analytics Sections
+        
+        #### Campaign Overview
+        - Basic campaign information
+        - Current status and date range
+        
+        #### Visit Metrics
+        - `total`: All page visits
+        - `unique_ip`: Unique IP addresses
+        - `total_unique`: Deduplicated unique visitors
+        
+        #### Email Statistics
+        - `total_prospects_notified`: Total prospects that have been sent emails for this campaign
+        - `unique_prospect_visits`: Prospects who clicked through
+        - `email_cta_click_rate`: Percentage rate (multiplied by 100)
+        
+        #### Device & Browser Breakdown
+        - Device types (desktop, mobile, tablet)
+        - Browser distribution
+        - Operating systems
+        - Language preferences
+        
+        #### UTM Tracking
+        - Traffic sources (organic, social, direct)
+        - Marketing mediums (email, banner, affiliate)
+        
+        ### Calculation Methods
+        
+        #### Click Rate
+        ```
+        (unique_prospect_visits / total_prospects_sent_emails) × 100
+        ```
+        
+        #### Unique Visitors
+        Deduplicated by:
+        1. IP address
+        2. Prospect ID (if available)
+        
+        ### Data Freshness
+        - Analytics are updated in real-time
+        
+        ### Use Cases
+        - Campaign performance dashboards
+        - A/B testing analysis
+        - Audience insights
+      operationId: getCampaignAnalytics
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Campaign ID
+      responses:
+        '200':
+          description: Campaign analytics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignAnalytics'
+              examples:
+                success:
+                  value:
+                    campaign_overview:
+                      campaign_id: "687b96179895ea533e00102c"
+                      campaign_title: "Aliquam ad expedita ut."
+                      status: "active"
+                      start_date: "2025-07-14T20:17:33.000000Z"
+                      end_date: "2025-09-18T13:54:19.000000Z"
+                    visits:
+                      total: 7
+                      unique_ip: 7
+                      total_unique: 7
+                    statistics:
+                      total_prospects_notified: 53
+                      unique_prospect_visits: 5
+                      email_cta_click_rate: 9.43
+                    device_browser_breakdown:
+                      device_types:
+                        tablet: 3
+                        mobile: 2
+                        desktop: 2
+                      browsers:
+                        Edge: 3
+                        Chrome: 1
+                        Firefox: 1
+                        Safari: 2
+                      operating_systems:
+                        Linux: 4
+                        macOS: 1
+                        Android: 1
+                        iOS: 1
+                      languages:
+                        fr: 1
+                        it: 4
+                        de: 2
+                    utm_sources:
+                      source:
+                        facebook: 2
+                        twitter: 2
+                        direct: 2
+                        organic: 1
+                      medium:
+                        email: 2
+                        affiliate: 3
+                        banner: 2
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Landing Pages
+  /api/landingpages:
+    get:
+      tags:
+        - Landing Pages
+      summary: List landing pages
+      description: |
+        Retrieve all landing pages with their associated campaigns.
+        
+        ### Response Structure
+        Each landing page includes:
+        - Page metadata (title, slug, headlines)
+        - Associated campaign details
+        - Content sections with CTAs
+        - Creation/update timestamps
+        
+        ### Use Cases
+        - Landing page management
+        - Content inventory
+        - Campaign association overview
+      operationId: listLandingPages
+      parameters:
+        - $ref: '#/components/parameters/PerPage'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Paginated list of landing pages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LandingPagePaginatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    
+    post:
+      tags:
+        - Landing Pages
+      summary: Create landing page
+      description: |
+        Create a new landing page for a campaign.
+        
+        ### Landing Page Structure
+        
+        #### Core Elements
+        - **Title**: Internal reference name
+        - **Headline**: Main visitor-facing headline
+        - **Subline**: Optional supporting text
+        - **Slug**: Auto-generated from title (URL-friendly)
+        
+        #### Content Sections
+        Each section can contain:
+        - **Text**: Markdown-supported content
+        - **Image**: Optional image URL
+        - **CTA Button**: Required call-to-action
+        - **And More**
+        
+        ### Best Practices
+        
+        #### Content
+        - Keep headlines clear and compelling
+        - Limit to 3-5 sections for better conversion
+        - Place strongest CTA in first section
+        - Use high-quality, relevant images
+        
+        #### CTAs
+        - Use action-oriented text ("Get Started", "Learn More")
+        - Ensure CTA URLs are valid and tracked
+        - Consider A/B testing different CTA texts
+        
+        ### URL Structure
+        Public URL will be: `/api/lp/{slug}`
+        
+        ### Important Notes
+        - Slugs must be unique across all landing pages
+        - Images should be hosted externally
+        - Campaign association is optional but recommended
+        - Changes are reflected immediately
+      operationId: createLandingPage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LandingPageInput'
+      responses:
+        '201':
+          description: Landing page created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LandingPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /api/landingpages/{id}:
+    get:
+      tags:
+        - Landing Pages
+      summary: Get landing page by ID
+      description: |
+        Retrieve a specific landing page with its associated campaign information.
+        
+        ### Dual Access Methods
+        This endpoint is for authenticated management access. For public access, use:
+        - `/api/lp/{slug}` - Public endpoint (no auth required)
+        - Active campaign requirement applies to public access only
+        
+        ### Response Includes
+        - Complete landing page content
+        - Associated campaign details
+        - All sections with images and CTAs
+        - Metadata (creation/update times)
+        
+        ### Use Cases
+        - Landing page preview in admin
+        - Content editing interfaces
+        - Campaign association verification
+        - Quality assurance checks
+      operationId: getLandingPageById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Landing page ID (MongoDB ObjectId)
+      responses:
+        '200':
+          description: Landing page details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LandingPageDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags:
+        - Landing Pages
+      summary: Update landing page
+      operationId: updateLandingPage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LandingPageInput'
+      responses:
+        '200':
+          description: Landing page updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/LandingPageDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    
+    delete:
+      tags:
+        - Landing Pages
+      summary: Delete landing page
+      operationId: deleteLandingPage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Landing page deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Public endpoints
+  /api/lp/{slug}:
+    get:
+      tags:
+        - Public
+      summary: Get landing page by slug (public)
+      description: |
+        Public endpoint for displaying landing pages to visitors.
+        
+        ### No Authentication Required
+        This endpoint is publicly accessible to allow campaign recipients
+        to view landing pages without authentication.
+        
+        ### Tracking Parameters
+        
+        #### Prospect Tracking
+        - `prospect`: Links visit to specific prospect
+        - Enables conversion tracking
+        - Required for email click-through tracking
+        
+        #### UTM Parameters
+        Standard UTM tracking for analytics:
+        - `utm_source`: Traffic source (e.g., email, facebook)
+        - `utm_medium`: Marketing medium (e.g., cpc, banner)
+        - `utm_campaign`: Campaign identifier
+        - `utm_content`: Content variant for A/B testing
+        - `utm_term`: Keyword for paid search
+        
+        #### Platform-Specific
+        - `gclid`: Google Ads click identifier
+        - `fbclid`: Facebook click identifier
+        
+        ### Tracking Behavior
+        
+        When tracking parameters are provided:
+        1. Visit is logged with all parameters
+        2. Unique visitor status is determined
+        3. Analytics are updated
+        
+        ### Campaign Status
+        - Landing pages are only accessible when the associated campaign is "active"
+        - Inactive campaigns return 404 error
+        - This prevents premature or outdated access
+        
+        ### Response Format
+        The response includes all content needed to render the page:
+        - Headlines and text
+        - Image URLs
+        - CTA buttons with tracking-enabled URLs
+        - Campaign context
+        
+        ### SEO Considerations
+        - Slugs are SEO-friendly
+        - Pages include appropriate meta tags
+      operationId: getPublicLandingPage
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: URL-friendly page identifier
+          example: "summer-sale-2025"
+        - name: prospect
+          in: query
+          schema:
+            type: string
+          description: Prospect ID for conversion tracking
+          example: "687b96159895ea533e000ef0"
+        - name: utm_source
+          in: query
+          schema:
+            type: string
+          description: Campaign source (e.g., google, newsletter)
+          example: "email"
+        - name: utm_medium
+          in: query
+          schema:
+            type: string
+          description: Marketing medium (e.g., cpc, email)
+          example: "campaign"
+        - name: utm_campaign
+          in: query
+          schema:
+            type: string
+          description: Campaign name or ID
+          example: "summer_sale_2025"
+        - name: utm_content
+          in: query
+          schema:
+            type: string
+          description: Content variant identifier
+          example: "header_a"
+        - name: utm_term
+          in: query
+          schema:
+            type: string
+          description: Paid search keywords
+          example: "discount+electronics"
+        - name: gclid
+          in: query
+          schema:
+            type: string
+          description: Google Ads click ID
+        - name: fbclid
+          in: query
+          schema:
+            type: string
+          description: Facebook click ID
+      responses:
+        '200':
+          description: Landing page data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PublicLandingPage'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: cm_grand_pilatus_session
+
+  parameters:
+    PerPage:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 10
+      description: |
+        Number of items to return per page.
+        - Default: 10
+        - Minimum: 1
+        
+        Larger page sizes may impact response time.
+    
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: |
+        Page number for pagination.
+        - Default: 1 (first page)
+        - Invalid page numbers return empty results
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            unauthenticated:
+              value:
+                message: "Unauthenticated."
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundResponse'
+          examples:
+            not_found:
+              value:
+                status: 404
+                message: "Resource not found."
+    
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+          examples:
+            validation_failed:
+              value:
+                message: "The title field is required. (and 1 more error)"
+                errors:
+                  title:
+                    - "The title field is required."
+                  status:
+                    - "The status field is required."
+
+  schemas:
+    # Common schemas
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    NotFoundResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: "Resource not found."
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    PaginationLinks:
+      type: object
+      properties:
+        first:
+          type: string
+          format: uri
+        last:
+          type: string
+          format: uri
+        prev:
+          type: string
+          format: uri
+          nullable: true
+        next:
+          type: string
+          format: uri
+          nullable: true
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        from:
+          type: integer
+        last_page:
+          type: integer
+        path:
+          type: string
+          format: uri
+        per_page:
+          type: integer
+        to:
+          type: integer
+        total:
+          type: integer
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: uri
+                nullable: true
+              label:
+                type: string
+              active:
+                type: boolean
+
+    # Prospect schemas
+    Prospect:
+      type: object
+      description: |
+        Basic prospect information as returned in list endpoints.
+        Contains demographic and physical attributes but excludes personal contact information.
+      properties:
+        id:
+          type: string
+          description: Unique MongoDB ObjectId
+          example: "687b96159895ea533e000ef0"
+        gender:
+          type: string
+          enum: [male, female]
+          description: Prospect's gender
+        age:
+          type: integer
+          description: Current age calculated from birthDate
+          minimum: 0
+          maximum: 150
+        birthDate:
+          type: string
+          format: date-time
+          description: Date of birth in ISO 8601 format
+        image:
+          type: string
+          format: uri
+          description: Profile image URL (placeholder service)
+        bloodGroup:
+          type: string
+          description: Blood type (A+, A-, B+, B-, AB+, AB-, O+, O-)
+          enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+        height:
+          type: number
+          description: Height in centimeters
+          minimum: 0
+          maximum: 300
+        weight:
+          type: number
+          description: Weight in kilograms
+          minimum: 0
+          maximum: 500
+        eyeColor:
+          type: string
+          description: Eye color
+          enum: [Blue, Brown, Green, Gray, Hazel, Amber, Violet, Red]
+        hairColor:
+          type: string
+          description: Hair color
+          enum: [Black, Brown, Blonde, Red, Gray, White, Blue, Green, Purple]
+        hairType:
+          type: string
+          description: Hair type/texture
+          enum: [Straight, Wavy, Curly, Kinky]
+        address:
+          $ref: '#/components/schemas/Address'
+
+    ProspectDetail:
+      description: |
+        Extended prospect information including personal contact details.
+        Only available through individual prospect endpoints for privacy protection.
+      allOf:
+        - $ref: '#/components/schemas/Prospect'
+        - type: object
+          properties:
+            firstName:
+              type: string
+              description: Prospect's first name
+              example: "Ethan"
+            lastName:
+              type: string
+              description: Prospect's last name
+              example: "Martinez"
+            email:
+              type: string
+              format: email
+              description: Contact email address
+              example: "ethan.martinez@x.dummyjson.com"
+            phone:
+              type: string
+              description: Phone number with country code
+              example: "+92 933-608-5081"
+            source:
+              type: string
+              enum: [ERP, KUEBA]
+              description: |
+                Data source of the prospect:
+                - **ERP**: Internal enterprise resource planning system
+                - **KUEBA**: External data from randomuser.me
+
+    Address:
+      type: object
+      description: |
+        Physical address information for prospect location.
+        Uses a flexible schema to accommodate international addresses.
+      properties:
+        address:
+          type: string
+          description: Street address including number and street name
+          example: "466 Pine Street"
+        city:
+          type: string
+          description: City or municipality name
+          example: "San Antonio"
+        state:
+          type: string
+          description: State, province, or canton
+          example: "Louisiana"
+        plz:
+          type: string
+          description: Postal code (PLZ/ZIP code)
+          example: "72360"
+        country:
+          type: string
+          description: Country name
+          example: "United States"
+        latitude:
+          type: number
+          description: Geographic latitude coordinate
+          minimum: -90
+          maximum: 90
+          example: 74.074918
+        longitude:
+          type: number
+          description: Geographic longitude coordinate
+          minimum: -180
+          maximum: 180
+          example: -25.312703
+
+    ProspectPaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Prospect'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    SearchCriteria:
+      type: object
+      properties:
+        source:
+          type: array
+          items:
+            type: string
+        gender:
+          type: array
+          items:
+            type: string
+        age:
+          type: object
+          properties:
+            min:
+              type: integer
+            max:
+              type: integer
+        birth_date:
+          type: object
+          properties:
+            min:
+              type: string
+              format: date-time
+            max:
+              type: string
+              format: date-time
+        blood_group:
+          type: array
+          items:
+            type: string
+        height:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+        weight:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+        eye_color:
+          type: array
+          items:
+            type: string
+        hair_color:
+          type: array
+          items:
+            type: string
+        address.city:
+          type: array
+          items:
+            type: string
+        address.state:
+          type: array
+          items:
+            type: string
+        address.country:
+          type: array
+          items:
+            type: string
+        address.plz:
+          type: object
+          properties:
+            min:
+              type: string
+            max:
+              type: string
+        address.latitude:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+        address.longitude:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+
+    # Campaign schemas
+    CampaignSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [draft, active, paused, completed]
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        prospect_filter:
+          type: object
+          description: Dynamic filter criteria for prospects
+          properties:
+            min_age:
+              type: integer
+              example: 25
+            max_age:
+              type: integer
+              example: 65
+            age:
+              type: integer
+              example: 32
+            gender:
+              type: string
+              enum: [male, female]
+              example: female
+            source:
+              type: string
+              enum: [erp, kueba]
+              example: kueba
+            address.plz:
+              type: string
+              example: "1012"
+            address.city:
+              type: string
+              example: "Zurich"
+            blood_group:
+              type: string
+              example: "O+"
+          example:
+            max_age: 51
+            source: "kueba"
+        notified_prospects:
+          type: integer
+          description: Number of unique prospects that have received at least one email for this campaign
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+          nullable: true
+        end_date:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          enum: [Draft, Active, Paused, Completed]
+        prospect_filter:
+          type: object
+          description: Dynamic filter criteria for prospects
+          properties:
+            min_age:
+              type: integer
+            max_age:
+              type: integer
+            age:
+              type: integer
+            gender:
+              type: string
+              enum: [male, female]
+            source:
+              type: string
+              enum: [erp, kueba]
+            address.plz:
+              type: string
+            address.city:
+              type: string
+            blood_group:
+              type: string
+
+    CampaignDetail:
+      allOf:
+        - $ref: '#/components/schemas/Campaign'
+        - type: object
+          properties:
+            landingpage:
+              $ref: '#/components/schemas/LandingPageSummary'
+
+    CampaignInput:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [draft, active, paused, completed]
+        start_date:
+          type: string
+          format: date-time
+          nullable: true
+        end_date:
+          type: string
+          format: date-time
+          nullable: true
+        prospect_filter:
+          type: object
+          description: Dynamic filter criteria for prospects
+          properties:
+            min_age:
+              type: integer
+            max_age:
+              type: integer
+            age:
+              type: integer
+            gender:
+              type: string
+              enum: [male, female]
+            source:
+              type: string
+              enum: [erp, kueba]
+            address.plz:
+              type: string
+            address.city:
+              type: string
+            blood_group:
+              type: string
+
+    CampaignPaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignWithLandingPage'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    CampaignWithLandingPage:
+      allOf:
+        - $ref: '#/components/schemas/Campaign'
+        - type: object
+          properties:
+            landingpage:
+              $ref: '#/components/schemas/LandingPageSummary'
+
+    # Landing Page schemas
+    LandingPageSection:
+      type: object
+      properties:
+        text:
+          type: string
+        image_url:
+          type: string
+          format: uri
+          nullable: true
+        cta_text:
+          type: string
+        cta_url:
+          type: string
+          format: uri
+
+    LandingPageSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        headline:
+          type: string
+        subline:
+          type: string
+          nullable: true
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/LandingPageSection'
+
+    LandingPage:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        headline:
+          type: string
+        subline:
+          type: string
+          nullable: true
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/LandingPageSection'
+
+    LandingPageDetail:
+      allOf:
+        - $ref: '#/components/schemas/LandingPage'
+        - type: object
+          properties:
+            campaign:
+              $ref: '#/components/schemas/Campaign'
+
+    LandingPageInput:
+      type: object
+      required:
+        - title
+        - headline
+        - sections
+      properties:
+        title:
+          type: string
+        headline:
+          type: string
+        subline:
+          type: string
+          nullable: true
+        campaign_id:
+          type: string
+        sections:
+          type: array
+          items:
+            type: object
+            required:
+              - text
+              - cta_text
+              - cta_url
+            properties:
+              text:
+                type: string
+              image_url:
+                type: string
+                format: uri
+                nullable: true
+              cta_text:
+                type: string
+              cta_url:
+                type: string
+                format: uri
+
+    LandingPagePaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LandingPageDetail'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PublicLandingPage:
+      type: object
+      properties:
+        id:
+          type: string
+        campaign:
+          type: object
+          properties:
+            id:
+              type: string
+            title:
+              type: string
+            description:
+              type: string
+        title:
+          type: string
+        slug:
+          type: string
+        headline:
+          type: string
+        subline:
+          type: string
+          nullable: true
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/LandingPageSection'
+
+    # Analytics schemas
+    CampaignAnalytics:
+      type: object
+      description: |
+        Comprehensive analytics data for campaign performance tracking.
+        All metrics are calculated in real-time from raw tracking data.
+      properties:
+        campaign_overview:
+          type: object
+          description: Basic campaign information for context
+          properties:
+            campaign_id:
+              type: string
+              description: Campaign identifier
+            campaign_title:
+              type: string
+              description: Human-readable campaign name
+            status:
+              type: string
+              description: Current campaign status
+            start_date:
+              type: string
+              format: date-time
+              description: Campaign start date
+            end_date:
+              type: string
+              format: date-time
+              description: Campaign end date
+        visits:
+          type: object
+          description: Landing page visit metrics
+          properties:
+            total:
+              type: integer
+              description: Total number of page visits (including duplicates)
+            unique_ip:
+              type: integer
+              description: Number of unique IP addresses
+            total_unique:
+              type: integer
+              description: Unique visitors (deduplicated by IP and prospect ID)
+        statistics:
+          type: object
+          description: Email campaign performance metrics
+          properties:
+            total_prospects_notified:
+              type: integer
+              description: Total number of unique prospects that have received emails
+            unique_prospect_visits:
+              type: integer
+              description: Number of email recipients who clicked through to landing page
+            email_cta_click_rate:
+              type: number
+              description: Click-through rate percentage (unique_visits / total_prospects_notified × 100)
+        device_browser_breakdown:
+          type: object
+          description: Technical demographics of visitors
+          properties:
+            device_types:
+              type: object
+              description: Distribution of device types
+              properties:
+                desktop:
+                  type: integer
+                  description: Desktop/laptop computer visits
+                mobile:
+                  type: integer
+                  description: Mobile phone visits
+                tablet:
+                  type: integer
+                  description: Tablet device visits
+              example:
+                tablet: 3
+                mobile: 2
+                desktop: 2
+            browsers:
+              type: object
+              description: Web browser distribution
+              properties:
+                Chrome:
+                  type: integer
+                Firefox:
+                  type: integer
+                Safari:
+                  type: integer
+                Edge:
+                  type: integer
+              example:
+                Edge: 3
+                Chrome: 1
+                Firefox: 1
+                Safari: 2
+            operating_systems:
+              type: object
+              description: Operating system distribution
+              properties:
+                Windows:
+                  type: integer
+                macOS:
+                  type: integer
+                Linux:
+                  type: integer
+                Android:
+                  type: integer
+                iOS:
+                  type: integer
+              example:
+                Linux: 4
+                macOS: 1
+                Android: 1
+                iOS: 1
+            languages:
+              type: object
+              description: Browser language preferences (ISO 639-1 codes)
+              properties:
+                en:
+                  type: integer
+                  description: English
+                de:
+                  type: integer
+                  description: German
+                fr:
+                  type: integer
+                  description: French
+                it:
+                  type: integer
+                  description: Italian
+              example:
+                fr: 1
+                it: 4
+                de: 2
+        utm_sources:
+          type: object
+          description: UTM tracking parameter analysis
+          properties:
+            source:
+              type: object
+              description: Traffic sources (utm_source parameter)
+              properties:
+                facebook:
+                  type: integer
+                twitter:
+                  type: integer
+                direct:
+                  type: integer
+                  description: Direct traffic (no utm_source)
+                organic:
+                  type: integer
+                  description: Organic search traffic
+                email:
+                  type: integer
+                  description: Email campaign traffic
+              example:
+                facebook: 2
+                twitter: 2
+                direct: 2
+                organic: 1
+            medium:
+              type: object
+              description: Marketing mediums (utm_medium parameter)
+              properties:
+                email:
+                  type: integer
+                  description: Email marketing
+                affiliate:
+                  type: integer
+                  description: Affiliate marketing
+                banner:
+                  type: integer
+                  description: Display advertising
+                social:
+                  type: integer
+                  description: Social media
+                cpc:
+                  type: integer
+                  description: Cost-per-click advertising
+              example:
+                email: 2
+                affiliate: 3
+                banner: 2

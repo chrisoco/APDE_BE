@@ -37,4 +37,15 @@ return [
         ],
     ],
 
+    'erp' => [
+        'prospects' => [
+            'url' => env('ERP_PROSPECTS_URL', 'https://dummyjson.com/users'),
+        ],
+    ],
+
+    'kueba' => [
+        'prospects' => [
+            'url' => env('KUEBA_PROSPECTS_URL', 'https://randomuser.me/api'),
+        ],
+    ],
 ];

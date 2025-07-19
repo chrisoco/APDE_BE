@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Enums\UserRole;
+use App\Models\Campaign;
+use App\Models\CampaignTracking;
+use App\Models\Landingpage;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
 
 final class DatabaseSeeder extends Seeder
 {
@@ -18,8 +24,18 @@ final class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'John Doe',
+            'email' => 'john@doe.com',
+            'password' => Hash::make('1234'),
+            'role' => UserRole::SUPER_ADMIN,
         ]);
+
+        Artisan::call('app:import-prospects');
+
+        Campaign::factory()->count(20)
+            ->has(Landingpage::factory()->count(1))
+            ->create();
+
+        CampaignTracking::factory()->count(200)->create();
     }
 }
