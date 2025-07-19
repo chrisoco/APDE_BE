@@ -17,7 +17,6 @@ use MongoDB\Laravel\Relations\HasOne;
  * @property string $id
  * @property string $title
  * @property string|null $description
- * @property int $emails_sent
  * @property CampaignStatus $status
  * @property \Illuminate\Support\Carbon|null $start_date
  * @property \Illuminate\Support\Carbon|null $end_date
@@ -32,11 +31,10 @@ final class Campaign extends Model
     /** @use HasFactory<\Database\Factories\CampaignFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['id', 'title', 'description', 'status', 'start_date', 'end_date', 'prospect_filter', 'emails_sent', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['id', 'title', 'description', 'status', 'start_date', 'end_date', 'prospect_filter', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $casts = [
         'status' => CampaignStatus::class,
-        'emails_sent' => 'integer',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'created_at' => 'datetime',
@@ -62,5 +60,15 @@ final class Campaign extends Model
     public function trackings(): HasMany
     {
         return $this->hasMany(CampaignTracking::class);
+    }
+
+    /**
+     * Get the prospects associated with the campaign.
+     *
+     * @return HasMany<CampainProspect, Campaign>
+     */
+    public function campaignProspects(): HasMany
+    {
+        return $this->hasMany(CampainProspect::class);
     }
 }

@@ -612,7 +612,7 @@
 								"login"
 							]
 						}
-                    },
+					},
 					"response": [
 						{
 							"name": "200 OK",
@@ -3177,7 +3177,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:22:35 GMT"
+									"value": "Sat, 19 Jul 2025 21:23:26 GMT"
 								},
 								{
 									"key": "Content-Encoding",
@@ -3185,7 +3185,128 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"message\": \"Campaign emails queued successfully. 1 emails sent to prospects.\",\n    \"emails_sent\": 1,\n    \"total_prospects\": 100\n}"
+							"body": "{\n    \"message\": \"Campaign emails queued successfully. 1 emails sent to prospects.\",\n    \"emails_sent\": 1,\n    \"total_emails_sent\": 6,\n    \"notified_prospects\": 5,\n    \"available_prospects\": 94,\n    \"total_prospects\": 100\n}"
+						}
+					]
+				},
+				{
+					"name": "force send-emails",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/campaigns/687b96179895ea533e00102c/send-emails?force=true",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"687b96179895ea533e00102c",
+								"send-emails"
+							],
+							"query": [
+								{
+									"key": "force",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/687b96179895ea533e00102c/send-emails?force=true",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"687b96179895ea533e00102c",
+										"send-emails"
+									],
+									"query": [
+										{
+											"key": "force",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.25.4"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.10"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 19 Jul 2025 21:23:57 GMT"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Campaign emails queued successfully. 3 emails sent to prospects.\",\n    \"emails_sent\": 3,\n    \"total_emails_sent\": 12,\n    \"notified_prospects\": 5,\n    \"available_prospects\": 88,\n    \"total_prospects\": 100\n}"
 						}
 					]
 				}
@@ -3291,7 +3412,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:23:05 GMT"
+									"value": "Sat, 19 Jul 2025 20:58:09 GMT"
 								},
 								{
 									"key": "Content-Encoding",
@@ -3299,7 +3420,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"campaign_overview\": {\n        \"campaign_id\": \"687b96179895ea533e00102c\",\n        \"campaign_title\": \"Aliquam ad expedita ut.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-14T20:17:33.000000Z\",\n        \"end_date\": \"2025-09-18T13:54:19.000000Z\"\n    },\n    \"visits\": {\n        \"total\": 7,\n        \"unique_ip\": 7,\n        \"total_unique\": 7\n    },\n    \"statistics\": {\n        \"emails_sent\": 1,\n        \"unique_prospect_visits\": 5,\n        \"email_cta_click_rate\": 500\n    },\n    \"device_browser_breakdown\": {\n        \"device_types\": {\n            \"tablet\": 3,\n            \"mobile\": 2,\n            \"desktop\": 2\n        },\n        \"browsers\": {\n            \"Edge\": 3,\n            \"Chrome\": 1,\n            \"Firefox\": 1,\n            \"Safari\": 2\n        },\n        \"operating_systems\": {\n            \"Linux\": 4,\n            \"macOS\": 1,\n            \"Android\": 1,\n            \"iOS\": 1\n        },\n        \"languages\": {\n            \"fr\": 1,\n            \"it\": 4,\n            \"de\": 2\n        }\n    },\n    \"utm_sources\": {\n        \"source\": {\n            \"facebook\": 2,\n            \"twitter\": 2,\n            \"direct\": 2,\n            \"organic\": 1\n        },\n        \"medium\": {\n            \"email\": 2,\n            \"affiliate\": 3,\n            \"banner\": 2\n        }\n    }\n}"
+							"body": "{\n    \"campaign_overview\": {\n        \"campaign_id\": \"687b96179895ea533e00102c\",\n        \"campaign_title\": \"Aliquam ad expedita ut.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-14T20:17:33.000000Z\",\n        \"end_date\": \"2025-09-18T13:54:19.000000Z\"\n    },\n    \"visits\": {\n        \"total\": 7,\n        \"unique_ip\": 7,\n        \"total_unique\": 7\n    },\n    \"statistics\": {\n        \"total_prospects_notified\": 3,\n        \"unique_prospect_visits\": 5,\n        \"email_cta_click_rate\": 166.67\n    },\n    \"device_browser_breakdown\": {\n        \"device_types\": {\n            \"tablet\": 3,\n            \"mobile\": 2,\n            \"desktop\": 2\n        },\n        \"browsers\": {\n            \"Edge\": 3,\n            \"Chrome\": 1,\n            \"Firefox\": 1,\n            \"Safari\": 2\n        },\n        \"operating_systems\": {\n            \"Linux\": 4,\n            \"macOS\": 1,\n            \"Android\": 1,\n            \"iOS\": 1\n        },\n        \"languages\": {\n            \"fr\": 1,\n            \"it\": 4,\n            \"de\": 2\n        }\n    },\n    \"utm_sources\": {\n        \"source\": {\n            \"facebook\": 2,\n            \"twitter\": 2,\n            \"direct\": 2,\n            \"organic\": 1\n        },\n        \"medium\": {\n            \"email\": 2,\n            \"affiliate\": 3,\n            \"banner\": 2\n        }\n    }\n}"
 						}
 					]
 				}

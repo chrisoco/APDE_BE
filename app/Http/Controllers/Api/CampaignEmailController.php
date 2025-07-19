@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\CampaignStatus;
 use App\Http\Controllers\Controller;
 use App\Mail\CampaignEmail;
 use App\Models\Campaign;
@@ -11,6 +12,7 @@ use App\Models\Prospect;
 use App\Services\CampaignTrackingService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 
@@ -20,7 +22,7 @@ final class CampaignEmailController extends Controller
         private readonly CampaignTrackingService $trackingService
     ) {}
 
-    public function send(Campaign $campaign): JsonResponse
+    public function send(Request $request, Campaign $campaign): JsonResponse
     {
         Gate::authorize('sendEmails', $campaign);
 
@@ -36,12 +38,32 @@ final class CampaignEmailController extends Controller
             ], 400);
         }
 
-        // Get filtered prospects based on campaign filters
-        $prospects = Prospect::applyFilters($campaign->prospect_filter)->get();
+        if ($campaign->status !== CampaignStatus::ACTIVE) {
+            return response()->json([
+                'message' => 'Campaign must be active to send emails.',
+            ], 400);
+        }
+
+        $force = $request->boolean('force', false);
+
+        // Filter prospects based on campaign filters
+        $filteredProspects = Prospect::applyFilters($campaign->prospect_filter);
+        $totalProspects = $filteredProspects->count();
+
+        if ($force) {
+            // Force mode: send to all prospects matching the filter
+            $prospects = $filteredProspects->get();
+        } else {
+            // Get IDs of already-associated prospects
+            $existingProspectIds = $campaign->campaignProspects()->pluck('prospect_id')->unique()->toArray();
+
+            // Only get prospects matching the filter that are NOT already associated
+            $prospects = $filteredProspects->whereNotIn('id', $existingProspectIds)->get();
+        }
 
         if ($prospects->isEmpty()) {
             return response()->json([
-                'message' => 'No prospects match the campaign filters.',
+                'message' => 'No prospects match the campaign filters or all prospects have already been contacted.',
             ], 400);
         }
 
@@ -51,13 +73,22 @@ final class CampaignEmailController extends Controller
             try {
                 $trackingUrl = $this->trackingService->generateCampaignEmailUrl($campaign, $prospect);
 
+                // Create association record to track this email send
+                $campaign->campaignProspects()->create([
+                    'prospect_id' => $prospect->id,
+                ]);
+
                 Mail::to($prospect->email)->send(
                     new CampaignEmail($campaign, $prospect, $trackingUrl)
                 );
 
                 $emailsSent++;
 
-                if (app()->isLocal()) {
+                if (! $force && app()->isLocal()) {
+                    break;
+                }
+
+                if ($force && app()->isLocal() && $emailsSent >= 3) {
                     break;
                 }
 
@@ -71,14 +102,13 @@ final class CampaignEmailController extends Controller
             }
         }
 
-        $campaign->update([
-            'emails_sent' => $emailsSent,
-        ]);
-
         return response()->json([
             'message' => "Campaign emails queued successfully. {$emailsSent} emails sent to prospects.",
             'emails_sent' => $emailsSent,
-            'total_prospects' => $prospects->count(),
+            'total_emails_sent' => $campaign->campaignProspects()->count(),
+            'notified_prospects' => $campaign->campaignProspects()->pluck('prospect_id')->unique()->count(),
+            'available_prospects' => $totalProspects - $campaign->campaignProspects()->count(),
+            'total_prospects' => $totalProspects,
         ]);
     }
 }
