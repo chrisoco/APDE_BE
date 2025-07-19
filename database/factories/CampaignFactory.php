@@ -39,6 +39,7 @@ final class CampaignFactory extends Factory
                 'gender' => $this->faker->boolean ? $this->faker->randomElement(['female', 'male']) : null,
                 'source' => $this->faker->boolean ? $this->faker->randomElement(['erp', 'kueba']) : null,
             ], fn ($v): bool => ! is_null($v)),
+            'emails_sent' => $this->faker->numberBetween(0, 100),
         ];
     }
 }

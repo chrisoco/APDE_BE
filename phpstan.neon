@@ -11,8 +11,10 @@ parameters:
     # Level 10 is the highest level
     level: 10
 
-#    ignoreErrors:
-#        - '#PHPDoc tag @var#'
-#
+    ignoreErrors:
+        - '#should return MongoDB\\Laravel\\Relations\\HasOne.* but returns Illuminate\\Database\\Eloquent\\Relations\\HasOne#'
+        - '#should return MongoDB\\Laravel\\Relations\\HasMany.* but returns Illuminate\\Database\\Eloquent\\Relations\\HasMany#'
+        - '#should return MongoDB\\Laravel\\Relations\\BelongsTo.* but returns Illuminate\\Database\\Eloquent\\Relations\\BelongsTo#'
+
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php

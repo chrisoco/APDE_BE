@@ -71,6 +71,10 @@ final class CampaignEmailController extends Controller
             }
         }
 
+        $campaign->update([
+            'emails_sent' => $emailsSent,
+        ]);
+
         return response()->json([
             'message' => "Campaign emails queued successfully. {$emailsSent} emails sent to prospects.",
             'emails_sent' => $emailsSent,

@@ -551,6 +551,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /campaigns/{campaign}/analytics:
+    get:
+      tags:
+        - Campaigns
+      summary: Get campaign analytics
+      description: |
+        Returns analytics data for a specific campaign. This endpoint provides aggregated statistics and insights about the campaign's performance, such as visits, conversions, and other tracked metrics.
+        
+        Requires authentication. User must have permission to view analytics for the specified campaign (policy: `viewAnalytics`).
+      operationId: getCampaignAnalytics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: campaign
+          in: path
+          required: true
+          description: The campaign's unique identifier (UUID)
+          schema:
+            type: string
+          example: "686a3affca7748f6b807cbee"
+      responses:
+        '200':
+          description: Analytics data for the campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignAnalyticsResponse'
+        '403':
+          description: Forbidden - user is not authorized to view analytics for the campaign
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Campaign not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /landingpages:
     get:
       tags:
@@ -1775,3 +1815,137 @@ components:
         - data
         - meta
         - links 
+
+    CampaignAnalyticsResponse:
+      type: object
+      properties:
+        campaign_overview:
+          type: object
+          properties:
+            campaign_id:
+              type: string
+              example: "686a3affca7748f6b807cbee"
+            campaign_title:
+              type: string
+              example: "Ut reiciendis consequatur dolore."
+            status:
+              type: string
+              example: "completed"
+            start_date:
+              type: string
+              format: date-time
+              example: "2025-08-04T13:02:20.000000Z"
+            end_date:
+              type: string
+              format: date-time
+              example: "2025-08-18T00:20:20.000000Z"
+        visits:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 10
+            unique_ip:
+              type: integer
+              example: 10
+            total_unique:
+              type: integer
+              example: 10
+        statistics:
+          type: object
+          properties:
+            emails_sent:
+              type: integer
+              example: 11
+            unique_prospect_visits:
+              type: integer
+              example: 4
+            email_cta_click_rate:
+              type: number
+              format: float
+              example: 36.36
+        device_browser_breakdown:
+          type: object
+          properties:
+            device_types:
+              type: object
+              properties:
+                desktop:
+                  type: integer
+                  example: 5
+                tablet:
+                  type: integer
+                  example: 2
+                mobile:
+                  type: integer
+                  example: 3
+            browsers:
+              type: object
+              properties:
+                Edge:
+                  type: integer
+                  example: 2
+                Safari:
+                  type: integer
+                  example: 2
+                Chrome:
+                  type: integer
+                  example: 4
+                Firefox:
+                  type: integer
+                  example: 2
+            operating_systems:
+              type: object
+              properties:
+                Windows:
+                  type: integer
+                  example: 1
+                Android:
+                  type: integer
+                  example: 3
+                macOS:
+                  type: integer
+                  example: 2
+                Linux:
+                  type: integer
+                  example: 1
+                iOS:
+                  type: integer
+                  example: 3
+            languages:
+              type: object
+              additionalProperties:
+                type: integer
+              example:
+                it: 3
+                en: 1
+                fr: 2
+                de: 4
+        utm_sources:
+          type: object
+          properties:
+            source:
+              type: object
+              additionalProperties:
+                type: integer
+              example:
+                facebook: 2
+                google: 1
+                direct: 3
+                linkedin: 3
+                twitter: 1
+            medium:
+              type: object
+              additionalProperties:
+                type: integer
+              example:
+                email: 2
+                affiliate: 4
+                banner: 3
+                organic: 1
+      required:
+        - campaign_overview
+        - visits
+        - statistics
+        - device_browser_breakdown
+        - utm_sources 

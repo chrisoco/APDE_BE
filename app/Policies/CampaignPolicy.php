@@ -95,4 +95,15 @@ final class CampaignPolicy
             UserRole::SUPER_ADMIN,
         ]);
     }
+
+    /**
+     * Determine whether the user can view analytics for the model.
+     */
+    public function viewAnalytics(User $user): bool
+    {
+        return in_array($user->role, [
+            UserRole::ADMIN,
+            UserRole::SUPER_ADMIN,
+        ]);
+    }
 }
