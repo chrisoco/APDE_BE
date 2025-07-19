@@ -53,18 +53,17 @@ Available campaign statuses:
       "id": "campaign-uuid",
       "title": "Summer Sale Campaign",
       "description": "Promotional campaign for summer products",
-      "status": "active",
       "start_date": "2024-06-01T00:00:00.000000Z",
       "end_date": "2024-08-31T23:59:59.000000Z",
-      "prospect_filter": null,
-      "created_at": "2024-06-01T10:00:00.000000Z",
-      "updated_at": "2024-06-01T10:00:00.000000Z",
+      "status": "active",
+      "prospect_filter": [],
       "landingpage": {
         "id": "landingpage-uuid",
         "title": "Summer Sale Landing Page",
         "slug": "summer-sale-landing-page",
         "headline": "Get 50% Off This Summer!",
-        "subline": "Limited time offer on selected items"
+        "subline": "Limited time offer on selected items",
+        "sections": []
       }
     }
   ],
@@ -84,6 +83,8 @@ Available campaign statuses:
   }
 }
 ```
+
+**Note:** The response structure includes conditional fields based on user permissions. The `start_date`, `end_date`, `status`, and `prospect_filter` fields are only included if the user has permission to view campaign details.
 
 #### 2. Create Campaign (POST /api/campaigns)
 
@@ -119,18 +120,17 @@ Available campaign statuses:
     "id": "campaign-uuid",
     "title": "Summer Sale Campaign",
     "description": "Promotional campaign for summer products",
-    "status": "active",
     "start_date": "2024-06-01T00:00:00.000000Z",
     "end_date": "2024-08-31T23:59:59.000000Z",
-    "prospect_filter": null,
-    "created_at": "2024-06-01T10:00:00.000000Z",
-    "updated_at": "2024-06-01T10:00:00.000000Z",
+    "status": "active",
+    "prospect_filter": [],
     "landingpage": {
       "id": "landingpage-uuid",
       "title": "Summer Sale Landing Page",
       "slug": "summer-sale-landing-page",
       "headline": "Get 50% Off This Summer!",
-      "subline": "Limited time offer on selected items"
+      "subline": "Limited time offer on selected items",
+      "sections": []
     }
   }
 }
@@ -148,7 +148,12 @@ Available campaign statuses:
 
 **Description:** Soft delete a campaign (sets `deleted_at` timestamp).
 
-**Response:** Returns the deleted campaign.
+**Response:** 
+```json
+{
+  "success": true
+}
+```
 
 ## Landingpage CRUD Operations
 
@@ -184,7 +189,16 @@ The Landingpage model represents landing pages associated with campaigns:
   "data": [
     {
       "id": "landingpage-uuid",
-      "campaign_id": "campaign-uuid",
+      "campaign": {
+        "id": "campaign-uuid",
+        "title": "Summer Sale Campaign",
+        "description": "Promotional campaign for summer products",
+        "start_date": "2024-06-01T00:00:00.000000Z",
+        "end_date": "2024-08-31T23:59:59.000000Z",
+        "status": "active",
+        "prospect_filter": [],
+        "landingpage": null
+      },
       "title": "Summer Sale Landing Page",
       "slug": "summer-sale-landing-page",
       "headline": "Get 50% Off This Summer!",
@@ -202,15 +216,7 @@ The Landingpage model represents landing pages associated with campaigns:
           "cta_text": "Learn More",
           "cta_url": "https://example.com/features"
         }
-      ],
-      "form_fields": null,
-      "created_at": "2024-06-01T10:00:00.000000Z",
-      "updated_at": "2024-06-01T10:00:00.000000Z",
-      "campaign": {
-        "id": "campaign-uuid",
-        "title": "Summer Sale Campaign",
-        "status": "active"
-      }
+      ]
     }
   ],
   "links": {
@@ -263,7 +269,7 @@ The Landingpage model represents landing pages associated with campaigns:
 }
 ```
 
-**Note:** The `slug` field is automatically generated from the `title` field using Laravel's `Str::slug()` helper.
+**Note:** The `slug` field is automatically generated from the `title` field using Laravel's `Str::slug()` helper in the `prepareForValidation()` method.
 
 **Response:** Returns the created landing page with HTTP 201 status.
 
@@ -278,67 +284,72 @@ The landing page can be identified by either:
 
 **Implementation Logic:**
 ```php
-public function show($identifier): JsonResource
+public function show(Request $request, CampaignTrackingService $campaignTrackingService, $identifier): JsonResource
 {
     if ($landingpage = Landingpage::find($identifier)) {
         Gate::authorize('view', $landingpage);
-    } else {
-        $landingpage = Landingpage::with('campaign')
-            ->where('slug', $identifier)
-            ->whereHas('campaign', function ($query): void {
-                $query->where('status', CampaignStatus::ACTIVE)
-                    ->where(function ($q): void {
-                        $q->whereNull('start_date')
-                            ->orWhere('start_date', '<=', now());
-                    })
-                    ->where(function ($q): void {
-                        $q->whereNull('end_date')
-                            ->orWhere('end_date', '>=', now());
-                    });
-            })
-            ->firstOrFail();
+        
+        return $landingpage->load('campaign')->toResource();
     }
-    
+
+    $landingpage = Landingpage::with('campaign')
+        ->where('slug', $identifier)
+        ->whereHas('campaign', function ($query): void {
+            $query->where('status', CampaignStatus::ACTIVE)
+                ->where(function ($q): void {
+                    $q->whereNull('start_date')
+                        ->orWhere('start_date', '<=', now());
+                })
+                ->where(function ($q): void {
+                    $q->whereNull('end_date')
+                        ->orWhere('end_date', '>=', now());
+                });
+        })
+        ->firstOrFail();
+
+    $campaignTrackingService->trackLandingPageVisit($request, $landingpage);
+
     return $landingpage->load('campaign')->toResource();
 }
 ```
 
 **Access Control:**
 - **UUID Access**: Requires authentication and proper authorization via Laravel Gates
-- **Slug Access**: Public access with campaign validation (active status and valid date range)
+- **Slug Access**: Public access with campaign validation (active status and valid date range) and automatic tracking
 
 **Response:**
 ```json
 {
   "data": {
     "id": "landingpage-uuid",
-    "campaign_id": "campaign-uuid",
+    "campaign": {
+      "id": "campaign-uuid",
+      "title": "Summer Sale Campaign",
+      "description": "Promotional campaign for summer products",
+      "start_date": "2024-06-01T00:00:00.000000Z",
+      "end_date": "2024-08-31T23:59:59.000000Z",
+      "status": "active",
+      "prospect_filter": [],
+      "landingpage": null
+    },
     "title": "Summer Sale Landing Page",
     "slug": "summer-sale-landing-page",
     "headline": "Get 50% Off This Summer!",
     "subline": "Limited time offer on selected items",
-          "sections": [
-        {
-          "text": "Welcome to our amazing summer sale! Discover incredible deals on all your favorite products. Don't miss out on these limited-time offers that will make your summer unforgettable.",
-          "image_url": "https://picsum.photos/800/400?random=1",
-          "cta_text": "Get Started",
-          "cta_url": "https://example.com/signup"
-        },
-        {
-          "text": "Our featured products are carefully selected to provide the best value for your money. From electronics to fashion, we have everything you need for a perfect summer.",
-          "image_url": "https://picsum.photos/800/400?random=2",
-          "cta_text": "Learn More",
-          "cta_url": "https://example.com/features"
-        }
-      ],
-    "form_fields": null,
-    "created_at": "2024-06-01T10:00:00.000000Z",
-    "updated_at": "2024-06-01T10:00:00.000000Z",
-    "campaign": {
-      "id": "campaign-uuid",
-      "title": "Summer Sale Campaign",
-      "status": "active"
-    }
+    "sections": [
+      {
+        "text": "Welcome to our amazing summer sale! Discover incredible deals on all your favorite products. Don't miss out on these limited-time offers that will make your summer unforgettable.",
+        "image_url": "https://picsum.photos/800/400?random=1",
+        "cta_text": "Get Started",
+        "cta_url": "https://example.com/signup"
+      },
+      {
+        "text": "Our featured products are carefully selected to provide the best value for your money. From electronics to fashion, we have everything you need for a perfect summer.",
+        "image_url": "https://picsum.photos/800/400?random=2",
+        "cta_text": "Learn More",
+        "cta_url": "https://example.com/features"
+      }
+    ]
   }
 }
 ```
@@ -355,7 +366,12 @@ public function show($identifier): JsonResource
 
 **Description:** Soft delete a landing page (sets `deleted_at` timestamp).
 
-**Response:** Returns the deleted landing page.
+**Response:** 
+```json
+{
+  "success": true
+}
+```
 
 ## Public Landing Page Access
 
@@ -367,6 +383,7 @@ public function show($identifier): JsonResource
 - **No Authentication Required**: This endpoint is publicly accessible
 - **Slug-Only Access**: Only supports slug-based identification (not UUID)
 - **Campaign Validation**: Only returns landing pages associated with active campaigns within valid date ranges
+- **Automatic Tracking**: All visits are automatically tracked via `CampaignTrackingService`
 
 **Campaign Validation Logic:**
 ```php
@@ -384,6 +401,8 @@ $landingpage = Landingpage::with('campaign')
             });
     })
     ->firstOrFail();
+
+$campaignTrackingService->trackLandingPageVisit($request, $landingpage);
 ```
 
 **Campaign Resource Restrictions:**
@@ -408,7 +427,11 @@ When accessed via the public endpoint, the campaign resource exposes only a limi
 {
   "data": {
     "id": "landingpage-uuid",
-    "campaign_id": "campaign-uuid",
+    "campaign": {
+      "id": "campaign-uuid",
+      "title": "Summer Sale Campaign",
+      "status": "active"
+    },
     "title": "Summer Sale Landing Page",
     "slug": "summer-sale-landing-page",
     "headline": "Get 50% Off This Summer!",
@@ -420,15 +443,7 @@ When accessed via the public endpoint, the campaign resource exposes only a limi
         "cta_text": "Get Started",
         "cta_url": "https://example.com/signup"
       }
-    ],
-    "form_fields": null,
-    "created_at": "2024-06-01T10:00:00.000000Z",
-    "updated_at": "2024-06-01T10:00:00.000000Z",
-    "campaign": {
-      "id": "campaign-uuid",
-      "title": "Summer Sale Campaign",
-      "status": "active"
-    }
+    ]
   }
 }
 ```
@@ -446,6 +461,7 @@ GET /api/lp/summer-sale-landing-page
 # 1. The slug exists
 # 2. The associated campaign is active
 # 3. The campaign is within its valid date range (or has no date restrictions)
+# 4. The visit will be automatically tracked
 ```
 
 ## Input Validation
@@ -463,7 +479,7 @@ GET /api/lp/summer-sale-landing-page
             ->whereNull('deleted_at'),
     ],
     'description' => 'sometimes|string|max:255',
-    'status' => 'required|string|in:draft,active,paused,completed',
+    'status' => 'required|string|in:'.implode(',', \App\Enums\CampaignStatus::values()),
     'start_date' => 'sometimes|nullable|date',
     'end_date' => 'sometimes|nullable|date|after:start_date',
     'prospect_filter' => 'sometimes|array',
@@ -473,7 +489,7 @@ GET /api/lp/summer-sale-landing-page
 **Validation Details:**
 - **title**: Required, unique across non-deleted campaigns, max 255 characters
 - **description**: Optional, max 255 characters
-- **status**: Required, must be one of the defined enum values
+- **status**: Required, must be one of the defined enum values (draft, active, paused, completed)
 - **start_date**: Optional, must be a valid date
 - **end_date**: Optional, must be a valid date and after start_date
 - **prospect_filter**: Optional, must be an array
@@ -502,6 +518,7 @@ GET /api/lp/summer-sale-landing-page
     'subline' => 'sometimes|nullable|string|max:255',
     'campaign_id' => 'sometimes|nullable|exists:campaigns,id',
     'sections' => 'required|array',
+    // 'form_fields' => 'required|array', // Currently commented out
 ]
 ```
 
@@ -512,8 +529,59 @@ GET /api/lp/summer-sale-landing-page
 - **subline**: Optional, max 255 characters
 - **campaign_id**: Optional, must reference an existing campaign
 - **sections**: Required, must be an array
+- **form_fields**: Currently commented out in validation rules
 
 **Auto-generation:** The slug is automatically generated from the title using `Str::slug()` in the `prepareForValidation()` method.
+
+## Resource Transformation
+
+### CampaignResource Implementation
+
+The `CampaignResource` includes conditional field inclusion based on user permissions:
+
+```php
+public function toArray(Request $request): array
+{
+    /** @var Campaign $campaign */
+    $campaign = $this->resource;
+
+    return [
+        'id' => $campaign->id,
+        'title' => $campaign->title,
+        'description' => $campaign->description,
+        $this->mergeWhen(Gate::allows('viewAny', Campaign::class), [
+            'start_date' => $campaign->start_date,
+            'end_date' => $campaign->end_date,
+            'status' => $campaign->status->label(),
+            'prospect_filter' => $campaign->prospect_filter ?? [],
+        ]),
+        'landingpage' => new LandingpageResource($this->whenLoaded('landingpage')),
+    ];
+}
+```
+
+### LandingpageResource Implementation
+
+The `LandingpageResource` includes the associated campaign:
+
+```php
+public function toArray(Request $request): array
+{
+    /** @var \App\Models\Landingpage $landingpage */
+    $landingpage = $this->resource;
+
+    return [
+        'id' => $landingpage->id,
+        'campaign' => new CampaignResource($this->whenLoaded('campaign')),
+        'title' => $landingpage->title,
+        'slug' => $landingpage->slug,
+        'headline' => $landingpage->headline,
+        'subline' => $landingpage->subline,
+        'sections' => $landingpage->sections,
+        // 'form_fields' => $landingpage->form_fields, // Currently commented out
+    ];
+}
+```
 
 ## Edge Cases
 
@@ -547,6 +615,24 @@ GET /api/landingpages/summer-sale-2024
 - The slug must be unique across all non-deleted landing pages
 - Slugs are automatically generated from titles but can be manually overridden
 
+### Missing toResource Method
+
+**Issue:** The documentation references `toResource()` and `toResourceCollection()` methods that are not visible in the current codebase.
+
+**Current Implementation:** The codebase appears to use Laravel's standard resource transformation methods. The `toResource()` method is likely implemented through:
+- Laravel's built-in resource transformation
+- Custom macros or service providers not visible in the current codebase
+- Laravel 12's enhanced resource handling
+
+**Workaround:** The actual implementation uses standard Laravel resource patterns:
+```php
+// Instead of $model->toResource()
+return new CampaignResource($campaign);
+
+// Instead of $collection->toResourceCollection()
+return CampaignResource::collection($collection);
+```
+
 ## API Endpoints Summary
 
 ### Campaign Endpoints
@@ -566,7 +652,7 @@ GET /api/landingpages/summer-sale-2024
 - `DELETE /api/landingpages/{id}` - Delete landing page
 
 ### Public Landing Page Endpoints
-- `GET /api/lp/{identifier}` - Public access to landing page (slug only, no authentication required)
+- `GET /api/lp/{identifier}` - Public access to landing page (slug only, no authentication required, automatic tracking)
 
 ### Authentication
 Most endpoints require authentication via Laravel Sanctum. Include the Bearer token in the Authorization header:

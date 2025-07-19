@@ -15,7 +15,7 @@ graph TB
     end
     
     subgraph "API Layer"
-        Route[Route: /api/model/filter]
+        Route[Route: /api/{model}/filter]
         Controller[GenericFilterController]
     end
     
@@ -195,15 +195,13 @@ classDiagram
         <<trait>>
         +scopeApplyFilters($query, $filters) void
         +searchCriteria() array
-        -parseFilterType($key) array
-        -castValue($value, $type) mixed
+        -castFilterValue($field, $value) mixed
     }
     
     class GenericFilterController {
-        +filter($model) JsonResponse
+        +filter($model) ResourceCollection
         +searchCriteria($model) JsonResponse
         -resolveModel($slug) string
-        -validateModel($modelClass) bool
     }
     
     class MongoDB {
@@ -264,17 +262,22 @@ flowchart TD
    - Implements `searchCriteria()` method for getting available filter options
    - Handles automatic value casting based on model casts
    - Supports MongoDB-specific query building
+   - Includes dot notation support for nested fields
+   - Prevents range operators on enum fields
 
 2. **GenericFilterController** (`app/Http/Controllers/Api/GenericFilterController.php`)
    - Provides REST API endpoints for filtering
    - Handles model resolution and validation
    - Returns paginated results using Laravel's Resource Collections
    - Implements proper error handling for non-existent or non-filterable models
+   - Uses Laravel's Gate authorization system
+   - Supports only the `prospects` model currently
 
 3. **Model Integration**
    - Models use the `HasFilterable` trait
    - Define filterable attributes via `getFilterableAttributes()` method
    - Support for different filter types (enum, range)
+   - Currently only the `Prospect` model implements filtering
 
 ## Filter Types
 
@@ -283,6 +286,7 @@ flowchart TD
 - Supports exact matching `=` and `in`/`not_in` operations
 - Automatically generates available values from existing data
 - Ideal for categorical data like gender, source, blood_group, etc.
+- Range operators (`>=`, `<=`) are automatically skipped for enum fields
 
 ### Range Filters
 - Used for numeric and date fields
@@ -429,7 +433,7 @@ The system supports both underscore and dot notation for nested fields:
 ?address.city=London    // Same field, dot notation
 ```
 
-**Note:** PHP automatically converts dots to underscores in query parameters, so both notations work seamlessly.
+**Note:** PHP automatically converts dots to underscores in query parameters, so both notations work seamlessly. The system intelligently converts underscores back to dots when matching against filterable attributes.
 
 ## Implementation Example
 
@@ -621,11 +625,13 @@ protected $casts = [
 - **Attribute Validation**: Only fields defined in `getFilterableAttributes()` are processed
 - **Type Safety**: Automatic casting prevents type-related issues
 - **Authentication**: All endpoints require authentication via Laravel Sanctum
+- **Authorization**: Uses Laravel's Gate system for model-level authorization
 - **Input Sanitization**: Query parameters are properly handled and validated
 
 ## Error Handling
 
 - **404 Not Found**: When model doesn't exist or isn't filterable
+- **403 Forbidden**: When user doesn't have permission to access the model
 - **400 Bad Request**: When filter syntax is invalid
 - **500 Internal Server Error**: When casting fails or other internal errors occur
 
@@ -642,6 +648,7 @@ protected $casts = [
 - **Indexing**: Ensure filterable fields are properly indexed in MongoDB
 - **Pagination**: Results are automatically paginated to prevent large result sets
 - **Query Optimization**: The system uses Laravel's query builder for efficient database queries
+- **Resource Collections**: Uses Laravel's Resource Collections for consistent API responses
 
 ## Extending the System
 
@@ -681,6 +688,7 @@ switch (true) {
 3. Add the model to the `resolveModel()` method in `GenericFilterController`
 4. Ensure proper casts are defined
 5. Create appropriate MongoDB indexes
+6. Implement the required policy for authorization
 
 ### Example: Adding a Movie Model
 
@@ -743,6 +751,7 @@ private function resolveModel(string $slug): string
 6. **Use Proper Casting**: Define appropriate casts for all filterable fields
 7. **Optimize Queries**: Use compound indexes for frequently combined filters
 8. **Monitor Performance**: Track query performance and optimize as needed
+9. **Implement Policies**: Ensure proper authorization policies are in place for new models
 
 ## Troubleshooting
 
@@ -753,6 +762,7 @@ private function resolveModel(string $slug): string
 3. **Dot Notation Issues**: Ensure the field exists in the database and is properly cast
 4. **Performance Issues**: Check MongoDB indexes on filterable fields
 5. **Authentication Errors**: Ensure proper Sanctum token is provided
+6. **Authorization Errors**: Check if the user has permission to access the model
 
 ### Debugging
 

@@ -47,8 +47,7 @@ graph TB
     AbstractImport --> KuebaImport
     ErpImport --> ErpDTO
     KuebaImport --> KuebaDTO
-    ErpDTO --> AddressDTOs
-    KuebaDTO --> AddressDTOs
+    DTOs --> AddressDTOs
     DTOs --> Prospect
     Prospect --> SourceEnum
     Prospect --> MongoDB
@@ -90,7 +89,7 @@ sequenceDiagram
         
         API-->>Import: Raw API response
         
-        Import->>Import: transformData()
+        Import->>Import: createProspectData()
         Note over Import: Convert to DTOs
         
         loop For each prospect
@@ -98,13 +97,26 @@ sequenceDiagram
             DTO->>DTO: Map and validate data
             DTO-->>Import: Validated prospect data
             
-            Import->>Model: upsert()
-            Model->>DB: Create or update record
+            Import->>Model: Find by email (withTrashed)
+            Model->>DB: Query existing prospect
+            DB-->>Model: Existing prospect or null
+            
+            alt Prospect exists
+                Import->>Model: update()
+                Model->>DB: Update record
+                Note over Import,DB: Update with new data
+                Import->>Model: restore() if trashed
+            else New prospect
+                Import->>Model: create()
+                Model->>DB: Insert new record
+                Note over Import,DB: Create new prospect
+            end
+            
             DB-->>Model: Saved prospect
             Model-->>Import: Prospect instance
         end
         
-        Import->>Import: handleSoftDeletes()
+        Import->>Import: Soft delete missing prospects
         Note over Import: Remove prospects not in source
         
         Import-->>Cmd: Import completed
@@ -120,27 +132,36 @@ classDiagram
     class AbstractImportProspectsAction {
         <<abstract>>
         +handle() void
-        +fetchData() array
-        +transformData() array
-        +upsertRecords() void
-        +handleSoftDeletes() void
+        +fetchAllProspects() Generator
+        +fetchWithPagination() Generator
+        +fetchWithoutPagination() Generator
         +getDataSource() ProspectDataSource*
         +getBaseUrl() string*
-        +getPaginationParams() array*
+        +getApiParameters() array*
+        +getResponseDataKey() string*
+        +createProspectData() Data*
+        +supportsPagination() bool*
+        +getPaginationParameters() array*
     }
     
     class ImportErpProspects {
         +getDataSource() ProspectDataSource
         +getBaseUrl() string
-        +getPaginationParams() array
-        +transformData() array
+        +getApiParameters() array
+        +getResponseDataKey() string
+        +createProspectData() ErpProspectData
+        +supportsPagination() bool
+        +getPaginationParameters() array
     }
     
     class ImportKuebaProspects {
         +getDataSource() ProspectDataSource
         +getBaseUrl() string
-        +getPaginationParams() array
-        +transformData() array
+        +getApiParameters() array
+        +getResponseDataKey() string
+        +createProspectData() KuebaProspectData
+        +supportsPagination() bool
+        +getPaginationParameters() array
     }
     
     class ProspectDataSource {
@@ -148,6 +169,7 @@ classDiagram
         ERP
         KUEBA
         +importAction() string
+        +label() string
     }
     
     class ErpProspectData {
@@ -155,6 +177,17 @@ classDiagram
         +string $first_name
         +string $last_name
         +string $email
+        +string $phone
+        +string $gender
+        +int $age
+        +Carbon $birth_date
+        +string $image
+        +string $blood_group
+        +float $height
+        +float $weight
+        +string $eye_color
+        +string $hair_color
+        +string $hair_type
         +ErpAddressData $address
         +ProspectDataSource $source
     }
@@ -164,6 +197,11 @@ classDiagram
         +string $first_name
         +string $last_name
         +string $email
+        +string $phone
+        +string $gender
+        +int $age
+        +Carbon $birth_date
+        +string $image
         +KuebaAddressData $address
         +ProspectDataSource $source
     }
@@ -223,18 +261,24 @@ flowchart TD
     
     G --> H{Valid?}
     H -->|No| I[Skip Record]
-    H -->|Yes| J[Create/Update Prospect]
+    H -->|Yes| J[Find by Email]
     
-    J --> K[Store in MongoDB]
-    K --> L[Apply Soft Deletes]
-    L --> M[Import Complete]
+    J --> K{Prospect Exists?}
+    K -->|Yes| L[Update Existing]
+    K -->|No| M[Create New]
+    
+    L --> N[Restore if Trashed]
+    M --> N
+    N --> O[Store in MongoDB]
+    O --> P[Apply Soft Deletes]
+    P --> Q[Import Complete]
     
     style A fill:#e3f2fd
     style C fill:#f3e5f5
     style D fill:#f3e5f5
-    style K fill:#e8f5e8
+    style O fill:#e8f5e8
     style I fill:#ffebee
-    style M fill:#e8f5e8
+    style Q fill:#e8f5e8
 ```
 
 ## Upsert Process
@@ -245,26 +289,30 @@ sequenceDiagram
     participant Model as Prospect Model
     participant DB as MongoDB
 
-    Import->>Model: upsert()
+    Import->>Model: withTrashed()->where('email', $dto->email)
+    Model->>DB: Find existing prospect by email
+    DB-->>Model: Existing prospect or null
     
-    loop For each prospect DTO
-        Import->>Model: where('external_id', $dto->external_id)
-        Model->>DB: Find existing prospect
-        DB-->>Model: Existing prospect or null
+    alt Prospect exists
+        Import->>Model: update($dto->toArray())
+        Model->>DB: Update record
+        Note over Import,DB: Update with new data from source
         
-        alt Prospect exists
-            Import->>Model: update()
-            Model->>DB: Update record
-            Note over Import,DB: Update with new data from source
-        else New prospect
-            Import->>Model: create()
-            Model->>DB: Insert new record
-            Note over Import,DB: Create new prospect
+        Import->>Model: trashed()?
+        Model-->>Import: true/false
+        
+        alt Prospect was trashed
+            Import->>Model: restore()
+            Model->>DB: Restore record
         end
-        
-        DB-->>Model: Saved prospect
-        Model-->>Import: Prospect instance
+    else New prospect
+        Import->>Model: create($dto->toArray())
+        Model->>DB: Insert new record
+        Note over Import,DB: Create new prospect
     end
+    
+    DB-->>Model: Saved prospect
+    Model-->>Import: Prospect instance
     
     Import->>Import: handleSoftDeletes()
     Note over Import: Remove prospects not in current import
@@ -288,7 +336,7 @@ graph LR
         KuebaStreet[street.name + street.number]
         KuebaCity[city]
         KuebaState[state]
-        KuebaPlz[postal_code]
+        KuebaPlz[postcode]
         KuebaCountry[country]
         KuebaLat[coordinates.latitude]
         KuebaLng[coordinates.longitude]
@@ -384,12 +432,13 @@ The Prospects system consists of several key components:
 - **API Endpoints**: RESTful API for prospect retrieval (index, show)
 - **Data Transfer Objects**: Type-safe data handling with source-specific mapping
 - **Scheduled Imports**: Automated data synchronization
+- **Generic Filtering**: Advanced filtering capabilities with range and enum support
 
 ## Architecture
 
 ### Core Components
 
-- **`Prospect` Model**: MongoDB Eloquent model with soft deletes
+- **`Prospect` Model**: MongoDB Eloquent model with soft deletes and filtering capabilities
 - **`AbstractImportProspectsAction`**: Base abstract class for import operations
 - **`ImportErpProspects`**: ERP system data importer
 - **`ImportKuebaProspects`**: Küba API data importer
@@ -408,13 +457,14 @@ External APIs → Import Actions → DTOs → Prospect Model → API Resources �
 
 ### Prospect Model
 
-The `Prospect` model is stored in MongoDB and includes comprehensive prospect information:
+The `Prospect` model is stored in MongoDB and includes comprehensive prospect information with advanced filtering capabilities:
 
 ```php
+#[UsePolicy(ProspectPolicy::class)]
 final class Prospect extends Model
 {
-    use SoftDeletes;
-    
+    use AuthorizesRequests, HasFilterable, SoftDeletes;
+
     protected $fillable = [
         'id',
         'external_id',
@@ -438,6 +488,45 @@ final class Prospect extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    protected $casts = [
+        'age' => 'integer',
+        'birth_date' => 'date',
+        'height' => 'float',
+        'weight' => 'float',
+        'address.latitude' => 'float',
+        'address.longitude' => 'float',
+        'source' => ProspectDataSource::class,
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+
+    public static function getFilterableAttributes(): array
+    {
+        return [
+            'source' => 'enum',
+            'gender' => 'enum',
+            'age' => 'range',
+            'birth_date' => 'range',
+            'blood_group' => 'enum',
+            'height' => 'range',
+            'weight' => 'range',
+            'eye_color' => 'enum',
+            'hair_color' => 'enum',
+            'address.city' => 'enum',
+            'address.state' => 'enum',
+            'address.country' => 'enum',
+            'address.plz' => 'range',
+            'address.latitude' => 'range',
+            'address.longitude' => 'range',
+        ];
+    }
+
+    public function prospectCampaigns(): HasMany
+    {
+        return $this->hasMany(CampainProspect::class);
+    }
 }
 ```
 
@@ -475,6 +564,7 @@ final class Prospect extends Model
 - **Address**: Array containing address components (varies by source)
 - **Timestamps**: Carbon instances for date/time handling
 - **Soft Deletes**: Records are soft deleted, not permanently removed
+- **Filterable Attributes**: Support for range (min, max), enum, in, not_in and nested filtering
 
 ## API Endpoints
 
@@ -585,6 +675,51 @@ GET /api/prospects/{id}
 }
 ```
 
+#### Generic Filtering
+
+```http
+GET /api/prospects/filter?gender=male&source=erp&age[min]=25&age[max]=35
+```
+
+**Response**: Filtered prospects based on criteria
+
+```json
+{
+  "data": [
+    {
+      "id": "507f1f77bcf86cd799439011",
+      "gender": "male",
+      "age": 28,
+      "birthDate": "1995-03-15T00:00:00.000000Z",
+      "image": "https://example.com/image.jpg",
+      "bloodGroup": "A+",
+      "height": 175.5,
+      "weight": 70.2,
+      "eyeColor": "brown",
+      "hairColor": "black",
+      "hairType": "straight",
+      "address": {
+        "address": "123 Main St",
+        "city": "Zurich",
+        "state": "ZH",
+        "plz": "8001",
+        "country": "Switzerland",
+        "latitude": 47.3769,
+        "longitude": 8.5417
+      }
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 1,
+    "per_page": 10,
+    "to": 1,
+    "total": 1
+  }
+}
+```
+
 ### API Resource Transformation
 
 The `ProspectResource` handles data transformation with conditional field inclusion:
@@ -618,7 +753,7 @@ The import system follows a template method pattern with the following component
 - **Configuration**: `services.kueba.prospects.url`
 - **Pagination**: Not supported (single request)
 - **Response Structure**: `{ "results": [...] }`
-- **Data Fields**: Basic prospect information with Swiss nationality filter
+- **Data Fields**: Basic prospect information with Swiss nationality filter (`nat=ch`)
 
 ### Usage
 
@@ -665,7 +800,7 @@ The import process follows these steps:
 #### Data Handling
 
 - **New Prospects**: Created with all available data
-- **Existing Prospects**: Updated with latest information from source
+- **Existing Prospects**: Updated with latest information from source (matched by email)
 - **Soft Deleted Prospects**: Restored if they reappear in the source
 - **Missing Prospects**: Soft deleted if they no longer exist in the source
 
@@ -735,7 +870,30 @@ final readonly class ImportNewSourceProspects extends AbstractImportProspectsAct
         return Config::string('services.new_source.prospects.url');
     }
     
-    // ... implement other abstract methods
+    protected function getApiParameters(): array
+    {
+        return [];
+    }
+    
+    protected function getResponseDataKey(): string
+    {
+        return 'data';
+    }
+    
+    protected function createProspectData(array $data): NewSourceProspectData
+    {
+        return NewSourceProspectData::from($data);
+    }
+    
+    protected function supportsPagination(): bool
+    {
+        return false;
+    }
+    
+    protected function getPaginationParameters(int $limit, int $skip): array
+    {
+        return [];
+    }
 }
 
 // 3. Update Enum
@@ -885,7 +1043,7 @@ final class KuebaAddressData extends Data
         public int $street_number,
         public string $city,
         public string $state,
-        #[MapInputName('postal_code')]
+        #[MapInputName('postcode')]
         public string $plz,
         public string $country,
         #[MapInputName('coordinates.latitude')]
@@ -897,6 +1055,39 @@ final class KuebaAddressData extends Data
     }
 }
 ```
+
+## Generic Filtering System
+
+The Prospects system includes a powerful generic filtering system that supports:
+
+### Filter Types
+
+- **Enum Filters**: `source`, `gender`, `blood_group`, `eye_color`, `hair_color`, `address.city`, `address.state`, `address.country`
+- **Range Filters**: `age`, `birth_date`, `height`, `weight`, `address.plz`, `address.latitude`, `address.longitude`
+
+### Usage Examples
+
+```bash
+# Filter by enum values
+GET /api/prospects/filter?gender=male&source=erp
+
+# Filter by ranges
+GET /api/prospects/filter?age[min]=25&age[max]=35
+
+# Filter by address
+GET /api/prospects/filter?address.city=Zurich&address.country=Switzerland
+
+# Combined filters
+GET /api/prospects/filter?gender=male&age[min]=25&source=erp
+```
+
+### Search Criteria
+
+```http
+GET /api/prospects/search-criteria
+```
+
+Returns available filter options for the prospects model.
 
 ## Scheduled Operations
 
@@ -918,6 +1109,7 @@ This runs the import process twice daily at 7:00 AM and 1:00 PM.
 - **Personal Information**: Only exposed in detail view with proper authentication
 - **Soft Deletes**: Sensitive data is soft deleted, not permanently removed
 - **API Access**: All endpoints require authentication via Sanctum tokens
+- **Authorization**: Uses Laravel Policies for fine-grained access control
 
 ### Rate Limiting
 
@@ -937,6 +1129,7 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
 - **Indexing**: Ensure proper indexes on frequently queried fields
 - **Pagination**: API responses are paginated to prevent large data transfers
 - **Soft Deletes**: Use `withTrashed()` when querying to include deleted records
+- **MongoDB**: Leverages MongoDB's flexible schema and indexing capabilities
 
 ### Caching
 
@@ -1003,6 +1196,7 @@ class ProspectApiTest extends TestCase
 2. **Data Validation Errors**: Review DTO mapping for source-specific fields
 3. **Authentication Issues**: Verify Sanctum token configuration
 4. **MongoDB Connection**: Ensure MongoDB is running and accessible
+5. **Filter Errors**: Check filter parameter syntax and supported attributes
 
 ### Debugging
 
@@ -1023,10 +1217,13 @@ tail -f storage/logs/laravel.log
 
 ### Potential Improvements
 
-1. **Search and Filtering**: Add search capabilities to API endpoints
+1. **Search and Filtering**: Enhanced search capabilities with full-text search
 2. **Bulk Operations**: Support for bulk prospect operations
 3. **Data Validation**: Enhanced validation rules for prospect data
 4. **Audit Logging**: Track changes to prospect records
 5. **Export Functionality**: Export prospects to various formats
 6. **Real-time Updates**: WebSocket support for real-time data updates
 7. **Advanced Analytics**: Prospect interaction and engagement tracking
+8. **Machine Learning**: Predictive analytics for prospect behavior
+9. **Integration APIs**: Additional external data source integrations
+10. **Performance Monitoring**: Real-time performance metrics and alerts

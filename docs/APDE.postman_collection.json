@@ -1835,6 +1835,36 @@
 									"disabled": true
 								},
 								{
+									"key": "max_address.latitude",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "min_address.latitude",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "max_address.longitude",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "min_address.longitude",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "min_height",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "max_height",
+									"value": null,
+									"disabled": true
+								},
+								{
 									"key": "per_page",
 									"value": "2"
 								},

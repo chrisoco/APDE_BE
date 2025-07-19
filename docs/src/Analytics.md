@@ -56,7 +56,7 @@ curl -X GET \
         "total_unique": 10
     },
     "statistics": {
-        "emails_sent": 11,
+        "total_prospects_notified": 11,
         "unique_prospect_visits": 4,
         "email_cta_click_rate": 36.36
     },
@@ -103,3 +103,32 @@ curl -X GET \
     }
 }
 ```
+
+## Response Structure
+
+### Campaign Overview
+- `campaign_id`: The unique identifier of the campaign
+- `campaign_title`: The title of the campaign
+- `status`: Current status of the campaign (draft, active, paused, completed)
+- `start_date`: Campaign start date in ISO format
+- `end_date`: Campaign end date in ISO format
+
+### Visits
+- `total`: Total number of page visits
+- `unique_ip`: Number of unique IP addresses that visited
+- `total_unique`: Number of unique visitors (deduplicated by IP + user agent)
+
+### Statistics
+- `total_prospects_notified`: Total number of prospects that have been sent emails for this campaign
+- `unique_prospect_visits`: Number of unique prospects who clicked through to the landing page
+- `email_cta_click_rate`: Click-through rate percentage (calculated as: unique_prospect_visits / total_prospects_notified × 100)
+
+### Device & Browser Breakdown
+- `device_types`: Distribution of device types (desktop, mobile, tablet)
+- `browsers`: Browser usage statistics
+- `operating_systems`: Operating system distribution
+- `languages`: Language preferences of visitors
+
+### UTM Sources
+- `source`: Traffic sources breakdown
+- `medium`: Marketing medium breakdown
