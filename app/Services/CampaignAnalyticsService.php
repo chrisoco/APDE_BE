@@ -9,6 +9,11 @@ use Illuminate\Support\Collection;
 
 final class CampaignAnalyticsService
 {
+    /**
+     * Get the analytics data for the specified campaign.
+     *
+     * @return array<string, array<string, mixed>>
+     */
     public function getAnalyticsData(Campaign $campaign): array
     {
         return [

@@ -35,13 +35,22 @@ You can also use the OpenAPI specification with external tools:
 3. Select "Link" and paste: `http://localhost:8000/api/docs/openapi/openapi.yaml`
 4. Or select "File" and upload the `openapi.yaml` file
 
+## Routes Overview
+
+### Web Routes (from `routes/web.php`)
+
+- **POST** `/login` - User authentication (web, cookie)
+- **POST** `/logout` - User logout (requires authentication, web, cookie)
+- **GET** `/cp-cookie` - Get all campaigns (requires authentication, web, cookie)
+- **GET** `/` - Health check (returns 'up')
+
 ## API Overview
 
 The APDE API provides the following main functionalities:
 
-### Authentication
-- **POST** `/login` - User authentication
-- **POST** `/logout` - User logout (requires authentication)
+### Authentication Token
+- **POST** `/api/login` - User authentication
+- **POST** `/api/logout` - User logout (requires authentication)
 
 ### Campaigns
 - **GET** `/campaigns` - List campaigns
@@ -49,6 +58,8 @@ The APDE API provides the following main functionalities:
 - **GET** `/campaigns/{id}` - Get campaign by ID
 - **PUT** `/campaigns/{id}` - Update campaign
 - **DELETE** `/campaigns/{id}` - Delete campaign
+- **POST** `/campaigns/{id}/send-emails` - Send Mail to Prospects
+- **GET** `/campaigns/{id}/analytics` - Get Campaign Analytics
 
 ### Landing Pages
 - **GET** `/landingpages` - List landing pages

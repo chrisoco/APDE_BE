@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LandingpageRequest;
 use App\Models\Landingpage;
 use App\Services\CampaignTrackingService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -84,12 +85,12 @@ final class LandingpageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Landingpage $landingpage): JsonResource
+    public function destroy(Landingpage $landingpage): JsonResponse
     {
         Gate::authorize('delete', $landingpage);
 
         $landingpage->delete();
 
-        return $landingpage->load('campaign')->toResource();
+        return response()->json(['success' => true]);
     }
 }

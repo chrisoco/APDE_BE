@@ -2,25 +2,19 @@ openapi: 3.1.0
 info:
   title: APDE API
   description: |
-    APDE (Application for Prospect Data Exchange) API
+    APDE Hotel Grand Pilatus API
     
     This API provides endpoints for managing campaigns, landing pages, prospects, and user authentication.
     
     ## Authentication
-    The API uses Laravel Sanctum for authentication. Most endpoints require a Bearer token obtained from the login endpoint.
-    
-    ## Rate Limiting
-    API requests are rate limited to ensure fair usage.
+    The API supports both Bearer Token (Laravel Sanctum) and Cookie-based authentication. Endpoints may require a Bearer token or a valid session cookie, as described per endpoint below.
     
     ## Pagination
     List endpoints return paginated results with metadata about the current page and total records.
   version: 1.0.0
   contact:
-    name: APDE Support
+    name: APDE Hotel Grand Pilatus Support
     email: support@apde.com
-  license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
 
 servers:
   - url: http://localhost:8000/api
@@ -43,8 +37,12 @@ paths:
     post:
       tags:
         - Authentication
-      summary: User login
-      description: Authenticate a user and return an access token
+      summary: User login (Token or Cookie based)
+      description: |
+        Authenticate a user and return an access token (for API clients) or set a session cookie (for browser clients).
+        
+        - **Token-based:** POST `/api/login` with email and password returns a Bearer token.
+        - **Cookie-based:** POST `/login` with email, password, and valid CSRF token sets a session cookie.
       operationId: login
       requestBody:
         required: true
@@ -60,7 +58,7 @@ paths:
                   type: string
                   format: email
                   description: User's email address
-                  example: "user@example.com"
+                  example: "john@doe.com"
                 password:
                   type: string
                   format: password
@@ -76,14 +74,32 @@ paths:
                 properties:
                   token:
                     type: string
-                    description: Bearer token for API access
-                    example: "1|abc123def456..."
+                    description: Bearer token for API access (token-based login)
+                    example: "687bb3a68c6a6f3e8c058ac3|Ir26AFaFW0FPVxP8CLuSDINi9U5AmCVmBVhjTYjjebbba333"
+                  message:
+                    type: string
+                    description: Success message (cookie-based login)
+                    example: "Logged in successfully"
         '401':
           description: Invalid credentials
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid login credentials"
+        '419':
+          description: CSRF token mismatch (cookie-based login)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "CSRF token mismatch."
         '422':
           description: Validation error
           content:
@@ -95,8 +111,9 @@ paths:
     post:
       tags:
         - Authentication
-      summary: User logout
-      description: Invalidate the current access token
+      summary: User logout (Token or Cookie based)
+      description: |
+        Invalidate the current access token (token-based) or session cookie (cookie-based).
       operationId: logout
       security:
         - bearerAuth: []
@@ -116,7 +133,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthenticated."
+
+  /sanctum/csrf-cookie:
+    get:
+      tags:
+        - Authentication
+      summary: Generate CSRF cookie (for browser login)
+      description: |
+        Generates a CSRF cookie required for cookie-based authentication. Call this endpoint before attempting a cookie-based login.
+      operationId: generateCsrfCookie
+      responses:
+        '204':
+          description: CSRF cookie set (no content)
+        '200':
+          description: CSRF cookie set (legacy clients)
 
   /lp/{identifier}:
     get:
@@ -181,18 +216,80 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProspectCollection'
+              examples:
+                example:
+                  value:
+                    data:
+                      - id: "687b96159895ea533e000ef0"
+                        gender: "male"
+                        age: 33
+                        birthDate: "1991-02-12T00:00:00.000000Z"
+                        image: "https://dummyjson.com/icon/ethanm/128"
+                        bloodGroup: "AB+"
+                        height: 159.19
+                        weight: 68.81
+                        eyeColor: "Hazel"
+                        hairColor: "Purple"
+                        hairType: "Curly"
+                        address:
+                          address: "466 Pine Street"
+                          city: "San Antonio"
+                          state: "Louisiana"
+                          plz: "72360"
+                          country: "United States"
+                          latitude: 74.074918
+                          longitude: -25.312703
+                      - id: "687b96159895ea533e000ef1"
+                        gender: "female"
+                        age: 31
+                        birthDate: "1993-06-10T00:00:00.000000Z"
+                        image: "https://dummyjson.com/icon/isabellad/128"
+                        bloodGroup: "A-"
+                        height: 150.56
+                        weight: 50.1
+                        eyeColor: "Brown"
+                        hairColor: "Blonde"
+                        hairType: "Curly"
+                        address:
+                          address: "1964 Oak Street"
+                          city: "New York"
+                          state: "Utah"
+                          plz: "89352"
+                          country: "United States"
+                          latitude: 41.331324
+                          longitude: 151.782727
+                    links:
+                      first: "http://apde_be.test/api/prospects?page=1"
+                      last: "http://apde_be.test/api/prospects?page=154"
+                      prev: "http://apde_be.test/api/prospects?page=4"
+                      next: "http://apde_be.test/api/prospects?page=6"
+                    meta:
+                      current_page: 5
+                      from: 9
+                      last_page: 154
+                      per_page: 2
+                      to: 10
+                      total: 308
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthenticated."
         '403':
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Forbidden."
 
   /prospects/{id}:
     get:
@@ -210,7 +307,7 @@ paths:
           description: Prospect ID
           schema:
             type: string
-          example: "507f1f77bcf86cd799439011"
+          example: "687b96159895ea533e000ef0"
       responses:
         '200':
           description: Prospect found
@@ -218,24 +315,303 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Prospect'
+              examples:
+                example:
+                  value:
+                    data:
+                      id: "687b96159895ea533e000ef0"
+                      firstName: "Ethan"
+                      lastName: "Martinez"
+                      email: "ethan.martinez@x.dummyjson.com"
+                      phone: "+92 933-608-5081"
+                      gender: "male"
+                      age: 33
+                      birthDate: "1991-02-12T00:00:00.000000Z"
+                      image: "https://dummyjson.com/icon/ethanm/128"
+                      bloodGroup: "AB+"
+                      height: 159.19
+                      weight: 68.81
+                      eyeColor: "Hazel"
+                      hairColor: "Purple"
+                      hairType: "Curly"
+                      address:
+                        address: "466 Pine Street"
+                        city: "San Antonio"
+                        state: "Louisiana"
+                        plz: "72360"
+                        country: "United States"
+                        latitude: 74.074918
+                        longitude: -25.312703
+                      source: "ERP"
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthenticated."
         '403':
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Forbidden."
         '404':
           description: Prospect not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Not found."
+
+  /prospects/filter:
+    get:
+      tags:
+        - Prospects
+      summary: Filter prospects
+      description: Filter prospects using query parameters (see below for supported filters)
+      operationId: filterProspects
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: source
+          in: query
+          description: Filter by prospect source (erp, kueba)
+          schema:
+            type: string
+            enum: [erp, kueba]
+          example: "erp"
+        - name: gender
+          in: query
+          description: Filter by gender (male, female)
+          schema:
+            type: string
+            enum: [male, female]
+          example: "female"
+        - name: min_age
+          in: query
+          description: Minimum age filter
+          schema:
+            type: integer
+            minimum: 0
+          example: 38
+        - name: max_age
+          in: query
+          description: Maximum age filter
+          schema:
+            type: integer
+            minimum: 0
+          example: 70
+        - name: per_page
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          example: 2
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 5
+        - name: blood_group_in[]
+          in: query
+          description: Filter by multiple blood groups
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
+          example: ["AB-", "O-"]
+      responses:
+        '200':
+          description: Filtered prospects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProspectCollection'
+              examples:
+                example:
+                  value:
+                    data:
+                      - id: "687b96159895ea533e000ef7"
+                        gender: "female"
+                        age: 25
+                        birthDate: "1999-03-10T00:00:00.000000Z"
+                        image: "https://dummyjson.com/icon/averyp/128"
+                        bloodGroup: "O-"
+                        height: 172.68
+                        weight: 93.9
+                        eyeColor: "Brown"
+                        hairColor: "Green"
+                        hairType: "Curly"
+                        address:
+                          address: "1125 First Street"
+                          city: "Columbus"
+                          state: "Iowa"
+                          plz: "30973"
+                          country: "United States"
+                          latitude: 12.789127
+                          longitude: 85.792598
+                      - id: "687b96159895ea533e000efb"
+                        gender: "male"
+                        age: 34
+                        birthDate: "1990-11-30T00:00:00.000000Z"
+                        image: "https://dummyjson.com/icon/jacksone/128"
+                        bloodGroup: "O-"
+                        height: 162.57
+                        weight: 74.37
+                        eyeColor: "Green"
+                        hairColor: "Red"
+                        hairType: "Straight"
+                        address:
+                          address: "1873 Main Street"
+                          city: "New York"
+                          state: "Arkansas"
+                          plz: "26600"
+                          country: "United States"
+                          latitude: 34.722451
+                          longitude: 63.448927
+                    links:
+                      first: "http://apde_be.test/api/prospects/filter?page=1"
+                      last: "http://apde_be.test/api/prospects/filter?page=30"
+                      prev: "http://apde_be.test/api/prospects/filter?page=4"
+                      next: "http://apde_be.test/api/prospects/filter?page=6"
+                    meta:
+                      current_page: 5
+                      from: 9
+                      last_page: 30
+                      per_page: 2
+                      to: 10
+                      total: 60
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthenticated."
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Forbidden."
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Not found."
+
+  /prospects/search-criteria:
+    get:
+      tags:
+        - Prospects
+      summary: Get search criteria for prospects
+      description: Get available search criteria for filtering prospects
+      operationId: getProspectSearchCriteria
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Search criteria retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                example:
+                  source:
+                    type: "enum"
+                    values: ["erp", "kueba"]
+                  gender:
+                    type: "enum"
+                    values: ["female", "male"]
+                  age:
+                    type: "range"
+                    min: 22
+                    max: 80
+                  birth_date:
+                    type: "range"
+                    min: "1945-05-20T00:00:00.000000Z"
+                    max: "2002-04-20T00:00:00.000000Z"
+                  blood_group:
+                    type: "enum"
+                    values: ["O-", "B+", "AB+", "AB-", "A-", "B-", "A+", "O+"]
+                  height:
+                    type: "range"
+                    min: 150.25
+                    max: 199.81
+                  weight:
+                    type: "range"
+                    min: 50.1
+                    max: 99.54
+                  eye_color:
+                    type: "enum"
+                    values: ["Green", "Red", "Hazel", "Amber", "Blue", "Brown", "Violet", "Gray"]
+                  hair_color:
+                    type: "enum"
+                    values: ["Brown", "Green", "White", "Blonde", "Gray", "Red", "Purple", "Blue", "Black"]
+                  address.city:
+                    type: "enum"
+                    values: ["Phoenix", "Houston", "Washington", "Seattle", "Jacksonville", "Fort Worth", "Indianapolis", "San Antonio", "New York", "Denver", "Columbus", "San Jose", "San Diego", "Chicago", "Philadelphia", "Dallas", "Los Angeles", "San Francisco", "Charlotte", "Austin", "Obersteckholz", "Soral", "Conthey", "Gündlischwand", "Coeuve", "Arnex-sur-Orbe", "Le Grand-Saconnex", "Mathod", "Cheiry", "Gilly", "Tannay", "Burgistein", "Muralto", "Wilderswil", "Leytron", "Kaiserstuhl", "Vendlincourt", "Vitznau", "Rolle", "Biglen", "Hindelbank", "Ossingen", "Saint-Saphorin (Lavaux)", "Morrens (Vd)", "Rüeggisberg", "Tartegnin", "Andermatt", "Paudex", "Bettenhausen", "Schwende", "Derendingen", "Rances", "Meilen", "Walperswil", "Soyhières", "Belfaux", "Torny", "Unterägeri", "Oberhünigen", "Muotathal", "Riedholz", "Étoy", "Deisswil bei Münchenbuchsee", "Eichberg", "Münchenbuchsee", "Coinsins", "Granges (Veveyse)", "Liestal", "Zizers", "Roggwil (Tg)", "Châtillon (Ju)", "Moudon", "Gruyères", "Turgi", "Homberg", "Ursenbach", "Cham", "Écublens (Vd)", "Veltheim (Ag)", "Ruswil", "Waltensburg/Vuorz", "Thônex", "Waltenschwil", "Chavannes-de-Bogis", "Erlen", "Cortébert", "Turbenthal", "Grüningen", "Walliswil bei Niederbipp", "Ellikon an der Thur", "Däniken", "Rorschach"]
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthenticated."
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Forbidden."
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Not found."
 
   /campaigns:
     get:
@@ -1200,37 +1576,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Model not found or not filterable
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /cp-cookie:
-    get:
-      tags:
-        - Campaigns
-      summary: Get campaigns with CP ability
-      description: Get all campaigns (requires 'view-cp' ability or global '*' ability)
-      operationId: getCpCookie
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Campaigns retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Campaign'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden - missing required ability
           content:
             application/json:
               schema:
