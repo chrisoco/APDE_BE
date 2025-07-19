@@ -2,7 +2,7 @@
 
 A modern, responsive web application for managing and analyzing targeted email campaigns for Hotel Grand Pilatus. Built with Laravel, React, and MongoDB.
 
-## 🚀 Features
+## Features
 
 - Campaign creation with custom landing pages
 - Audience segmentation via ERP & Küba APIs
@@ -11,7 +11,7 @@ A modern, responsive web application for managing and analyzing targeted email c
 - Role-based access (Admin vs. Prospect)
 - RESTful API with OpenAPI (Swagger) documentation
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React, Tailwind CSS
 - **Backend**: Laravel (PHP)
@@ -20,13 +20,28 @@ A modern, responsive web application for managing and analyzing targeted email c
 - **CI/CD**: GitHub Actions, Cloudflare
 - **Dev Tools**: Postman, Figma, VSCode/Cursor.ai
 
-## 📂 Structure
+## Structure
 
 - React SPA (tbd)
 - `/` – Laravel API
-- `/docs` – Project documentation & diagrams
+- `./docs` – Project documentation & diagrams
 
-## ✅ Setup (Local Dev)
+## Documentation
+- **[Analytics](./docs/src/Analytics.md)**: Campaign analytics implementation
+- **[Authentication](./docs/src/Auth.md)**: Authentication system documentation
+- **[Authorization](./docs/src/Authorization.md)**: Role-based access control
+- **[CRUD Operations](./docs/src/CRUD.md)**: Standard CRUD functionality
+- **[Email System](./docs/src/Mailing.md)**: Campaign email implementation
+- **[Generic Filtering](./docs/src/GenericFilter.md)**: Advanced filtering system
+- **[Prospect Management](./docs/src/Prospects.md)**: Prospect data handling
+- **[Management Documentation](./docs/management/)**: Project management docs
+- **[External API Examples](./docs/externalApiExampleSchemas/)**: ERP and Kueba integration schemas
+- **[Postman Collection](./docs/APDE.postman_collection.json)** - Complete API test suite with authentication, CRUD operations, email and analytic endpoints
+- **[OpenAPI Documentation](./docs/openapi/README.md)** - API documentation setup and viewing instructions
+- **[OpenAPI YAML](./docs/openapi/openapi.yaml)** - Complete API specification with all endpoints, schemas, and examples
+- **[Local Swagger](https://apde_be.test/api/docs/openapi/#/)** - Interactive API documentation (requires local server)
+
+## Setup (Local Dev)
 
 ```bash
 # Clone repository
@@ -66,7 +81,7 @@ php artisan serve
   - [Rector Laravel](https://github.com/driftingly/rector-laravel)
   - [Laravel Rules](https://github.com/driftingly/rector-laravel/blob/main/docs/rector_rules_overview.md)
 
-## 👥 Roles
+## Roles
 
 - **Marketing Team (Admins)**: Manage campaigns, view analytics
 - **Prospects (Guests)**: Receive emails, view landing pages, submit interest
