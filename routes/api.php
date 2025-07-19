@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CampaignAnalyticsController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\CampaignEmailController;
 use App\Http\Controllers\Api\GenericFilterController;
@@ -24,6 +25,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('campaigns', CampaignController::class);
     Route::apiResource('landingpages', LandingpageController::class);
 
+    Route::get('/campaigns/{campaign}/analytics', [CampaignAnalyticsController::class, 'show']);
     Route::post('/campaigns/{campaign}/send-emails', [CampaignEmailController::class, 'send']);
 
     Route::get('/cp-cookie', function () {

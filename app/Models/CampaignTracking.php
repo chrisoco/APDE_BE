@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Scope;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Relations\BelongsTo;
 
 /**
  * @property string $id
@@ -103,29 +101,5 @@ final class CampaignTracking extends Model
             'utm_content' => $this->utm_content,
             'utm_term' => $this->utm_term,
         ]);
-    }
-
-    /**
-     * Scope to filter by campaign.
-     *
-     * @param  Builder<CampaignTracking>  $query
-     */
-    #[Scope]
-    private function forCampaign(Builder $query, string $campaignId): void
-    {
-        $query->where('campaign_id', $campaignId);
-    }
-
-    /**
-     * Scope to filter by date range.
-     *
-     * @param  Builder<CampaignTracking>  $query
-     * @param  mixed  $startDate
-     * @param  mixed  $endDate
-     */
-    #[Scope]
-    private function dateRange(Builder $query, $startDate, $endDate): void
-    {
-        $query->whereBetween('created_at', [$startDate, $endDate]);
     }
 }

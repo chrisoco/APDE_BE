@@ -72,7 +72,7 @@ final class CampaignTrackingService
      */
     public function getCampaignAnalytics(string $campaignId): array
     {
-        CampaignTracking::forCampaign($campaignId)->get();
+        CampaignTracking::where('campaign_id', $campaignId)->get();
 
         return [
             //
