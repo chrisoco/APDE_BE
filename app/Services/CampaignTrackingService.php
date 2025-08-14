@@ -50,7 +50,6 @@ final class CampaignTrackingService
         throw_unless($campaign->landingpage, new InvalidArgumentException('Campaign must have an associated landing page'));
 
         $params = [
-            'identifier' => $campaign->landingpage->slug,
             'prospect' => $prospect->id,
             'utm_source' => 'mail',
             'utm_medium' => 'web',
@@ -61,8 +60,10 @@ final class CampaignTrackingService
             // 'fbclid' => 'none',
         ];
 
-        // return \Illuminate\Support\Facades\URL::signedRoute('lp.show', $params);
-        return route('lp.show', $params);
+        $baseUrl = config('app.spa_url');
+        $identifier = $campaign->landingpage->slug;
+        $queryString = http_build_query($params);
+        return "{$baseUrl}/lp/{$identifier}?{$queryString}";
     }
 
     /**

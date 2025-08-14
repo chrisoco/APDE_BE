@@ -109,6 +109,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend SPA URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used to generate links to the frontend SPA application.
+    | Set this to the URL where your frontend application is running.
+    |
+    */
+
+    'spa_url' => env('SPA_URL', 'http://127.0.0.1:5173'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Maintenance Mode Driver
     |--------------------------------------------------------------------------
     |
