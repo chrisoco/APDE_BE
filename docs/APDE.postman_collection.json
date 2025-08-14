@@ -286,6 +286,151 @@
 					]
 				},
 				{
+					"name": "Token Authenticated User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/user",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 14 Aug 2025 16:43:51 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"687b96149895ea533e000ee7\",\n    \"name\": \"John Doe\",\n    \"email\": \"john@doe.com\",\n    \"created_at\": \"2025-07-19T12:56:52.820000Z\",\n    \"updated_at\": \"2025-07-19T12:56:52.820000Z\"\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/logout",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"logout"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.25.4"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.10"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 19 Jul 2025 15:05:33 GMT"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthenticated.\"\n}"
+						}
+					]
+				},
+				{
 					"name": "Token Logout",
 					"request": {
 						"method": "POST",
@@ -475,6 +620,11 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -565,6 +715,13 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -581,6 +738,11 @@
 							{
 								"key": "X-XSRF-TOKEN",
 								"value": "{{X-XSRF-TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -1026,14 +1188,8 @@
 								"type": "text"
 							},
 							{
-								"key": "Origin",
-								"value": "{{URL}}",
-								"type": "text",
-								"disabled": true
-							},
-							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -1137,6 +1293,207 @@
 							],
 							"cookie": [],
 							"body": "[\n    {\n        \"title\": \"Excepturi voluptatum aut voluptas.\",\n        \"description\": \"Nemo et voluptas ut aut ipsam sed. Quas fugit ab perspiciatis. Aut unde fugiat autem dolores eum ex omnis.\",\n        \"status\": \"draft\",\n        \"start_date\": \"2025-07-20T15:28:31.000000Z\",\n        \"end_date\": \"2025-09-18T02:24:40.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 80,\n            \"gender\": \"female\",\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 53,\n        \"updated_at\": \"2025-07-19T12:56:55.342000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.342000Z\",\n        \"id\": \"687b96179895ea533e00101c\"\n    },\n    {\n        \"title\": \"Rerum eveniet quidem dicta quis.\",\n        \"description\": \"Corrupti nobis deserunt sint consectetur laboriosam similique cumque provident. Excepturi fugiat sit in similique ab cupiditate ea. Aperiam nostrum dicta debitis soluta aliquid.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-22T17:00:18.000000Z\",\n        \"end_date\": \"2025-09-04T03:02:49.000000Z\",\n        \"prospect_filter\": {\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 11,\n        \"updated_at\": \"2025-07-19T12:56:55.387000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.387000Z\",\n        \"id\": \"687b96179895ea533e00101e\"\n    },\n    {\n        \"title\": \"Atque consequatur est.\",\n        \"description\": \"Consequatur dolorem sit qui iste consequatur deserunt. Ipsam perspiciatis autem explicabo similique iure consectetur. Id laboriosam facilis pariatur quis maiores aut.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-08-05T05:25:56.000000Z\",\n        \"end_date\": \"2025-09-15T10:05:34.000000Z\",\n        \"prospect_filter\": {\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 1,\n        \"updated_at\": \"2025-07-19T12:56:55.390000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.390000Z\",\n        \"id\": \"687b96179895ea533e001020\"\n    },\n    {\n        \"title\": \"Et praesentium accusamus.\",\n        \"description\": \"Dolores est accusantium facere et corrupti. Sed eius natus in et dignissimos repellat dolorem voluptas. Quia totam accusamus explicabo. Deserunt quasi dolores mollitia fuga voluptate.\",\n        \"status\": \"completed\",\n        \"start_date\": \"2025-07-28T02:56:41.000000Z\",\n        \"end_date\": \"2025-09-21T16:36:00.000000Z\",\n        \"prospect_filter\": [],\n        \"emails_sent\": 74,\n        \"updated_at\": \"2025-07-19T12:56:55.393000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.393000Z\",\n        \"id\": \"687b96179895ea533e001022\"\n    },\n    {\n        \"title\": \"Ullam officia facilis aut quo.\",\n        \"description\": \"Culpa quasi nobis qui consequuntur et aliquam sequi. Ipsam expedita atque occaecati eligendi aperiam numquam. Aliquam praesentium quidem et recusandae suscipit aut. Sit soluta et sint et dolores suscipit ex.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-06-30T23:14:35.000000Z\",\n        \"end_date\": \"2025-10-17T17:14:59.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 25,\n            \"max_age\": 94,\n            \"gender\": \"female\"\n        },\n        \"emails_sent\": 48,\n        \"updated_at\": \"2025-07-19T12:56:55.395000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.395000Z\",\n        \"id\": \"687b96179895ea533e001024\"\n    },\n    {\n        \"title\": \"Ullam ullam quo vel.\",\n        \"description\": \"Tenetur possimus quis tempora enim ea. Laborum quos similique adipisci sed voluptates recusandae. Dolorem aut consequuntur rerum reprehenderit hic est. Omnis doloribus error dicta omnis.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-25T17:56:06.000000Z\",\n        \"end_date\": \"2025-09-02T05:56:11.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 34,\n            \"max_age\": 64\n        },\n        \"emails_sent\": 51,\n        \"updated_at\": \"2025-07-19T12:56:55.397000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.397000Z\",\n        \"id\": \"687b96179895ea533e001026\"\n    },\n    {\n        \"title\": \"Eos possimus corporis et accusamus.\",\n        \"description\": \"Ut consectetur alias soluta ducimus labore. Repellendus veritatis assumenda saepe incidunt. Tempora excepturi qui et et exercitationem velit. Sint aspernatur exercitationem aliquid quae eos.\",\n        \"status\": \"draft\",\n        \"start_date\": \"2025-08-12T23:12:52.000000Z\",\n        \"end_date\": \"2025-10-08T01:17:39.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 77\n        },\n        \"emails_sent\": 83,\n        \"updated_at\": \"2025-07-19T12:56:55.398000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.398000Z\",\n        \"id\": \"687b96179895ea533e001028\"\n    },\n    {\n        \"title\": \"Est officia labore distinctio.\",\n        \"description\": \"Qui est ut nihil et. Consequuntur sed inventore consectetur ea reiciendis vitae nisi. Voluptatem similique totam alias repellat delectus recusandae.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-06-26T12:35:54.000000Z\",\n        \"end_date\": \"2025-10-18T23:23:28.000000Z\",\n        \"prospect_filter\": {\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 27,\n        \"updated_at\": \"2025-07-19T12:56:55.401000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.401000Z\",\n        \"id\": \"687b96179895ea533e00102a\"\n    },\n    {\n        \"title\": \"Aliquam ad expedita ut.\",\n        \"description\": \"Nostrum sunt est et nostrum ut autem asperiores at. Eum ducimus qui tempore sunt omnis eum. Eos officia est quas tenetur nihil eveniet et. Officiis est ea excepturi excepturi dignissimos.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-14T20:17:33.000000Z\",\n        \"end_date\": \"2025-09-18T13:54:19.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 87,\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 90,\n        \"updated_at\": \"2025-07-19T12:56:55.403000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.403000Z\",\n        \"id\": \"687b96179895ea533e00102c\"\n    },\n    {\n        \"title\": \"Atque voluptas itaque.\",\n        \"description\": \"Qui enim iure delectus a beatae molestiae mollitia. Id quia repellendus libero nesciunt sed ut blanditiis ea. Aspernatur ea nihil a quas qui omnis incidunt.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-06-28T05:56:14.000000Z\",\n        \"end_date\": \"2025-09-21T04:21:32.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 53,\n            \"gender\": \"male\",\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 49,\n        \"updated_at\": \"2025-07-19T12:56:55.405000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.405000Z\",\n        \"id\": \"687b96179895ea533e00102e\"\n    },\n    {\n        \"title\": \"Perspiciatis omnis aut sit.\",\n        \"description\": \"Mollitia aut aut autem. Nihil nulla dolorum inventore laborum laboriosam nesciunt aut soluta. Quam debitis maiores voluptatem tempora corporis assumenda enim. Quos repellendus voluptatem quisquam debitis soluta provident nesciunt. Possimus perspiciatis earum velit perferendis vero vel.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-07-20T01:09:57.000000Z\",\n        \"end_date\": \"2025-08-21T08:29:32.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 20,\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 52,\n        \"updated_at\": \"2025-07-19T12:56:55.428000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.428000Z\",\n        \"id\": \"687b96179895ea533e001030\"\n    },\n    {\n        \"title\": \"Et est quas numquam.\",\n        \"description\": \"Rem optio molestias aut repellendus ea. Atque sit provident est vero dolore tempore ut.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-07-02T20:10:17.000000Z\",\n        \"end_date\": \"2025-09-08T04:16:45.000000Z\",\n        \"prospect_filter\": {\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 56,\n        \"updated_at\": \"2025-07-19T12:56:55.430000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.430000Z\",\n        \"id\": \"687b96179895ea533e001032\"\n    },\n    {\n        \"title\": \"Doloremque cupiditate rem quia.\",\n        \"description\": \"Dignissimos voluptas suscipit sunt. Quia necessitatibus quia enim est placeat. Placeat accusantium qui doloremque praesentium libero.\",\n        \"status\": \"completed\",\n        \"start_date\": \"2025-06-20T16:22:28.000000Z\",\n        \"end_date\": \"2025-10-05T07:17:31.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 51,\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 3,\n        \"updated_at\": \"2025-07-19T12:56:55.432000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.432000Z\",\n        \"id\": \"687b96179895ea533e001034\"\n    },\n    {\n        \"title\": \"Enim eius in laborum quasi.\",\n        \"description\": \"Atque eos reprehenderit voluptatem error nisi ut iusto. Quos voluptatibus voluptas alias ullam eos. Atque eveniet sit et quam ducimus aut quas laudantium. Recusandae accusamus omnis praesentium quos.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-30T08:48:27.000000Z\",\n        \"end_date\": \"2025-08-22T05:22:19.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 22\n        },\n        \"emails_sent\": 89,\n        \"updated_at\": \"2025-07-19T12:56:55.434000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.434000Z\",\n        \"id\": \"687b96179895ea533e001036\"\n    },\n    {\n        \"title\": \"Aperiam culpa itaque aut.\",\n        \"description\": \"Id maxime in iste impedit. Laboriosam qui qui suscipit et fugiat suscipit quia. Voluptatem molestiae velit sed non.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-07-28T06:11:05.000000Z\",\n        \"end_date\": \"2025-09-13T17:50:56.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 47,\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 57,\n        \"updated_at\": \"2025-07-19T12:56:55.443000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.443000Z\",\n        \"id\": \"687b96179895ea533e001038\"\n    },\n    {\n        \"title\": \"Placeat excepturi reiciendis.\",\n        \"description\": \"Ab commodi ipsum architecto. Illo optio voluptas repellat eligendi. Voluptatem dicta id soluta qui modi cumque quia. Eum sit consequatur quae possimus voluptas. Sit iusto qui illo voluptatem.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-08-17T17:53:37.000000Z\",\n        \"end_date\": \"2025-09-11T12:22:03.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 36,\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 99,\n        \"updated_at\": \"2025-07-19T12:56:55.446000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.446000Z\",\n        \"id\": \"687b96179895ea533e00103a\"\n    },\n    {\n        \"title\": \"Sit et enim.\",\n        \"description\": \"Sint consequatur saepe modi adipisci animi. Voluptatem perspiciatis et et magnam voluptatibus omnis voluptate. Voluptas sint voluptatem omnis.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-07-29T07:31:22.000000Z\",\n        \"end_date\": \"2025-10-12T12:19:13.000000Z\",\n        \"prospect_filter\": {\n            \"gender\": \"female\",\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 36,\n        \"updated_at\": \"2025-07-19T12:56:55.448000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.448000Z\",\n        \"id\": \"687b96179895ea533e00103c\"\n    },\n    {\n        \"title\": \"Quia odio qui.\",\n        \"description\": \"Dolor dolor rerum perspiciatis itaque quod molestiae iure. Tempore saepe aut rerum expedita maxime saepe mollitia. Reprehenderit modi consequuntur est veniam exercitationem quo.\",\n        \"status\": \"completed\",\n        \"start_date\": \"2025-08-10T10:58:43.000000Z\",\n        \"end_date\": \"2025-09-23T05:48:25.000000Z\",\n        \"prospect_filter\": {\n            \"gender\": \"female\",\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 17,\n        \"updated_at\": \"2025-07-19T12:56:55.451000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.451000Z\",\n        \"id\": \"687b96179895ea533e00103e\"\n    },\n    {\n        \"title\": \"Nostrum alias dolore.\",\n        \"description\": \"Neque et amet assumenda omnis dolor alias necessitatibus. Quo consequatur nulla ad sit natus sit. Beatae autem sit quos dolores.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-08-03T17:31:06.000000Z\",\n        \"end_date\": \"2025-09-30T10:01:55.000000Z\",\n        \"prospect_filter\": [],\n        \"emails_sent\": 65,\n        \"updated_at\": \"2025-07-19T12:56:55.453000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.453000Z\",\n        \"id\": \"687b96179895ea533e001040\"\n    },\n    {\n        \"title\": \"Eaque nihil deleniti.\",\n        \"description\": \"Tempore rem eum omnis ad corrupti amet. Expedita et unde architecto non voluptatem molestias voluptate. Est voluptatum incidunt atque mollitia. Eius voluptas numquam omnis error facilis nulla.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-06-25T14:36:02.000000Z\",\n        \"end_date\": \"2025-09-04T03:00:29.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 48,\n            \"gender\": \"female\",\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 49,\n        \"updated_at\": \"2025-07-19T12:56:55.455000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.455000Z\",\n        \"id\": \"687b96179895ea533e001042\"\n    }\n]"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Origin",
+										"value": "{{URL}}",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Referer",
+										"value": "{{URL}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/cp-cookie",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"cp-cookie"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.25.4"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.10"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 19 Jul 2025 15:09:37 GMT"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6InNZaW50WUtzRW9RWjdta0xRZjJndVE9PSIsInZhbHVlIjoiLzM5aUMwOWJGa2k0UG9iTkVyQTRYSjJ5bzQ5aG93RVc5RHhuRXprYk9VNjZyWWJSbmNxclZwWm5wOTFQNTNGMCtVZkhRdE1LSUo0Q2FZWUZrS3dyV3R0Y0tkdEV4L1Yva20xNXBEWWlINnVWeGNEZHRrRnpJSW11UlpBM09OdloiLCJtYWMiOiJkYTVjODgwOTNmMjEyOWIwNjgyNzUzZWEzYjc3M2Q2ZGM2ODY4NDkwMWY0OTIwY2U5ZDJiNzhlY2JmODE5YzAwIiwidGFnIjoiIn0%3D; expires=Sat, 19 Jul 2025 17:09:37 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6Ill6d1hydlRRK09JL3lHRDVQZ0pjbmc9PSIsInZhbHVlIjoiNkV2djgzcUh4M2I5MmI4ZzZETEdEVG9PcXBTWGJGNytlNDNhMnhCM0ZCY0tveTNCejdEUXhyblhhNDQyeXVYbXVYNTdsejlkcG9zVC90VEtFWFIwUWhFUmM3aTUvaEwwQ2VuOGxSMCtRSWlHdTlCaVBKNkZmRkFRczdGdURpNzkiLCJtYWMiOiIxZjFkODM2NWQxZTZhZDk0MWFjM2VkY2I4NTA4NjI2MjUyMjMzN2YzZTk0MjI5MjcyMzI3Y2QxZDM5Yjc1ZjZjIiwidGFnIjoiIn0%3D; expires=Sat, 19 Jul 2025 17:09:37 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthenticated.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Authenticated User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Origin",
+								"value": "{{URL}}",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Referer",
+								"value": "{{URL}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Origin",
+										"value": "{{URL}}",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Referer",
+										"value": "{{URL}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/user",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 14 Aug 2025 16:44:14 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6IkE2aEs0UkEyWU1JZyt6UHhSdmM3THc9PSIsInZhbHVlIjoiNGFvbnNnclBXL2NTVkFIZGkzbTZic2tPVmREWVZZKzZCdk1zTyt3Ui9ZOWxuUEc5RS91dnlRU0RTTFA4UzVxUC9rK09vNm4xcjFwOUJkSk5mRnNTaFJuem9OeDdkVFdiZWltLzlDOVpmWis3dWZRbHJXcE1lMGlnMTkzV21YQk8iLCJtYWMiOiI5MjNmMGQ2NWJhN2FkNjdmMGFhZWUwNGRmMTkxYTQ2MjczYmZjOWFjNjcxMTk2MDU5NTZjNzEyMWU4NjE1Njg0IiwidGFnIjoiIn0%3D; expires=Thu, 14 Aug 2025 18:44:14 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6IlQwejlRenJlTDkvcGt0ZnpEOWJXaGc9PSIsInZhbHVlIjoiRFczbWpIRjdPYUZ3OUo1bjZ2TUFHRis2V3YzU0dDQzlpZ3RhY2xBZlRUajMzOElSWmJvMmcvS2dTQVpJVGJKaVhBMjFWcms3V0RuMDdIbTA3bm1ibW4xNXhnb1BkSENWMDV1ZktwTTFUOFBBQlV5UFdvK0ZWOWxGb2tkVWp3TUoiLCJtYWMiOiIxMzJmODZhMTczZTBjYTc1YTQyMGFkYmY2NDY1ODgxZTRmNDNjZTM4NjVjMGIwMjZlZjBiY2NjZjRlODU1MDE0IiwidGFnIjoiIn0%3D; expires=Thu, 14 Aug 2025 18:44:14 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "S06FmZ8OvYC87Yl0KqLSfcNS3fzpvOQlhXC0EdcW=eyJpdiI6InRkSmVYeTluNXVwQlQ1QTJsSlg1aVE9PSIsInZhbHVlIjoiWUI4d0RoSVlXYm9wYjlML2FOYjR4NlhHcUdXQnNPeFYwNElZalVaNU1IUW1nMkJnendqd0ZrZDhUWHpWZHkvTDUvaUxiYTcvZytTYVhKZVJBUStmRnZtNWU2MXFYZTJiNkFuSlRNWUY3cHZ3NWFweVlGaDBLT1JkS3RNc2hkUUc3dmVhNzB5UmE4UzdQcXZDc0lKQTRIajY2aWRZOUZQSnlkSWpidE9NSW1obGZRd3JuS1RQdGc2UERCaW4xcXpHSkhaVmRmeWVCVHAyazREQU5HU0lTamIwQ29ITnNTbk8yWkZjR2hpTjRCOU0xTGc1NkxyZ2lmVWswT1laZlJkV2FVNHlRdDl4bTg2dkRKUTJocXFscGRWNjViaWdLMG83SUFtekFSS2w4UnBINUsrL1pkZFU1NW80NHZxS3daMlZ3UVVCZUFPajVSTjRhWVVlcFRoN3RHL3l0akZvVTJlRTRXc3BxYWtSV3Y4RHFRMUg4SGlHdWk0dkFSWHhJOEtZc0prSzNQeVZUamc2c0RreW90V2lsb2M3RTZ6UVRSN1IrdTNaQVZaNzRsS0NQR2wzYmFrMXdTeDNoeFZRZXZBTzd4ZmNOZE8zNTI2YUxleWwxa3FWeHQ3S2drc0hGR0xPZTBvNjVhRkg2a1NxV0F3alRDMzczbjhaU2pvOGlIYjZIcUhsVzI2aUhMSUJkYlFvMjl2UVpMRkZtOE9Temh0d0hDR3REaE5SRmlkSHBkWDRLNXJYQU5DNEFIQnh6MFBrQTRLSzJkTWRBMEVvcnIzTFpYUTU5ZDVTbmJTWWZVTndpTjRhVXprZ01seFpvVzdZTnp6Z1A3TFF6THNvaDdjdiIsIm1hYyI6IjJkZjVlOTQ2NmRiNDNjNjk4MDdmNzliOGJlOWI5NmQzODgzOGI1NzcyNTcxODdmMmYwMGJmMDY3ZjBkN2M0OGYiLCJ0YWciOiIifQ%3D%3D; expires=Thu, 14 Aug 2025 18:44:14 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"687b96149895ea533e000ee7\",\n    \"name\": \"John Doe\",\n    \"email\": \"john@doe.com\",\n    \"created_at\": \"2025-07-19T12:56:52.820000Z\",\n    \"updated_at\": \"2025-07-19T12:56:52.820000Z\"\n}"
 						},
 						{
 							"name": "401 Unauthorized",
@@ -1478,7 +1835,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -1598,7 +1955,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -1727,7 +2084,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2057,7 +2414,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2195,7 +2552,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2324,7 +2681,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2444,7 +2801,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2546,7 +2903,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2727,7 +3084,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2999,7 +3356,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3128,7 +3485,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3232,7 +3589,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3375,7 +3732,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3484,7 +3841,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3604,7 +3961,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3706,7 +4063,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3808,7 +4165,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3989,7 +4346,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -4261,7 +4618,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -4464,7 +4821,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -4640,7 +4997,7 @@
 							},
 							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -4980,6 +5337,11 @@
 		{
 			"key": "password",
 			"value": "1234",
+			"type": "default"
+		},
+		{
+			"key": "SPA",
+			"value": "127.0.0.1:5173",
 			"type": "default"
 		}
 	]
