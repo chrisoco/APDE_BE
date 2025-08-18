@@ -19,7 +19,9 @@ The Campaign model represents marketing campaigns with the following properties:
 ```php
 /**
  * @property string $id
+ * @property string|null $landingpage_id
  * @property string $title
+ * @property string $slug
  * @property string|null $description
  * @property CampaignStatus $status
  * @property \Illuminate\Support\Carbon|null $start_date
@@ -30,6 +32,8 @@ The Campaign model represents marketing campaigns with the following properties:
  * @property array<string, mixed>|null $prospect_filter
  */
 ```
+
+**Relationship:** Campaign belongs to Landingpage (via `landingpage_id`). Multiple campaigns can share the same landingpage.
 
 ### Campaign Status Enum
 
@@ -52,6 +56,7 @@ Available campaign statuses:
     {
       "id": "campaign-uuid",
       "title": "Summer Sale Campaign",
+      "slug": "summer-sale-campaign",
       "description": "Promotional campaign for summer products",
       "start_date": "2024-06-01T00:00:00.000000Z",
       "end_date": "2024-08-31T23:59:59.000000Z",
@@ -60,7 +65,6 @@ Available campaign statuses:
       "landingpage": {
         "id": "landingpage-uuid",
         "title": "Summer Sale Landing Page",
-        "slug": "summer-sale-landing-page",
         "headline": "Get 50% Off This Summer!",
         "subline": "Limited time offer on selected items",
         "sections": []
@@ -94,6 +98,7 @@ Available campaign statuses:
 ```json
 {
   "title": "New Campaign",
+  "landingpage_id": "landingpage-uuid",
   "description": "Campaign description",
   "status": "draft",
   "start_date": "2024-06-01",
@@ -107,6 +112,8 @@ Available campaign statuses:
 }
 ```
 
+**Note:** The `slug` field is automatically generated from the `title` field using Laravel's `Str::slug()` helper in the `prepareForValidation()` method.
+
 **Response:** Returns the created campaign with HTTP 201 status.
 
 #### 3. Show Campaign (GET /api/campaigns/{id})
@@ -119,6 +126,7 @@ Available campaign statuses:
   "data": {
     "id": "campaign-uuid",
     "title": "Summer Sale Campaign",
+    "slug": "summer-sale-campaign",
     "description": "Promotional campaign for summer products",
     "start_date": "2024-06-01T00:00:00.000000Z",
     "end_date": "2024-08-31T23:59:59.000000Z",
@@ -127,7 +135,6 @@ Available campaign statuses:
     "landingpage": {
       "id": "landingpage-uuid",
       "title": "Summer Sale Landing Page",
-      "slug": "summer-sale-landing-page",
       "headline": "Get 50% Off This Summer!",
       "subline": "Limited time offer on selected items",
       "sections": []
@@ -159,14 +166,12 @@ Available campaign statuses:
 
 ### Landingpage Model Overview
 
-The Landingpage model represents landing pages associated with campaigns:
+The Landingpage model represents landing pages that can be shared by multiple campaigns:
 
 ```php
 /**
  * @property string $id
- * @property string|null $campaign_id
  * @property string $title
- * @property string $slug
  * @property string $headline
  * @property string|null $subline
  * @property array<int, array<string, mixed>> $sections
@@ -176,6 +181,8 @@ The Landingpage model represents landing pages associated with campaigns:
  * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 ```
+
+**Relationship:** Landingpage has many Campaigns. Multiple campaigns can share the same landingpage content.
 
 ### Landingpage CRUD Endpoints
 
@@ -189,18 +196,19 @@ The Landingpage model represents landing pages associated with campaigns:
   "data": [
     {
       "id": "landingpage-uuid",
-      "campaign": {
-        "id": "campaign-uuid",
-        "title": "Summer Sale Campaign",
-        "description": "Promotional campaign for summer products",
-        "start_date": "2024-06-01T00:00:00.000000Z",
-        "end_date": "2024-08-31T23:59:59.000000Z",
-        "status": "active",
-        "prospect_filter": [],
-        "landingpage": null
-      },
+      "campaigns": [
+        {
+          "id": "campaign-uuid",
+          "title": "Summer Sale Campaign",
+          "slug": "summer-sale-campaign",
+          "description": "Promotional campaign for summer products",
+          "start_date": "2024-06-01T00:00:00.000000Z",
+          "end_date": "2024-08-31T23:59:59.000000Z",
+          "status": "active",
+          "prospect_filter": []
+        }
+      ],
       "title": "Summer Sale Landing Page",
-      "slug": "summer-sale-landing-page",
       "headline": "Get 50% Off This Summer!",
       "subline": "Limited time offer on selected items",
       "sections": [
@@ -375,34 +383,46 @@ public function show(Request $request, CampaignTrackingService $campaignTracking
 
 ## Public Landing Page Access
 
-### Public Landing Page Endpoint (GET /api/lp/{identifier})
+### Public Campaign Landing Page Endpoint (GET /api/cp/{identifier})
 
-**Description:** Public access to landing pages via slug only. This endpoint is designed for external/public consumption and has different access controls and response formatting compared to the authenticated endpoint.
+**Description:** Public access to campaign landing pages via campaign ID or slug. This endpoint is designed for external/public consumption and has different access controls and response formatting compared to the authenticated endpoint.
 
 **Access Control:**
 - **No Authentication Required**: This endpoint is publicly accessible
-- **Slug-Only Access**: Only supports slug-based identification (not UUID)
-- **Campaign Validation**: Only returns landing pages associated with active campaigns within valid date ranges
+- **Campaign ID or Slug Access**: Supports both campaign UUID and slug-based identification
+- **Campaign Validation**: Only returns landing pages for active campaigns within valid date ranges & status = 'active'
 - **Automatic Tracking**: All visits are automatically tracked via `CampaignTrackingService`
 
 **Campaign Validation Logic:**
 ```php
-$landingpage = Landingpage::with('campaign')
-    ->where('slug', $identifier)
-    ->whereHas('campaign', function ($query): void {
-        $query->where('status', CampaignStatus::ACTIVE)
-            ->where(function ($q): void {
-                $q->whereNull('start_date')
-                    ->orWhere('start_date', '<=', now());
-            })
-            ->where(function ($q): void {
-                $q->whereNull('end_date')
-                    ->orWhere('end_date', '>=', now());
-            });
-    })
-    ->firstOrFail();
+// Try to find campaign by ID first
+if ($campaign = Campaign::with('landingpage')->find($identifier)) {
+    // Check if campaign is active and within date range
+    abort_if($campaign->status !== CampaignStatus::ACTIVE ||
+        ($campaign->start_date && $campaign->start_date > now()) ||
+        ($campaign->end_date && $campaign->end_date < now()),
+        404
+    );
+} else {
+    // If not found by ID, try to find active campaign by campaign slug
+    $campaign = Campaign::with('landingpage')
+        ->where('slug', $identifier)
+        ->where('status', CampaignStatus::ACTIVE)
+        ->where(function ($q): void {
+            $q->whereNull('start_date')
+                ->orWhere('start_date', '<=', now());
+        })
+        ->where(function ($q): void {
+            $q->whereNull('end_date')
+                ->orWhere('end_date', '>=', now());
+        })
+        ->firstOrFail();
+}
 
-$campaignTrackingService->trackLandingPageVisit($request, $landingpage);
+abort_if($campaign->landingpage === null, 404, 'Campaign does not have an associated landing page.');
+
+$campaignTrackingService->trackLandingPageVisit($request, $campaign);
+return $campaign->load('landingpage')->toResource();
 ```
 
 **Campaign Resource Restrictions:**
@@ -454,14 +474,18 @@ When accessed via the public endpoint, the campaign resource exposes only a limi
 
 **Usage Examples:**
 ```bash
-# Public access via slug
-GET /api/lp/summer-sale-landing-page
+# Public access via campaign UUID
+GET /api/cp/550e8400-e29b-41d4-a716-446655440000
 
-# This will return the landing page only if:
-# 1. The slug exists
-# 2. The associated campaign is active
+# Public access via campaign slug
+GET /api/cp/summer-sale-campaign
+
+# This will return the campaign's landing page only if:
+# 1. The campaign exists (by ID or slug)
+# 2. The campaign is active
 # 3. The campaign is within its valid date range (or has no date restrictions)
-# 4. The visit will be automatically tracked
+# 4. The campaign has an associated landing page
+# 5. The visit will be automatically tracked
 ```
 
 ## Input Validation
@@ -478,21 +502,34 @@ GET /api/lp/summer-sale-landing-page
             ->ignore($this->campaign?->id)
             ->whereNull('deleted_at'),
     ],
+    'slug' => [
+        'required',
+        'string',
+        'max:255',
+        Rule::unique('campaigns', 'slug')
+            ->ignore($this->campaign?->id)
+            ->whereNull('deleted_at'),
+    ],
     'description' => 'sometimes|string|max:255',
     'status' => 'required|string|in:'.implode(',', \App\Enums\CampaignStatus::values()),
     'start_date' => 'sometimes|nullable|date',
     'end_date' => 'sometimes|nullable|date|after:start_date',
+    'landingpage_id' => 'sometimes|nullable|exists:landingpages,id',
     'prospect_filter' => 'sometimes|array',
 ]
 ```
 
 **Validation Details:**
 - **title**: Required, unique across non-deleted campaigns, max 255 characters
+- **slug**: Required, unique across non-deleted campaigns, max 255 characters (auto-generated from title)
 - **description**: Optional, max 255 characters
 - **status**: Required, must be one of the defined enum values (draft, active, paused, completed)
 - **start_date**: Optional, must be a valid date
 - **end_date**: Optional, must be a valid date and after start_date
+- **landingpage_id**: Optional, must reference an existing landingpage
 - **prospect_filter**: Optional, must be an array
+
+**Auto-generation:** The slug is automatically generated from the title using `Str::slug()` in the `prepareForValidation()` method.
 
 ### Landing Page Validation Rules
 
@@ -506,17 +543,8 @@ GET /api/lp/summer-sale-landing-page
             ->ignore($this->landingpage?->id)
             ->whereNull('deleted_at'),
     ],
-    'slug' => [
-        'required',
-        'string',
-        'max:255',
-        Rule::unique('landingpages', 'slug')
-            ->ignore($this->landingpage?->id)
-            ->whereNull('deleted_at'),
-    ],
     'headline' => 'required|string|max:255',
     'subline' => 'sometimes|nullable|string|max:255',
-    'campaign_id' => 'sometimes|nullable|exists:campaigns,id',
     'sections' => 'required|array',
     // 'form_fields' => 'required|array', // Currently commented out
 ]
@@ -524,14 +552,12 @@ GET /api/lp/summer-sale-landing-page
 
 **Validation Details:**
 - **title**: Required, unique across non-deleted landing pages, max 255 characters
-- **slug**: Required, unique across non-deleted landing pages, max 255 characters (auto-generated from title)
 - **headline**: Required, max 255 characters
 - **subline**: Optional, max 255 characters
-- **campaign_id**: Optional, must reference an existing campaign
 - **sections**: Required, must be an array
 - **form_fields**: Currently commented out in validation rules
 
-**Auto-generation:** The slug is automatically generated from the title using `Str::slug()` in the `prepareForValidation()` method.
+**Note:** The slug field has been moved to the Campaign model. Landing pages no longer have slugs as they are accessed through campaigns.
 
 ## Resource Transformation
 
@@ -651,8 +677,8 @@ return CampaignResource::collection($collection);
 - `PATCH /api/landingpages/{id}` - Update landing page (partial)
 - `DELETE /api/landingpages/{id}` - Delete landing page
 
-### Public Landing Page Endpoints
-- `GET /api/lp/{identifier}` - Public access to landing page (slug only, no authentication required, automatic tracking)
+### Public Campaign Landing Page Endpoints
+- `GET /api/cp/{identifier}` - Public access to campaign landing page (campaign ID or slug, no authentication required, automatic tracking)
 
 ### Authentication
 Most endpoints require authentication via Laravel Sanctum. Include the Bearer token in the Authorization header:
@@ -661,7 +687,7 @@ Authorization: Bearer {your-token}
 ```
 
 **Public Endpoints:**
-- `GET /api/lp/{identifier}` - No authentication required
+- `GET /api/cp/{identifier}` - No authentication required
 
 ### Error Responses
 - **401 Unauthorized**: Invalid or missing authentication token (for authenticated endpoints)

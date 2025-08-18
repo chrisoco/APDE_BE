@@ -6,7 +6,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 final class LandingpageRequest extends FormRequest
@@ -36,31 +35,10 @@ final class LandingpageRequest extends FormRequest
                     ->ignore($this->landingpage?->id)
                     ->whereNull('deleted_at'),
             ],
-            'slug' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('landingpages', 'slug')
-                    /** @phpstan-ignore-next-line */
-                    ->ignore($this->landingpage?->id)
-                    ->whereNull('deleted_at'),
-            ],
             'headline' => 'required|string|max:255',
             'subline' => 'sometimes|nullable|string|max:255',
-            'campaign_id' => 'sometimes|nullable|exists:campaigns,id',
             'sections' => 'required|array',
             // 'form_fields' => 'required|array',
         ];
-    }
-
-    /**
-     * Prepare the data for validation.
-     */
-    protected function prepareForValidation(): void
-    {
-        $title = is_string($this->title) ? $this->title : '';
-        $this->merge([
-            'slug' => Str::slug($title),
-        ]);
     }
 }
