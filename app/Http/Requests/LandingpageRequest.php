@@ -37,7 +37,7 @@ final class LandingpageRequest extends FormRequest
             ],
             'headline' => 'required|string|max:255',
             'subline' => 'sometimes|nullable|string|max:255',
-            'sections' => 'required|array',
+            'sections' => 'nullable|array',
             // 'form_fields' => 'required|array',
         ];
     }
