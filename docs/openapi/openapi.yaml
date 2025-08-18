@@ -43,10 +43,10 @@ info:
     url: https://apde.test/license
 
 servers:
-  - url: http://apde_be.test
+  - url: http://127.0.0.1:8000
     description: Development server
-  - url: https://api.apde.com
-    description: Production server
+  - url: https://apde.test
+    description: Local server
 
 tags:
   - name: Authentication
@@ -65,6 +65,7 @@ tags:
       - Login via `/login` with CSRF token in headers
       - Subsequent requests use session cookies
       - Required for web-based integrations
+      - Requires Referer header for all requests
       
       Choose token-based auth for API integrations and cookie-based for web applications.
   - name: Prospects
@@ -103,7 +104,8 @@ tags:
       - **Prospect Filtering**: Target specific demographics
       - **Date Scheduling**: Set start and end dates
       - **Email Automation**: Send personalized emails
-      - **Landing Page Integration**: Automatic landing page creation
+      - **Landing Page Association**: Link to shared landing page content
+      - **Slug Generation**: Automatic URL-friendly identifiers
       
       ### Best Practices
       - Define clear prospect filters for targeted campaigns
@@ -125,13 +127,13 @@ tags:
         - Call-to-action buttons
       
       ### Features
-      - **Slug-based URLs**: SEO-friendly URLs
-      - **UTM Tracking**: Full analytics integration
+      - **Campaign Association**: One landing page can serve multiple campaigns
+      - **UTM Tracking**: Full analytics integration via campaigns
       - **Prospect Tracking**: Link visits to specific prospects
-      - **A/B Testing Ready**: Create multiple variants
+      - **Shared Content**: Efficient content reuse across campaigns
       
       ### Public Access
-      Landing pages are publicly accessible when campaigns are active.
+      Landing pages are publicly accessible through active campaigns via `/api/cp/{identifier}`.
   - name: Analytics
     description: |
       ## Campaign Analytics
@@ -156,12 +158,12 @@ tags:
       
       No authentication required. Used for:
       
-      - Landing page display
+      - Campaign landing page display
       - Visit tracking
       - UTM parameter collection
       - Prospect activity logging
       
-      These endpoints support the public-facing campaign pages.
+      These endpoints support the public-facing campaign pages accessed via campaign identifiers.
 
 security:
   - bearerAuth: []
@@ -1033,7 +1035,11 @@ paths:
         2. Set campaign status (usually starts as 'draft')
         3. Configure prospect filters for targeting
         4. Optionally set date ranges
-        5. Create associated landing page separately
+        5. Optionally associate with existing landing page via landingpage_id
+        
+        ### Automatic Fields
+        - **Slug**: Automatically generated from title using URL-friendly formatting
+        - **Created/Updated timestamps**: Automatically managed
         
         ### Prospect Filters
         The `prospect_filter` object accepts any valid filter from the 
@@ -1076,7 +1082,9 @@ paths:
                     data:
                       id: "687bb6a98c6a6f3e8c058ac5"
                       title: "New Campaign 5"
+                      slug: "new-campaign-5"
                       description: "This is a Test of the Input Validation."
+                      landingpage_id: null
                       start_date: null
                       end_date: null
                       status: "Draft"
@@ -1558,13 +1566,13 @@ paths:
         - Ensure CTA URLs are valid and tracked
         - Consider A/B testing different CTA texts
         
-        ### URL Structure
-        Public URL will be: `/api/lp/{slug}`
+        ### Public Access
+        Landing pages are accessed through campaigns via: `/api/cp/{campaign-identifier}`
         
         ### Important Notes
-        - Slugs must be unique across all landing pages
+        - Landing pages can be shared by multiple campaigns
         - Images should be hosted externally
-        - Campaign association is optional but recommended
+        - Public access requires active campaigns
         - Changes are reflected immediately
       operationId: createLandingPage
       requestBody:
@@ -1598,8 +1606,8 @@ paths:
         
         ### Dual Access Methods
         This endpoint is for authenticated management access. For public access, use:
-        - `/api/lp/{slug}` - Public endpoint (no auth required)
-        - Active campaign requirement applies to public access only
+        - `/api/cp/{identifier}` - Public endpoint (no auth required, requires active campaign)
+        - Campaign identifier can be UUID or slug
         
         ### Response Includes
         - Complete landing page content
@@ -1697,17 +1705,22 @@ paths:
           $ref: '#/components/responses/NotFound'
 
   # Public endpoints
-  /api/lp/{slug}:
+  /api/cp/{identifier}:
     get:
       tags:
         - Public
-      summary: Get landing page by slug (public)
+      summary: Get campaign landing page (public)
       description: |
-        Public endpoint for displaying landing pages to visitors.
+        Public endpoint for displaying campaign landing pages to visitors.
         
         ### No Authentication Required
         This endpoint is publicly accessible to allow campaign recipients
         to view landing pages without authentication.
+        
+        ### Campaign Identification
+        The endpoint accepts both:
+        - **Campaign UUID**: Direct campaign ID lookup
+        - **Campaign Slug**: URL-friendly identifier generated from campaign title
         
         ### Tracking Parameters
         
@@ -1735,31 +1748,38 @@ paths:
         2. Unique visitor status is determined
         3. Analytics are updated
         
-        ### Campaign Status
-        - Landing pages are only accessible when the associated campaign is "active"
-        - Inactive campaigns return 404 error
-        - This prevents premature or outdated access
+        ### Campaign Status Requirements
+        - Campaign must be "active" status
+        - Campaign must be within its date range (if dates are set)
+        - Campaign must have an associated landing page
+        - Inactive or expired campaigns return 404 error
         
         ### Response Format
         The response includes all content needed to render the page:
         - Headlines and text
         - Image URLs
         - CTA buttons with tracking-enabled URLs
-        - Campaign context
+        - Campaign context (limited for security)
         
         ### SEO Considerations
-        - Slugs are SEO-friendly
+        - Campaign slugs are SEO-friendly
         - Pages include appropriate meta tags
-      operationId: getPublicLandingPage
+      operationId: getPublicCampaignLandingPage
       security: []
       parameters:
-        - name: slug
+        - name: identifier
           in: path
           required: true
           schema:
             type: string
-          description: URL-friendly page identifier
-          example: "summer-sale-2025"
+          description: Campaign UUID or URL-friendly campaign slug
+          examples:
+            uuid:
+              value: "686a3affca7748f6b807cbec"
+              summary: Campaign UUID
+            slug:
+              value: "summer-sale-2025"
+              summary: Campaign slug
         - name: prospect
           in: query
           schema:
@@ -1808,14 +1828,14 @@ paths:
           description: Facebook click ID
       responses:
         '200':
-          description: Landing page data
+          description: Campaign landing page data
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PublicLandingPage'
+                    $ref: '#/components/schemas/PublicCampaignLandingPage'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -2214,8 +2234,15 @@ components:
           type: string
         title:
           type: string
+        slug:
+          type: string
+          description: URL-friendly identifier generated from title
         description:
           type: string
+        landingpage_id:
+          type: string
+          nullable: true
+          description: ID of the associated landing page
         status:
           type: string
           enum: [draft, active, paused, completed]
@@ -2275,8 +2302,15 @@ components:
           type: string
         title:
           type: string
+        slug:
+          type: string
+          description: URL-friendly identifier generated from title
         description:
           type: string
+        landingpage_id:
+          type: string
+          nullable: true
+          description: ID of the associated landing page
         start_date:
           type: string
           format: date-time
@@ -2329,6 +2363,10 @@ components:
           type: string
         description:
           type: string
+        landingpage_id:
+          type: string
+          nullable: true
+          description: ID of the associated landing page
         status:
           type: string
           enum: [draft, active, paused, completed]
@@ -2406,8 +2444,6 @@ components:
           type: string
         title:
           type: string
-        slug:
-          type: string
         headline:
           type: string
         subline:
@@ -2425,8 +2461,6 @@ components:
           type: string
         title:
           type: string
-        slug:
-          type: string
         headline:
           type: string
         subline:
@@ -2442,8 +2476,11 @@ components:
         - $ref: '#/components/schemas/LandingPage'
         - type: object
           properties:
-            campaign:
-              $ref: '#/components/schemas/Campaign'
+            campaigns:
+              type: array
+              items:
+                $ref: '#/components/schemas/Campaign'
+              description: Array of campaigns associated with this landing page
 
     LandingPageInput:
       type: object
@@ -2459,8 +2496,6 @@ components:
         subline:
           type: string
           nullable: true
-        campaign_id:
-          type: string
         sections:
           type: array
           items:
@@ -2494,33 +2529,41 @@ components:
         meta:
           $ref: '#/components/schemas/PaginationMeta'
 
-    PublicLandingPage:
+    PublicCampaignLandingPage:
       type: object
+      description: |
+        Campaign landing page data for public access. Campaign fields are limited for security.
       properties:
         id:
           type: string
-        campaign:
+          description: Campaign ID
+        title:
+          type: string
+          description: Campaign title
+        slug:
+          type: string
+          description: Campaign slug
+        status:
+          type: string
+          description: Campaign status (always "active" for public access)
+        landingpage:
           type: object
+          nullable: true
+          description: Associated landing page content
           properties:
             id:
               type: string
             title:
               type: string
-            description:
+            headline:
               type: string
-        title:
-          type: string
-        slug:
-          type: string
-        headline:
-          type: string
-        subline:
-          type: string
-          nullable: true
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/LandingPageSection'
+            subline:
+              type: string
+              nullable: true
+            sections:
+              type: array
+              items:
+                $ref: '#/components/schemas/LandingPageSection'
 
     # Analytics schemas
     CampaignAnalytics:

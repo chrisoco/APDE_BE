@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Models\Campaign;
 use App\Models\CampaignTracking;
-use App\Models\Landingpage;
 use App\Models\Prospect;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -16,7 +15,7 @@ final class CampaignTrackingService
     /**
      * Track a new visit with UTM parameters.
      */
-    public function trackLandingPageVisit(Request $request, Landingpage $landingpage): CampaignTracking
+    public function trackLandingPageVisit(Request $request, Campaign $campaign): CampaignTracking
     {
         // TODO: Validate Signed URL: create RequestValidator?
         // if($request->has('prospect') && ! $request->hasValidSignature()) {
@@ -25,8 +24,8 @@ final class CampaignTrackingService
 
         // Create new tracking record
         return CampaignTracking::create([
-            'campaign_id' => $landingpage->campaign_id,
-            'landingpage_id' => $landingpage->id,
+            'campaign_id' => $campaign->id,
+            'landingpage_id' => $campaign->landingpage?->id,
             'prospect_id' => $request->get('prospect'),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
@@ -60,10 +59,11 @@ final class CampaignTrackingService
             // 'fbclid' => 'none',
         ];
 
-        $baseUrl = config('app.spa_url');
-        $identifier = $campaign->landingpage->slug;
+        $baseUrl = config()->string('app.spa_url');
+        $identifier = $campaign->slug;
         $queryString = http_build_query($params);
-        return "{$baseUrl}/lp/{$identifier}?{$queryString}";
+
+        return "{$baseUrl}/cp/{$identifier}?{$queryString}";
     }
 
     /**

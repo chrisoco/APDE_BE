@@ -6,7 +6,9 @@ namespace Database\Factories;
 
 use App\Enums\CampaignStatus;
 use App\Models\Campaign;
+use App\Models\Landingpage;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Campaign>
@@ -27,8 +29,12 @@ final class CampaignFactory extends Factory
      */
     public function definition(): array
     {
+        $title = $this->faker->sentence(3);
+
         return [
-            'title' => $this->faker->sentence(3),
+            'landingpage_id' => Landingpage::factory(),
+            'title' => $title,
+            'slug' => Str::slug($title),
             'description' => $this->faker->paragraph(),
             'status' => $this->faker->randomElement(CampaignStatus::values()),
             'start_date' => $this->faker->dateTimeBetween('-1 month', '+1 month'),

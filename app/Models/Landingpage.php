@@ -9,13 +9,11 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Eloquent\SoftDeletes;
-use MongoDB\Laravel\Relations\BelongsTo;
+use MongoDB\Laravel\Relations\HasMany;
 
 /**
  * @property string $id
- * @property string|null $campaign_id
  * @property string $title
- * @property string $slug
  * @property string $headline
  * @property string|null $subline
  * @property array<int, array<string, mixed>> $sections
@@ -30,7 +28,7 @@ final class Landingpage extends Model
     /** @use HasFactory<\Database\Factories\LandingpageFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['id', 'campaign_id', 'title', 'slug', 'headline', 'subline', 'sections', 'form_fields', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['id', 'title', 'headline', 'subline', 'sections', 'form_fields', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $casts = [
         'created_at' => 'datetime',
@@ -39,12 +37,12 @@ final class Landingpage extends Model
     ];
 
     /**
-     * Get the campaign that owns the landingpage.
+     * Get the campaigns for the landingpage.
      *
-     * @return BelongsTo<Campaign, Landingpage>
+     * @return HasMany<Campaign, Landingpage>
      */
-    public function campaign(): BelongsTo
+    public function campaigns(): HasMany
     {
-        return $this->belongsTo(Campaign::class);
+        return $this->hasMany(Campaign::class);
     }
 }
