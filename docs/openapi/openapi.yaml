@@ -103,14 +103,22 @@ tags:
       ### Features
       - **Prospect Filtering**: Target specific demographics
       - **Date Scheduling**: Set start and end dates
-      - **Email Automation**: Send personalized emails
+      - **Email Automation**: Send personalized emails with tracking
+      - **Email Statistics**: Monitor email performance
       - **Landing Page Association**: Link to shared landing page content
       - **Slug Generation**: Automatic URL-friendly identifiers
+      
+      ### Email Operations
+      - **Send Emails**: Queue personalized emails to filtered prospects
+      - **Email Statistics**: View sending metrics and prospect targeting data
+      - **Duplicate Prevention**: Automatically avoid resending to same prospects
+      - **Force Mode**: Override duplicate prevention when needed
       
       ### Best Practices
       - Define clear prospect filters for targeted campaigns
       - Set appropriate date ranges
-      - Monitor analytics regularly
+      - Monitor email statistics before and after sending
+      - Use statistics endpoint to plan campaigns
       - Test with small groups before full launch
   - name: Landing Pages
     description: |
@@ -1337,29 +1345,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  emails_sent:
-                    type: integer
-                    description: Number of emails sent in this request
-                  total_emails_sent:
-                    type: integer
-                    description: Total number of emails sent for this campaign (including all previous sends)
-                  notified_prospects:
-                    type: integer
-                    description: Number of unique prospects that have received at least one email for this campaign
-                  available_prospects:
-                    type: integer
-                    description: Number of prospects that haven't been contacted yet
-                  total_prospects:
-                    type: integer
-                    description: Total number of prospects matching the campaign filters
+                $ref: '#/components/schemas/SendEmailsResponse'
               examples:
                 success:
                   value:
                     message: "Campaign emails queued successfully. 1 emails sent to prospects."
+                    campaign:
+                      id: "687bb6a98c6a6f3e8c058ac5"
+                      title: "Summer Sale 2024"
                     emails_sent: 1
                     total_emails_sent: 6
                     notified_prospects: 5
@@ -1368,11 +1361,100 @@ paths:
                 force_example:
                   value:
                     message: "Campaign emails queued successfully. 3 emails sent to prospects."
+                    campaign:
+                      id: "687bb6a98c6a6f3e8c058ac5"
+                      title: "Summer Sale 2024"
                     emails_sent: 3
                     total_emails_sent: 12
                     notified_prospects: 5
                     available_prospects: 88
                     total_prospects: 100
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/campaigns/{id}/send-emails/sent:
+    get:
+      tags:
+        - Analytics
+      summary: Get email statistics
+      description: |
+        Retrieve email statistics for a campaign without sending any emails.
+        
+        ### Purpose
+        This endpoint provides the same email metrics as the send emails endpoint 
+        but only returns statistics without performing any email sending operations.
+        
+        ### Response Data
+        - Campaign information (ID and title)
+        - Total emails sent for this campaign
+        - Number of unique prospects notified
+        - Number of prospects available for future emails
+        - Total prospects matching campaign filters
+        
+        ### Use Cases
+        - Dashboard analytics display
+        - Progress monitoring without sending emails
+        - Campaign performance tracking
+        - Pre-send validation and planning
+        
+        ### Prerequisites
+        - Campaign must have prospect filters defined
+        - No authentication restrictions (view permission required)
+        
+        ### Difference from Send Emails Endpoint
+        - **This endpoint**: Read-only statistics, no emails sent
+        - **Send emails endpoint**: Sends emails AND returns statistics
+        
+        ### Important Notes
+        - Statistics are calculated in real-time
+        - Available prospects count may change if filters are updated
+        - Requires campaign view permissions (less restrictive than send emails)
+      operationId: getCampaignEmailStatistics
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Campaign ID
+      responses:
+        '200':
+          description: Email statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailStatisticsResponse'
+              examples:
+                success:
+                  value:
+                    campaign:
+                      id: "687bb6a98c6a6f3e8c058ac5"
+                      title: "Summer Sale 2024"
+                    total_emails_sent: 6
+                    notified_prospects: 5
+                    available_prospects: 94
+                    total_prospects: 100
+                no_filters:
+                  value:
+                    campaign:
+                      id: "687bb6a98c6a6f3e8c058ac5"
+                      title: "Draft Campaign"
+                    total_emails_sent: 0
+                    notified_prospects: 0
+                    available_prospects: 0
+                    total_prospects: 0
+        '400':
+          description: Campaign has no prospect filters defined
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                no_filters:
+                  value:
+                    message: "Campaign must have prospect filters defined to show statistics."
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -2745,3 +2827,71 @@ components:
                 email: 2
                 affiliate: 3
                 banner: 2
+
+    # Email Campaign Response schemas
+    CampaignInfo:
+      type: object
+      description: Basic campaign information included in email responses
+      properties:
+        id:
+          type: string
+          description: Campaign identifier
+          example: "687bb6a98c6a6f3e8c058ac5"
+        title:
+          type: string
+          description: Campaign title
+          example: "Summer Sale 2024"
+
+    SendEmailsResponse:
+      type: object
+      description: Response from the send emails endpoint
+      properties:
+        message:
+          type: string
+          description: Success message with email count
+          example: "Campaign emails queued successfully. 1 emails sent to prospects."
+        campaign:
+          $ref: '#/components/schemas/CampaignInfo'
+        emails_sent:
+          type: integer
+          description: Number of emails sent in this request
+          example: 1
+        total_emails_sent:
+          type: integer
+          description: Total number of emails sent for this campaign (including all previous sends)
+          example: 6
+        notified_prospects:
+          type: integer
+          description: Number of unique prospects that have received at least one email for this campaign
+          example: 5
+        available_prospects:
+          type: integer
+          description: Number of prospects that haven't been contacted yet
+          example: 94
+        total_prospects:
+          type: integer
+          description: Total number of prospects matching the campaign filters
+          example: 100
+
+    EmailStatisticsResponse:
+      type: object
+      description: Response from the email statistics endpoint
+      properties:
+        campaign:
+          $ref: '#/components/schemas/CampaignInfo'
+        total_emails_sent:
+          type: integer
+          description: Total number of emails sent for this campaign
+          example: 6
+        notified_prospects:
+          type: integer
+          description: Number of unique prospects that have received at least one email for this campaign
+          example: 5
+        available_prospects:
+          type: integer
+          description: Number of prospects that haven't been contacted yet
+          example: 94
+        total_prospects:
+          type: integer
+          description: Total number of prospects matching the campaign filters
+          example: 100

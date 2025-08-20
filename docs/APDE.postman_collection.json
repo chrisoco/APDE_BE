@@ -2812,14 +2812,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b0",
+							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b2",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"campaigns",
-								"68a36943d7f5370a250556b0"
+								"68a36943d7f5370a250556b2"
 							]
 						}
 					},
@@ -3650,14 +3650,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b1/send-emails",
+							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b4/send-emails",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"campaigns",
-								"68a36943d7f5370a250556b1",
+								"68a36943d7f5370a250556b4",
 								"send-emails"
 							]
 						}
@@ -3715,7 +3715,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Mon, 18 Aug 2025 18:51:00 GMT"
+									"value": "Wed, 20 Aug 2025 16:38:32 GMT"
 								},
 								{
 									"key": "Content-Type",
@@ -3727,7 +3727,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"message\": \"Campaign emails queued successfully. 1 emails sent to prospects.\",\n    \"emails_sent\": 1,\n    \"total_emails_sent\": 1,\n    \"notified_prospects\": 1,\n    \"available_prospects\": 288,\n    \"total_prospects\": 289\n}"
+							"body": "{\n    \"message\": \"Campaign emails queued successfully. 1 emails sent to prospects.\",\n    \"campaign\": {\n        \"id\": \"68a36943d7f5370a250556b1\",\n        \"title\": \"Reprehenderit ut optio autem.\"\n    },\n    \"emails_sent\": 1,\n    \"total_emails_sent\": 4,\n    \"notified_prospects\": 4,\n    \"available_prospects\": 285,\n    \"total_prospects\": 289\n}"
 						},
 						{
 							"name": "400 No LP associated",
@@ -3794,6 +3794,307 @@
 							],
 							"cookie": [],
 							"body": "{\n    \"message\": \"Campaign must have an associated landing page to send emails.\"\n}"
+						},
+						{
+							"name": "400 Not Active",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b4/send-emails",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b4",
+										"send-emails"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 20 Aug 2025 16:43:29 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Campaign must be active to send emails.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "send-emails sent",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b0/send-emails/sent",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"68a36943d7f5370a250556b0",
+								"send-emails",
+								"sent"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b1/send-emails/sent",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b1",
+										"send-emails",
+										"sent"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 20 Aug 2025 16:42:07 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"campaign\": {\n        \"id\": \"68a36943d7f5370a250556b1\",\n        \"title\": \"Reprehenderit ut optio autem.\"\n    },\n    \"total_emails_sent\": 4,\n    \"notified_prospects\": 4,\n    \"available_prospects\": 285,\n    \"total_prospects\": 289\n}"
+						},
+						{
+							"name": "200 Inactive Campaign",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b4/send-emails/sent",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b4",
+										"send-emails",
+										"sent"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 20 Aug 2025 16:43:45 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"campaign\": {\n        \"id\": \"68a36943d7f5370a250556b4\",\n        \"title\": \"Beatae culpa aut.\"\n    },\n    \"total_emails_sent\": 0,\n    \"notified_prospects\": 0,\n    \"available_prospects\": 202,\n    \"total_prospects\": 202\n}"
+						},
+						{
+							"name": "200 No LP associated",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b0/send-emails/sent",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b0",
+										"send-emails",
+										"sent"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 20 Aug 2025 16:44:20 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"campaign\": {\n        \"id\": \"68a36943d7f5370a250556b0\",\n        \"title\": \"Assumenda voluptatem omnis.\"\n    },\n    \"total_emails_sent\": 0,\n    \"notified_prospects\": 0,\n    \"available_prospects\": 11,\n    \"total_prospects\": 11\n}"
 						}
 					]
 				},
@@ -4191,14 +4492,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/landingpages/68a36943d7f5370a250556a8",
+							"raw": "{{URL}}/api/landingpages/68a38bb145ba99549b0fa772",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"landingpages",
-								"68a36943d7f5370a250556a8"
+								"68a38bb145ba99549b0fa772"
 							]
 						}
 					},
