@@ -27,6 +27,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('landingpages', LandingpageController::class);
 
     Route::get('/campaigns/{campaign}/analytics', [CampaignAnalyticsController::class, 'show']);
+    Route::get('/campaigns/{campaign}/send-emails/sent', [CampaignAnalyticsController::class, 'emailStatistics']);
     Route::post('/campaigns/{campaign}/send-emails', [CampaignEmailController::class, 'send']);
 
     Route::get('/cp-cookie', function () {

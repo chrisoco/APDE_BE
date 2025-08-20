@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Campaign;
+use App\Models\Prospect;
 use Illuminate\Support\Collection;
 
 final class CampaignAnalyticsService
@@ -28,6 +29,42 @@ final class CampaignAnalyticsService
             'statistics' => $this->getStatistics($campaign),
             'device_browser_breakdown' => $this->getDeviceBrowserBreakdown($campaign),
             'utm_sources' => $this->getUtmSourceBreakdown($campaign),
+        ];
+    }
+
+    /**
+     * Get email statistics for the specified campaign.
+     *
+     * @return array<string, int>
+     */
+    public function getEmailStatistics(Campaign $campaign): array
+    {
+        if (! $campaign->prospect_filter) {
+            return [
+                'campaign' => [
+                    'id' => $campaign->id,
+                    'title' => $campaign->title,
+                ],
+                'total_emails_sent' => 0,
+                'notified_prospects' => 0,
+                'available_prospects' => 0,
+                'total_prospects' => 0,
+            ];
+        }
+
+        // Filter prospects based on campaign filters
+        $filteredProspects = Prospect::applyFilters($campaign->prospect_filter);
+        $totalProspects = $filteredProspects->count();
+
+        return [
+            'campaign' => [
+                'id' => $campaign->id,
+                'title' => $campaign->title,
+            ],
+            'total_emails_sent' => $campaign->campaignProspects()->count(),
+            'notified_prospects' => $campaign->campaignProspects()->pluck('prospect_id')->unique()->count(),
+            'available_prospects' => $totalProspects - $campaign->campaignProspects()->count(),
+            'total_prospects' => $totalProspects,
         ];
     }
 

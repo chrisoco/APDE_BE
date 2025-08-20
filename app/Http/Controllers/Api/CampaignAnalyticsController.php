@@ -27,4 +27,16 @@ final class CampaignAnalyticsController extends Controller
 
         return response()->json($analyticsData);
     }
+
+    /**
+     * Get email statistics for the specified campaign.
+     */
+    public function emailStatistics(Campaign $campaign): JsonResponse
+    {
+        Gate::authorize('view', $campaign);
+
+        $emailStatistics = $this->campaignAnalyticsService->getEmailStatistics($campaign);
+
+        return response()->json($emailStatistics);
+    }
 }
