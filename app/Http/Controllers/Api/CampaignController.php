@@ -92,10 +92,6 @@ final class CampaignController extends Controller
                 ->where('slug', $identifier)
                 ->where('status', CampaignStatus::ACTIVE)
                 ->where(function ($q): void {
-                    $q->whereNull('start_date')
-                        ->orWhere('start_date', '<=', now());
-                })
-                ->where(function ($q): void {
                     $q->whereNull('end_date')
                         ->orWhere('end_date', '>=', now());
                 })
