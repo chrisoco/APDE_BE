@@ -80,6 +80,7 @@ trait HasFilterable
                     $baseField = Str::replaceEnd('_not_in', '', $key);
                     break;
                 case Str::endsWith($key, '_in'):
+                case is_array($value):
                     $operator = 'in';
                     $baseField = Str::replaceEnd('_in', '', $key);
                     break;

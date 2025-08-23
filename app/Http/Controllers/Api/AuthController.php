@@ -40,4 +40,9 @@ final class AuthController extends Controller
             'message' => 'Logged out successfully',
         ]);
     }
+
+    public function user(Request $request): \Illuminate\Http\JsonResponse
+    {
+        return response()->json(Auth::user()?->only('id', 'name', 'email', 'created_at', 'updated_at'));
+    }
 }

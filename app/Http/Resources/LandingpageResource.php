@@ -21,9 +21,8 @@ final class LandingpageResource extends JsonResource
 
         return [
             'id' => $landingpage->id,
-            'campaign' => new CampaignResource($this->whenLoaded('campaign')),
+            'campaigns' => CampaignResource::collection($this->whenLoaded('campaigns')),
             'title' => $landingpage->title,
-            'slug' => $landingpage->slug,
             'headline' => $landingpage->headline,
             'subline' => $landingpage->subline,
             'sections' => $landingpage->sections,

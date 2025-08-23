@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Campaign;
 use App\Models\CampaignTracking;
-use App\Models\Landingpage;
 use App\Models\Prospect;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -28,12 +28,11 @@ final class CampaignTrackingFactory extends Factory
      */
     public function definition(): array
     {
-
-        $landingpage = Landingpage::all()->random();
+        $campaign = Campaign::all()->random();
 
         return [
-            'campaign_id' => $landingpage->campaign_id,
-            'landingpage_id' => $landingpage->id,
+            'campaign_id' => $campaign->id,
+            'landingpage_id' => $campaign->landingpage_id,
             'prospect_id' => $this->faker->optional()->randomElement(Prospect::pluck('id')),
             'ip_address' => $this->faker->ipv4(),
             'user_agent' => $this->faker->userAgent(),

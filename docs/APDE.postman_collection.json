@@ -286,18 +286,153 @@
 					]
 				},
 				{
+					"name": "Token Authenticated User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/user",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 14 Aug 2025 16:43:51 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"687b96149895ea533e000ee7\",\n    \"name\": \"John Doe\",\n    \"email\": \"john@doe.com\",\n    \"created_at\": \"2025-07-19T12:56:52.820000Z\",\n    \"updated_at\": \"2025-07-19T12:56:52.820000Z\"\n}"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/logout",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"logout"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.25.4"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.10"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 19 Jul 2025 15:05:33 GMT"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthenticated.\"\n}"
+						}
+					]
+				},
+				{
 					"name": "Token Logout",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
@@ -485,6 +620,11 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -575,6 +715,13 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -591,6 +738,11 @@
 							{
 								"key": "X-XSRF-TOKEN",
 								"value": "{{X-XSRF-TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -1036,14 +1188,8 @@
 								"type": "text"
 							},
 							{
-								"key": "Origin",
-								"value": "{{URL}}",
-								"type": "text",
-								"disabled": true
-							},
-							{
 								"key": "Referer",
-								"value": "{{URL}}",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -1147,6 +1293,207 @@
 							],
 							"cookie": [],
 							"body": "[\n    {\n        \"title\": \"Excepturi voluptatum aut voluptas.\",\n        \"description\": \"Nemo et voluptas ut aut ipsam sed. Quas fugit ab perspiciatis. Aut unde fugiat autem dolores eum ex omnis.\",\n        \"status\": \"draft\",\n        \"start_date\": \"2025-07-20T15:28:31.000000Z\",\n        \"end_date\": \"2025-09-18T02:24:40.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 80,\n            \"gender\": \"female\",\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 53,\n        \"updated_at\": \"2025-07-19T12:56:55.342000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.342000Z\",\n        \"id\": \"687b96179895ea533e00101c\"\n    },\n    {\n        \"title\": \"Rerum eveniet quidem dicta quis.\",\n        \"description\": \"Corrupti nobis deserunt sint consectetur laboriosam similique cumque provident. Excepturi fugiat sit in similique ab cupiditate ea. Aperiam nostrum dicta debitis soluta aliquid.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-22T17:00:18.000000Z\",\n        \"end_date\": \"2025-09-04T03:02:49.000000Z\",\n        \"prospect_filter\": {\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 11,\n        \"updated_at\": \"2025-07-19T12:56:55.387000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.387000Z\",\n        \"id\": \"687b96179895ea533e00101e\"\n    },\n    {\n        \"title\": \"Atque consequatur est.\",\n        \"description\": \"Consequatur dolorem sit qui iste consequatur deserunt. Ipsam perspiciatis autem explicabo similique iure consectetur. Id laboriosam facilis pariatur quis maiores aut.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-08-05T05:25:56.000000Z\",\n        \"end_date\": \"2025-09-15T10:05:34.000000Z\",\n        \"prospect_filter\": {\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 1,\n        \"updated_at\": \"2025-07-19T12:56:55.390000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.390000Z\",\n        \"id\": \"687b96179895ea533e001020\"\n    },\n    {\n        \"title\": \"Et praesentium accusamus.\",\n        \"description\": \"Dolores est accusantium facere et corrupti. Sed eius natus in et dignissimos repellat dolorem voluptas. Quia totam accusamus explicabo. Deserunt quasi dolores mollitia fuga voluptate.\",\n        \"status\": \"completed\",\n        \"start_date\": \"2025-07-28T02:56:41.000000Z\",\n        \"end_date\": \"2025-09-21T16:36:00.000000Z\",\n        \"prospect_filter\": [],\n        \"emails_sent\": 74,\n        \"updated_at\": \"2025-07-19T12:56:55.393000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.393000Z\",\n        \"id\": \"687b96179895ea533e001022\"\n    },\n    {\n        \"title\": \"Ullam officia facilis aut quo.\",\n        \"description\": \"Culpa quasi nobis qui consequuntur et aliquam sequi. Ipsam expedita atque occaecati eligendi aperiam numquam. Aliquam praesentium quidem et recusandae suscipit aut. Sit soluta et sint et dolores suscipit ex.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-06-30T23:14:35.000000Z\",\n        \"end_date\": \"2025-10-17T17:14:59.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 25,\n            \"max_age\": 94,\n            \"gender\": \"female\"\n        },\n        \"emails_sent\": 48,\n        \"updated_at\": \"2025-07-19T12:56:55.395000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.395000Z\",\n        \"id\": \"687b96179895ea533e001024\"\n    },\n    {\n        \"title\": \"Ullam ullam quo vel.\",\n        \"description\": \"Tenetur possimus quis tempora enim ea. Laborum quos similique adipisci sed voluptates recusandae. Dolorem aut consequuntur rerum reprehenderit hic est. Omnis doloribus error dicta omnis.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-25T17:56:06.000000Z\",\n        \"end_date\": \"2025-09-02T05:56:11.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 34,\n            \"max_age\": 64\n        },\n        \"emails_sent\": 51,\n        \"updated_at\": \"2025-07-19T12:56:55.397000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.397000Z\",\n        \"id\": \"687b96179895ea533e001026\"\n    },\n    {\n        \"title\": \"Eos possimus corporis et accusamus.\",\n        \"description\": \"Ut consectetur alias soluta ducimus labore. Repellendus veritatis assumenda saepe incidunt. Tempora excepturi qui et et exercitationem velit. Sint aspernatur exercitationem aliquid quae eos.\",\n        \"status\": \"draft\",\n        \"start_date\": \"2025-08-12T23:12:52.000000Z\",\n        \"end_date\": \"2025-10-08T01:17:39.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 77\n        },\n        \"emails_sent\": 83,\n        \"updated_at\": \"2025-07-19T12:56:55.398000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.398000Z\",\n        \"id\": \"687b96179895ea533e001028\"\n    },\n    {\n        \"title\": \"Est officia labore distinctio.\",\n        \"description\": \"Qui est ut nihil et. Consequuntur sed inventore consectetur ea reiciendis vitae nisi. Voluptatem similique totam alias repellat delectus recusandae.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-06-26T12:35:54.000000Z\",\n        \"end_date\": \"2025-10-18T23:23:28.000000Z\",\n        \"prospect_filter\": {\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 27,\n        \"updated_at\": \"2025-07-19T12:56:55.401000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.401000Z\",\n        \"id\": \"687b96179895ea533e00102a\"\n    },\n    {\n        \"title\": \"Aliquam ad expedita ut.\",\n        \"description\": \"Nostrum sunt est et nostrum ut autem asperiores at. Eum ducimus qui tempore sunt omnis eum. Eos officia est quas tenetur nihil eveniet et. Officiis est ea excepturi excepturi dignissimos.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-14T20:17:33.000000Z\",\n        \"end_date\": \"2025-09-18T13:54:19.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 87,\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 90,\n        \"updated_at\": \"2025-07-19T12:56:55.403000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.403000Z\",\n        \"id\": \"687b96179895ea533e00102c\"\n    },\n    {\n        \"title\": \"Atque voluptas itaque.\",\n        \"description\": \"Qui enim iure delectus a beatae molestiae mollitia. Id quia repellendus libero nesciunt sed ut blanditiis ea. Aspernatur ea nihil a quas qui omnis incidunt.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-06-28T05:56:14.000000Z\",\n        \"end_date\": \"2025-09-21T04:21:32.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 53,\n            \"gender\": \"male\",\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 49,\n        \"updated_at\": \"2025-07-19T12:56:55.405000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.405000Z\",\n        \"id\": \"687b96179895ea533e00102e\"\n    },\n    {\n        \"title\": \"Perspiciatis omnis aut sit.\",\n        \"description\": \"Mollitia aut aut autem. Nihil nulla dolorum inventore laborum laboriosam nesciunt aut soluta. Quam debitis maiores voluptatem tempora corporis assumenda enim. Quos repellendus voluptatem quisquam debitis soluta provident nesciunt. Possimus perspiciatis earum velit perferendis vero vel.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-07-20T01:09:57.000000Z\",\n        \"end_date\": \"2025-08-21T08:29:32.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 20,\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 52,\n        \"updated_at\": \"2025-07-19T12:56:55.428000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.428000Z\",\n        \"id\": \"687b96179895ea533e001030\"\n    },\n    {\n        \"title\": \"Et est quas numquam.\",\n        \"description\": \"Rem optio molestias aut repellendus ea. Atque sit provident est vero dolore tempore ut.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-07-02T20:10:17.000000Z\",\n        \"end_date\": \"2025-09-08T04:16:45.000000Z\",\n        \"prospect_filter\": {\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 56,\n        \"updated_at\": \"2025-07-19T12:56:55.430000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.430000Z\",\n        \"id\": \"687b96179895ea533e001032\"\n    },\n    {\n        \"title\": \"Doloremque cupiditate rem quia.\",\n        \"description\": \"Dignissimos voluptas suscipit sunt. Quia necessitatibus quia enim est placeat. Placeat accusantium qui doloremque praesentium libero.\",\n        \"status\": \"completed\",\n        \"start_date\": \"2025-06-20T16:22:28.000000Z\",\n        \"end_date\": \"2025-10-05T07:17:31.000000Z\",\n        \"prospect_filter\": {\n            \"max_age\": 51,\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 3,\n        \"updated_at\": \"2025-07-19T12:56:55.432000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.432000Z\",\n        \"id\": \"687b96179895ea533e001034\"\n    },\n    {\n        \"title\": \"Enim eius in laborum quasi.\",\n        \"description\": \"Atque eos reprehenderit voluptatem error nisi ut iusto. Quos voluptatibus voluptas alias ullam eos. Atque eveniet sit et quam ducimus aut quas laudantium. Recusandae accusamus omnis praesentium quos.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-07-30T08:48:27.000000Z\",\n        \"end_date\": \"2025-08-22T05:22:19.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 22\n        },\n        \"emails_sent\": 89,\n        \"updated_at\": \"2025-07-19T12:56:55.434000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.434000Z\",\n        \"id\": \"687b96179895ea533e001036\"\n    },\n    {\n        \"title\": \"Aperiam culpa itaque aut.\",\n        \"description\": \"Id maxime in iste impedit. Laboriosam qui qui suscipit et fugiat suscipit quia. Voluptatem molestiae velit sed non.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-07-28T06:11:05.000000Z\",\n        \"end_date\": \"2025-09-13T17:50:56.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 47,\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 57,\n        \"updated_at\": \"2025-07-19T12:56:55.443000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.443000Z\",\n        \"id\": \"687b96179895ea533e001038\"\n    },\n    {\n        \"title\": \"Placeat excepturi reiciendis.\",\n        \"description\": \"Ab commodi ipsum architecto. Illo optio voluptas repellat eligendi. Voluptatem dicta id soluta qui modi cumque quia. Eum sit consequatur quae possimus voluptas. Sit iusto qui illo voluptatem.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-08-17T17:53:37.000000Z\",\n        \"end_date\": \"2025-09-11T12:22:03.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 36,\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 99,\n        \"updated_at\": \"2025-07-19T12:56:55.446000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.446000Z\",\n        \"id\": \"687b96179895ea533e00103a\"\n    },\n    {\n        \"title\": \"Sit et enim.\",\n        \"description\": \"Sint consequatur saepe modi adipisci animi. Voluptatem perspiciatis et et magnam voluptatibus omnis voluptate. Voluptas sint voluptatem omnis.\",\n        \"status\": \"paused\",\n        \"start_date\": \"2025-07-29T07:31:22.000000Z\",\n        \"end_date\": \"2025-10-12T12:19:13.000000Z\",\n        \"prospect_filter\": {\n            \"gender\": \"female\",\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 36,\n        \"updated_at\": \"2025-07-19T12:56:55.448000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.448000Z\",\n        \"id\": \"687b96179895ea533e00103c\"\n    },\n    {\n        \"title\": \"Quia odio qui.\",\n        \"description\": \"Dolor dolor rerum perspiciatis itaque quod molestiae iure. Tempore saepe aut rerum expedita maxime saepe mollitia. Reprehenderit modi consequuntur est veniam exercitationem quo.\",\n        \"status\": \"completed\",\n        \"start_date\": \"2025-08-10T10:58:43.000000Z\",\n        \"end_date\": \"2025-09-23T05:48:25.000000Z\",\n        \"prospect_filter\": {\n            \"gender\": \"female\",\n            \"source\": \"kueba\"\n        },\n        \"emails_sent\": 17,\n        \"updated_at\": \"2025-07-19T12:56:55.451000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.451000Z\",\n        \"id\": \"687b96179895ea533e00103e\"\n    },\n    {\n        \"title\": \"Nostrum alias dolore.\",\n        \"description\": \"Neque et amet assumenda omnis dolor alias necessitatibus. Quo consequatur nulla ad sit natus sit. Beatae autem sit quos dolores.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-08-03T17:31:06.000000Z\",\n        \"end_date\": \"2025-09-30T10:01:55.000000Z\",\n        \"prospect_filter\": [],\n        \"emails_sent\": 65,\n        \"updated_at\": \"2025-07-19T12:56:55.453000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.453000Z\",\n        \"id\": \"687b96179895ea533e001040\"\n    },\n    {\n        \"title\": \"Eaque nihil deleniti.\",\n        \"description\": \"Tempore rem eum omnis ad corrupti amet. Expedita et unde architecto non voluptatem molestias voluptate. Est voluptatum incidunt atque mollitia. Eius voluptas numquam omnis error facilis nulla.\",\n        \"status\": \"active\",\n        \"start_date\": \"2025-06-25T14:36:02.000000Z\",\n        \"end_date\": \"2025-09-04T03:00:29.000000Z\",\n        \"prospect_filter\": {\n            \"min_age\": 48,\n            \"gender\": \"female\",\n            \"source\": \"erp\"\n        },\n        \"emails_sent\": 49,\n        \"updated_at\": \"2025-07-19T12:56:55.455000Z\",\n        \"created_at\": \"2025-07-19T12:56:55.455000Z\",\n        \"id\": \"687b96179895ea533e001042\"\n    }\n]"
+						},
+						{
+							"name": "401 Unauthorized",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Origin",
+										"value": "{{URL}}",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Referer",
+										"value": "{{URL}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/cp-cookie",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"cp-cookie"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx/1.25.4"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.10"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 19 Jul 2025 15:09:37 GMT"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6InNZaW50WUtzRW9RWjdta0xRZjJndVE9PSIsInZhbHVlIjoiLzM5aUMwOWJGa2k0UG9iTkVyQTRYSjJ5bzQ5aG93RVc5RHhuRXprYk9VNjZyWWJSbmNxclZwWm5wOTFQNTNGMCtVZkhRdE1LSUo0Q2FZWUZrS3dyV3R0Y0tkdEV4L1Yva20xNXBEWWlINnVWeGNEZHRrRnpJSW11UlpBM09OdloiLCJtYWMiOiJkYTVjODgwOTNmMjEyOWIwNjgyNzUzZWEzYjc3M2Q2ZGM2ODY4NDkwMWY0OTIwY2U5ZDJiNzhlY2JmODE5YzAwIiwidGFnIjoiIn0%3D; expires=Sat, 19 Jul 2025 17:09:37 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6Ill6d1hydlRRK09JL3lHRDVQZ0pjbmc9PSIsInZhbHVlIjoiNkV2djgzcUh4M2I5MmI4ZzZETEdEVG9PcXBTWGJGNytlNDNhMnhCM0ZCY0tveTNCejdEUXhyblhhNDQyeXVYbXVYNTdsejlkcG9zVC90VEtFWFIwUWhFUmM3aTUvaEwwQ2VuOGxSMCtRSWlHdTlCaVBKNkZmRkFRczdGdURpNzkiLCJtYWMiOiIxZjFkODM2NWQxZTZhZDk0MWFjM2VkY2I4NTA4NjI2MjUyMjMzN2YzZTk0MjI5MjcyMzI3Y2QxZDM5Yjc1ZjZjIiwidGFnIjoiIn0%3D; expires=Sat, 19 Jul 2025 17:09:37 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Unauthenticated.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Authenticated User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Origin",
+								"value": "{{URL}}",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Referer",
+								"value": "{{URL}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Origin",
+										"value": "{{URL}}",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Referer",
+										"value": "{{URL}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/user",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 14 Aug 2025 16:44:14 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6IkE2aEs0UkEyWU1JZyt6UHhSdmM3THc9PSIsInZhbHVlIjoiNGFvbnNnclBXL2NTVkFIZGkzbTZic2tPVmREWVZZKzZCdk1zTyt3Ui9ZOWxuUEc5RS91dnlRU0RTTFA4UzVxUC9rK09vNm4xcjFwOUJkSk5mRnNTaFJuem9OeDdkVFdiZWltLzlDOVpmWis3dWZRbHJXcE1lMGlnMTkzV21YQk8iLCJtYWMiOiI5MjNmMGQ2NWJhN2FkNjdmMGFhZWUwNGRmMTkxYTQ2MjczYmZjOWFjNjcxMTk2MDU5NTZjNzEyMWU4NjE1Njg0IiwidGFnIjoiIn0%3D; expires=Thu, 14 Aug 2025 18:44:14 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6IlQwejlRenJlTDkvcGt0ZnpEOWJXaGc9PSIsInZhbHVlIjoiRFczbWpIRjdPYUZ3OUo1bjZ2TUFHRis2V3YzU0dDQzlpZ3RhY2xBZlRUajMzOElSWmJvMmcvS2dTQVpJVGJKaVhBMjFWcms3V0RuMDdIbTA3bm1ibW4xNXhnb1BkSENWMDV1ZktwTTFUOFBBQlV5UFdvK0ZWOWxGb2tkVWp3TUoiLCJtYWMiOiIxMzJmODZhMTczZTBjYTc1YTQyMGFkYmY2NDY1ODgxZTRmNDNjZTM4NjVjMGIwMjZlZjBiY2NjZjRlODU1MDE0IiwidGFnIjoiIn0%3D; expires=Thu, 14 Aug 2025 18:44:14 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "S06FmZ8OvYC87Yl0KqLSfcNS3fzpvOQlhXC0EdcW=eyJpdiI6InRkSmVYeTluNXVwQlQ1QTJsSlg1aVE9PSIsInZhbHVlIjoiWUI4d0RoSVlXYm9wYjlML2FOYjR4NlhHcUdXQnNPeFYwNElZalVaNU1IUW1nMkJnendqd0ZrZDhUWHpWZHkvTDUvaUxiYTcvZytTYVhKZVJBUStmRnZtNWU2MXFYZTJiNkFuSlRNWUY3cHZ3NWFweVlGaDBLT1JkS3RNc2hkUUc3dmVhNzB5UmE4UzdQcXZDc0lKQTRIajY2aWRZOUZQSnlkSWpidE9NSW1obGZRd3JuS1RQdGc2UERCaW4xcXpHSkhaVmRmeWVCVHAyazREQU5HU0lTamIwQ29ITnNTbk8yWkZjR2hpTjRCOU0xTGc1NkxyZ2lmVWswT1laZlJkV2FVNHlRdDl4bTg2dkRKUTJocXFscGRWNjViaWdLMG83SUFtekFSS2w4UnBINUsrL1pkZFU1NW80NHZxS3daMlZ3UVVCZUFPajVSTjRhWVVlcFRoN3RHL3l0akZvVTJlRTRXc3BxYWtSV3Y4RHFRMUg4SGlHdWk0dkFSWHhJOEtZc0prSzNQeVZUamc2c0RreW90V2lsb2M3RTZ6UVRSN1IrdTNaQVZaNzRsS0NQR2wzYmFrMXdTeDNoeFZRZXZBTzd4ZmNOZE8zNTI2YUxleWwxa3FWeHQ3S2drc0hGR0xPZTBvNjVhRkg2a1NxV0F3alRDMzczbjhaU2pvOGlIYjZIcUhsVzI2aUhMSUJkYlFvMjl2UVpMRkZtOE9Temh0d0hDR3REaE5SRmlkSHBkWDRLNXJYQU5DNEFIQnh6MFBrQTRLSzJkTWRBMEVvcnIzTFpYUTU5ZDVTbmJTWWZVTndpTjRhVXprZ01seFpvVzdZTnp6Z1A3TFF6THNvaDdjdiIsIm1hYyI6IjJkZjVlOTQ2NmRiNDNjNjk4MDdmNzliOGJlOWI5NmQzODgzOGI1NzcyNTcxODdmMmYwMGJmMDY3ZjBkN2M0OGYiLCJ0YWciOiIifQ%3D%3D; expires=Thu, 14 Aug 2025 18:44:14 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"687b96149895ea533e000ee7\",\n    \"name\": \"John Doe\",\n    \"email\": \"john@doe.com\",\n    \"created_at\": \"2025-07-19T12:56:52.820000Z\",\n    \"updated_at\": \"2025-07-19T12:56:52.820000Z\"\n}"
 						},
 						{
 							"name": "401 Unauthorized",
@@ -1479,21 +1826,16 @@
 				{
 					"name": "index",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -1604,33 +1946,28 @@
 				{
 					"name": "show",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/prospects/687b96159895ea533e000ef0",
+							"raw": "{{URL}}/api/prospects/687b96159895ea533e000f10",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"prospects",
-								"687b96159895ea533e000ef0"
+								"687b96159895ea533e000f10"
 							]
 						}
 					},
@@ -1708,6 +2045,28 @@
 						}
 					]
 				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		},
 		{
@@ -1716,21 +2075,16 @@
 				{
 					"name": "prospects/filter",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2051,21 +2405,16 @@
 				{
 					"name": "prospects/filter Array",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2194,21 +2543,16 @@
 				{
 					"name": "prospects/search-criteria",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -2298,6 +2642,28 @@
 						}
 					]
 				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		},
 		{
@@ -2306,26 +2672,22 @@
 				{
 					"name": "index",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/campaigns?per_page=2&page=5",
+							"raw": "{{URL}}/api/campaigns?per_page=100&page=1",
 							"host": [
 								"{{URL}}"
 							],
@@ -2336,11 +2698,11 @@
 							"query": [
 								{
 									"key": "per_page",
-									"value": "2"
+									"value": "100"
 								},
 								{
 									"key": "page",
-									"value": "5"
+									"value": "1"
 								}
 							]
 						}
@@ -2354,6 +2716,11 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
 										"type": "text"
 									}
 								],
@@ -2380,35 +2747,19 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -2416,48 +2767,59 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:15:22 GMT"
+									"value": "Mon, 18 Aug 2025 17:58:20 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6InFLTnVVdDVTb0ZOcmxEK0VPY1FwekE9PSIsInZhbHVlIjoiellDQllWM3UrQWhUblZDTFFqbXVwZVdUZlRvRXVQQngydDFRNVJSSkdQekwwK3FFbTljU1JxSmZYVUdkV01oL3ozQWd3WmwzWmlRZWd1bWJ1VExXVDNCS0NzOEVDYXFQdGJEVFNnTjZBL1BxT3JzT1hWTnRUL1ZJaDJJV2lYM2giLCJtYWMiOiJkY2QwMDAwOWJlY2NlZTlhMDE5NzdjODlhNjg3YjlhMjBkODEwMTE5NzdkYTY1NDdkOGY1NWQ1YThjZDMyYjUyIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 19:58:20 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6Ikx1aXI5YXY0VUFWUHBxcGJ5UTJHQlE9PSIsInZhbHVlIjoiWmJxT1BYK1dKOTB6cEhESmFGZzJlWUJRUU4vTmhLdE1rRHdhZ01CV2RIY3VIdnR6NlRHQnB1WGhxS1NYOFRmR0dKaHY2OTU1UnU1NVBIbW9nUnd2cXRCOUd2S1pBSUhBQ1ZFUy9HVE5scFNBT2o5Qld6MExibVN1ZUhBb0dHR3kiLCJtYWMiOiI1ZTU3YjgxYjY0MTFkMzBiNWRjNjk2ZDVhZTAwM2E4Yjk4ZDMwZDJlMDFmNzE2NDNlMzY1NzJhZmFlMGVjMWZmIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 19:58:20 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "CTsPixU4KSImEVIixW3C7tj0wlBAowFdzuHiN2TY=eyJpdiI6ImlWQ2dhK3FoSzJ4U0F2S3duOVRDWHc9PSIsInZhbHVlIjoiYUY3empvQW02bGduc1M2aHB4YXVhWTNwUzNmMTlDS2lIZUYwMnlDUmI4K05nM2hLYjExdkFxMXpicHNoYXkzNnVXU2YxaGRhV1F0eW5lbXZsS25ncEV1eC9KY2lFdzNhTGNCcGkyZUh1Zm9tUXJDekZqNzg2ZHVDUDZGK2FGRHZlL0JKS1dHTHgwQjlZejBUcXFzbi95K2tLSithYklUUnBVclRTUWhTSXJWMzBlZWpjRTZXS254NjcxeS9kWVlEbnFwNlJRb2dSK2JBOS9YKzY4SXM0aktYN3RTc1RHemZ4dG12M0RmWHV5YVNpM09HeVZaQ3JIRnh1Tjc3WFl3aCtGUEZ6ZjNrK05aNEFjMXljdUhkQXhzNFpMMTRSQ3pMNklQN3FjV0pWaUtzNVBTc3RtMmUzTkJjYVJXRXBiSG5laHJlcmNTc3V3aG4wU2kyaFNCREk2U2RMb1Bhb0FQRGYxbENCckRJZm9wWTYyVEU5ZlZoak5rY0RTcFdENENzVVl0dmEzalNiOVNUeEtDUXF1N2tGU2p4UnhzZGR0MnZtOFNGcmZaUlFNVT0iLCJtYWMiOiJmMjQxZDcwNzY3ZWM1NDQxOTBlNzNmYzY4YzUzMGJjNDFlOWY2ODIyZjI3ZjkzNWJiMjBlMWMwNDhhNWY4NjNkIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 19:58:20 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": [\n        {\n            \"id\": \"687b96179895ea533e00102c\",\n            \"title\": \"Aliquam ad expedita ut.\",\n            \"description\": \"Nostrum sunt est et nostrum ut autem asperiores at. Eum ducimus qui tempore sunt omnis eum. Eos officia est quas tenetur nihil eveniet et. Officiis est ea excepturi excepturi dignissimos.\",\n            \"start_date\": \"2025-07-14T20:17:33.000000Z\",\n            \"end_date\": \"2025-09-18T13:54:19.000000Z\",\n            \"status\": \"Active\",\n            \"prospect_filter\": {\n                \"max_age\": 87,\n                \"source\": \"kueba\"\n            },\n            \"landingpage\": {\n                \"id\": \"687b96179895ea533e00102d\",\n                \"title\": \"Eveniet quas sunt mollitia.\",\n                \"slug\": \"voluptatem-distinctio-nisi\",\n                \"headline\": \"Omnis quis aut eaque laboriosam esse aut cum.\",\n                \"subline\": \"Quia aut animi ipsam et laborum quae quam excepturi.\",\n                \"sections\": [\n                    {\n                        \"text\": \"Sit dolores minus maiores porro. Nisi quasi sed error sint ea occaecati et dolorem. Sit velit beatae magni magni suscipit hic in.\\n\\nFacilis dolor repellat quis voluptas similique nam. Et consectetur voluptas dolorum deleniti. Expedita facere optio distinctio non libero. Ducimus rerum asperiores quidem excepturi amet. Nobis nemo ut at saepe.\\n\\nUt eum non laborum blanditiis quaerat ad. Dolores omnis accusantium cum itaque veniam.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/003377?text=business+Landingpage+laboriosam\",\n                        \"cta_text\": \"Learn More\",\n                        \"cta_url\": \"http://predovic.com/debitis-laborum-ut-a-aperiam-dolor\"\n                    },\n                    {\n                        \"text\": \"Cum eligendi ab non dolorem debitis quidem velit. Omnis minus expedita praesentium deserunt iste assumenda. Et dignissimos rerum eius aut. Expedita iusto voluptatibus quia.\\n\\nVitae dolor quod aut est. Itaque impedit illo quia et aut eius eum aut. Neque dolores consectetur quae ducimus itaque iste consequatur. Est veniam sequi eum distinctio. Minima autem deserunt pariatur modi aperiam illum ipsum.\\n\\nOfficia quae atque voluptatem. Sunt ut error itaque ab et. Maxime earum harum cum iusto ut.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/000077?text=business+Landingpage+accusantium\",\n                        \"cta_text\": \"Learn More\",\n                        \"cta_url\": \"http://www.abbott.com/\"\n                    }\n                ]\n            }\n        },\n        {\n            \"id\": \"687b96179895ea533e00102e\",\n            \"title\": \"Atque voluptas itaque.\",\n            \"description\": \"Qui enim iure delectus a beatae molestiae mollitia. Id quia repellendus libero nesciunt sed ut blanditiis ea. Aspernatur ea nihil a quas qui omnis incidunt.\",\n            \"start_date\": \"2025-06-28T05:56:14.000000Z\",\n            \"end_date\": \"2025-09-21T04:21:32.000000Z\",\n            \"status\": \"Active\",\n            \"prospect_filter\": {\n                \"max_age\": 53,\n                \"gender\": \"male\",\n                \"source\": \"kueba\"\n            },\n            \"landingpage\": {\n                \"id\": \"687b96179895ea533e00102f\",\n                \"title\": \"Facere neque quos fugit.\",\n                \"slug\": \"qui-quasi-nemo\",\n                \"headline\": \"Sit dolore rerum praesentium velit dicta.\",\n                \"subline\": \"Amet enim ea dolores quibusdam et nostrum alias non vitae omnis provident distinctio.\",\n                \"sections\": [\n                    {\n                        \"text\": \"Ut libero omnis quis eos dolorem et et facere. Aut at aut sapiente eum facere tenetur. Voluptas optio saepe quia quo non cum. Accusamus quis esse ipsa omnis ipsa dolores ex.\\n\\nMolestiae libero nesciunt saepe saepe perspiciatis totam omnis maiores. Necessitatibus atque labore laboriosam aliquid officiis. Et suscipit et temporibus accusamus asperiores voluptas ullam ducimus.\\n\\nDolor quae in aut minus. Qui corrupti repellendus inventore voluptatibus doloribus dolorem. A sit quia perferendis omnis.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/0011ff?text=business+Landingpage+earum\",\n                        \"cta_text\": \"Sign Up\",\n                        \"cta_url\": \"https://mitchell.com/voluptas-nam-asperiores-in-et.html\"\n                    },\n                    {\n                        \"text\": \"Saepe harum reprehenderit aut et inventore. Numquam qui dolorem aliquid inventore repellat magnam omnis. Iusto fugiat ea distinctio eum qui.\\n\\nFacere natus aut ut excepturi minima et adipisci. Molestiae illum saepe rerum quam quia ea nostrum. Tenetur odit ut quia quia nemo.\\n\\nId ut magni dolor aut qui ipsam. Distinctio non praesentium et. Sed et delectus veritatis culpa animi voluptatem. Voluptas voluptatibus nihil sed eos.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/00eebb?text=business+Landingpage+neque\",\n                        \"cta_text\": \"Get Started\",\n                        \"cta_url\": \"http://marks.com/explicabo-modi-deserunt-rerum-quaerat-ut\"\n                    },\n                    {\n                        \"text\": \"Quasi atque id tenetur et totam sint quas. Veritatis omnis aliquid sint et. Sit optio quis aut consequatur voluptas quae. Itaque voluptatibus voluptas quo minus labore reiciendis sed.\\n\\nCulpa neque qui illo dolore facere sit et. Accusamus dolor nemo repellendus error. Et non consequuntur quas non ad quos iusto. Quo qui eum blanditiis expedita ad.\\n\\nAtque vitae sint fugiat dolores qui est. Iusto repellat aliquam ipsum officia temporibus quia quia sed. Nostrum amet enim deleniti possimus quam.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/00bb11?text=business+Landingpage+ut\",\n                        \"cta_text\": \"Learn More\",\n                        \"cta_url\": \"https://okon.net/fugiat-ratione-reiciendis-ut.html\"\n                    }\n                ]\n            }\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://apde_be.test/api/campaigns?page=1\",\n        \"last\": \"http://apde_be.test/api/campaigns?page=10\",\n        \"prev\": \"http://apde_be.test/api/campaigns?page=4\",\n        \"next\": \"http://apde_be.test/api/campaigns?page=6\"\n    },\n    \"meta\": {\n        \"current_page\": 5,\n        \"from\": 9,\n        \"last_page\": 10,\n        \"links\": [\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=4\",\n                \"label\": \"&laquo; Previous\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=1\",\n                \"label\": \"1\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=2\",\n                \"label\": \"2\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=3\",\n                \"label\": \"3\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=4\",\n                \"label\": \"4\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=5\",\n                \"label\": \"5\",\n                \"active\": true\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=6\",\n                \"label\": \"6\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=7\",\n                \"label\": \"7\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=8\",\n                \"label\": \"8\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=9\",\n                \"label\": \"9\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=10\",\n                \"label\": \"10\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/campaigns?page=6\",\n                \"label\": \"Next &raquo;\",\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://apde_be.test/api/campaigns\",\n        \"per_page\": 2,\n        \"to\": 10,\n        \"total\": 20\n    }\n}"
+							"body": "{\n    \"data\": [\n        {\n            \"id\": \"68a36943d7f5370a250556b8\",\n            \"title\": \"Officia quae rem reprehenderit.\",\n            \"slug\": \"officia-quae-rem-reprehenderit\",\n            \"description\": \"Dolorum maxime omnis soluta rem iusto et odio minima. Accusantium et ut sequi non. Cum vitae nihil ratione dolore et.\",\n            \"start_date\": \"2025-08-19T05:44:02.000000Z\",\n            \"end_date\": \"2025-10-19T06:52:58.000000Z\",\n            \"status\": \"Completed\",\n            \"prospect_filter\": {\n                \"max_age\": 81,\n                \"gender\": \"female\",\n                \"source\": \"erp\"\n            },\n            \"landingpage\": {\n                \"id\": \"68a36943d7f5370a250556a4\",\n                \"title\": \"Excepturi est ullam blanditiis.\",\n                \"headline\": \"Est iure eos esse autem voluptatem laudantium.\",\n                \"subline\": \"Explicabo inventore natus dolorem eum enim ut sed blanditiis.\",\n                \"sections\": [\n                    {\n                        \"text\": \"Quia alias voluptas et consequuntur. Sit vitae repellendus et explicabo rem fugiat quisquam nam. Consectetur autem est placeat aut. Omnis repellat ut ipsam.\\n\\nNostrum ea et sequi quae. Enim quia aperiam est esse explicabo qui. Dolore officiis molestias expedita quod. Dicta accusantium hic optio asperiores eum ducimus facilis.\\n\\nNon vel fugit vero iusto. Ea soluta nihil ducimus aut et. Minus ea at quidem voluptate tempora est. Est modi debitis dolor eum officia sed.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/0033ff?text=business+Landingpage+iure\",\n                        \"cta_text\": \"Get Started\",\n                        \"cta_url\": \"http://www.lemke.com/\"\n                    },\n                    {\n                        \"text\": \"Pariatur eum modi sequi dolores. Aut distinctio quis atque. Adipisci recusandae quo et eos minus iste laboriosam.\\n\\nNon labore cupiditate deserunt aut et amet et veniam. Molestias perferendis cumque vel quis aut provident. Dicta veniam iusto blanditiis ducimus laborum. Quia culpa optio temporibus rerum odio fuga ab modi.\\n\\nSit illo voluptatem rerum velit sequi iusto. In praesentium asperiores temporibus quia totam quam quaerat nam. Adipisci tempora nostrum eaque itaque eos a assumenda. Sequi ut dolore non odit dolorem rerum.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/002299?text=business+Landingpage+ut\",\n                        \"cta_text\": \"Learn More\",\n                        \"cta_url\": \"http://kub.net/earum-optio-officia-omnis-repellendus-necessitatibus-quod\"\n                    }\n                ]\n            }\n        },\n        {\n            \"id\": \"68a36943d7f5370a250556b9\",\n            \"title\": \"Dolorem enim minima earum.\",\n            \"slug\": \"dolorem-enim-minima-earum\",\n            \"description\": \"Non omnis quibusdam similique facere doloribus. Aut quae ut quaerat ut odio doloremque. Accusantium rem quo ipsum recusandae vitae qui. Eveniet vel aliquid voluptas recusandae aut.\",\n            \"start_date\": \"2025-08-14T17:20:57.000000Z\",\n            \"end_date\": \"2025-10-10T11:22:50.000000Z\",\n            \"status\": \"Active\",\n            \"prospect_filter\": {\n                \"min_age\": 50,\n                \"max_age\": 90,\n                \"gender\": \"male\"\n            },\n            \"landingpage\": {\n                \"id\": \"68a36943d7f5370a250556a5\",\n                \"title\": \"Deserunt qui voluptas voluptatem qui.\",\n                \"headline\": \"Iusto cupiditate nam facilis nostrum rerum delectus nesciunt.\",\n                \"subline\": \"Sit culpa est omnis sit qui et voluptatibus assumenda ut voluptates quia non.\",\n                \"sections\": [\n                    {\n                        \"text\": \"Soluta distinctio aspernatur saepe eligendi voluptate similique. Quidem labore harum nam ut aut quis sed.\\n\\nReprehenderit autem et occaecati voluptatem qui. Officia nemo nesciunt quia rem vero. Hic sunt ipsa eum qui optio dolorem. Veniam iste porro ut ullam.\\n\\nVoluptas esse aperiam repellendus dolorem. Rem explicabo ab voluptate quia officia. Corporis sed enim qui reprehenderit dicta natus.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/009999?text=business+Landingpage+harum\",\n                        \"cta_text\": \"Contact Us\",\n                        \"cta_url\": \"http://www.walsh.com/cupiditate-iusto-nam-ipsam-voluptatum-eligendi-et\"\n                    },\n                    {\n                        \"text\": \"Fugiat voluptatem nihil ea officia beatae omnis. Qui voluptatem nemo dolor et. Aut accusantium natus doloremque dolorem quod non.\\n\\nQuia itaque similique voluptas quos assumenda cupiditate iste. Sunt eveniet dignissimos reiciendis nihil quia vel labore qui. Quia quo laudantium dicta dicta autem doloremque voluptas.\\n\\nNostrum fugiat quis magnam dicta omnis. Sunt animi nihil ipsam ut quia. Aliquid dolorem fuga libero autem. Aspernatur illo nostrum itaque magnam ut. Dolores est quo voluptatibus est aut.\",\n                        \"image_url\": \"https://via.placeholder.com/800x400.png/00ffff?text=business+Landingpage+earum\",\n                        \"cta_text\": \"Sign Up\",\n                        \"cta_url\": \"http://collier.com/alias-id-sit-dolor-recusandae-ut-eligendi.html\"\n                    }\n                ]\n            }\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://127.0.0.1:8000/api/campaigns?page=1\",\n        \"last\": \"http://127.0.0.1:8000/api/campaigns?page=10\",\n        \"prev\": \"http://127.0.0.1:8000/api/campaigns?page=4\",\n        \"next\": \"http://127.0.0.1:8000/api/campaigns?page=6\"\n    },\n    \"meta\": {\n        \"current_page\": 5,\n        \"from\": 9,\n        \"last_page\": 10,\n        \"links\": [\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=4\",\n                \"label\": \"&laquo; Previous\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=1\",\n                \"label\": \"1\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=2\",\n                \"label\": \"2\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=3\",\n                \"label\": \"3\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=4\",\n                \"label\": \"4\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=5\",\n                \"label\": \"5\",\n                \"active\": true\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=6\",\n                \"label\": \"6\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=7\",\n                \"label\": \"7\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=8\",\n                \"label\": \"8\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=9\",\n                \"label\": \"9\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=10\",\n                \"label\": \"10\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/campaigns?page=6\",\n                \"label\": \"Next &raquo;\",\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://127.0.0.1:8000/api/campaigns\",\n        \"per_page\": 2,\n        \"to\": 10,\n        \"total\": 20\n    }\n}"
 						}
 					]
 				},
 				{
 					"name": "show",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/campaigns/687b96179895ea533e00102c",
+							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b2",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"campaigns",
-								"687b96179895ea533e00102c"
+								"68a36943d7f5370a250556b2"
 							]
 						}
 					},
@@ -2471,51 +2833,40 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text"
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/api/campaigns/687b96179895ea533e00102c",
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b8",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"api",
 										"campaigns",
-										"687b96179895ea533e00102c"
+										"68a36943d7f5370a250556b8"
 									]
 								}
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -2523,42 +2874,130 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:15:36 GMT"
+									"value": "Mon, 18 Aug 2025 18:01:50 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6Ikk4YWNLUlZtNjk2U243VmpXL3NPVVE9PSIsInZhbHVlIjoicW5QTmN0T0N2TTBZeldVUUJjaTVGU0c4bFJ1djRidmRPUnJDYWc3cm16NUk3U0FrN2p3M2Q0VVh1MFo1aGl4Sk9wMnRVZTJ4RGdCLzg0UGVQbGIzbmdDN284eHJrYU9idUtUWHNRK1dSKysrL0FkUmtyVUVPU1JBR214WGg0YlkiLCJtYWMiOiJjMzE4MDU3ZGQxNGViNWY0ZjBmMjkyMTcyNmQ5NGU2MGI0N2M4MGEzNmJjMDY2NmVjMGRlMGFlM2I3M2Y0NDNjIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:01:50 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6Ikx3Rlc2Zm1tWGdNSnE4Tll1Ym1CUkE9PSIsInZhbHVlIjoiOGhLc05VRDBGR1VkYk41K1BBMkZxWDFFS0dESkY0UGNsQk5GazFOQXZhQ3JBajVVb0JPdWpoWG5FN1c3Vko2K1B5NTJ1OEJQY0xGWTBPV2hMUUthaG5aQng0aC9LbXhyNDV2TzRQU0ludnpJOVRSa2VnYWpDZ09RNHM0NEd4L0YiLCJtYWMiOiJmNDcxNGZhMTY5YTYzYjEzZWQ3MTUzNjRjYWRiYzE5NDA1MjU1ZGNiMzRmOTVmZjEyNTRjMmM5MDJlZTU0MTViIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:01:50 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "CTsPixU4KSImEVIixW3C7tj0wlBAowFdzuHiN2TY=eyJpdiI6IlZBMytKblZFeklYRDVyb0VlbDRDNEE9PSIsInZhbHVlIjoiTzFGVXpsZFhWZGNkNnlmVDhkU3RkN041Y1B1NzAwc1ZyQkJuV01zY3dEeWFpdk9oNzJLUXZZM0lFQkkyOGhqSkVod0crbzkxd3N4Z1RlVlZSSHlOYVVDT0E3OElqamRjR3ZvV1VWS0pISW5HRzF2c3N3SnNaTVRESzZBWjNsNUJnbjJ1b21RUFVjQ054blp1NlZwRG1lUkdqcXE2WTE4QW5rZVp5MjBXSm4rS2VLdEVWOTROeU1IN0JaSmNMQjUyNnl0cmhXVkZ3MVoyMUN1bmRoTTNkU0x2NDc2Sy93Q0s2YldYemVLZG1aMy9CUDFjVkFzWlViczhvVGRnVFhYOXVKeDAydnRHTGNaUXZ2dC9ud0lGalpqUXRuOExKTjRXUkFWQ1JhVVQ3RGkzKzhnSU9BUVZQK3BEVTczTWZnVXVwdm8xc3dsQ3RvSm1KSGNGWmRWblRXcXFxY3c4TTVqRWFPeXZUQTFPNjRQRWIxM1EwMHIzTW9rREl3M1krL0szeEtVWlRBZDVHMmNGbjYwZk9ueCtqUDR2eW14Z1JaZWZMMTVyMWRXbWlCcz0iLCJtYWMiOiJmYzc2YjY1ZWI2NTk3NDEwYjBhOWMxMWYxNDJhMjY1NTNiYjM1OWZiNjUyYWNmZDI3MDBhOWVmYmQxM2I2YTNiIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:01:50 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687b96179895ea533e00102c\",\n        \"title\": \"Aliquam ad expedita ut.\",\n        \"description\": \"Nostrum sunt est et nostrum ut autem asperiores at. Eum ducimus qui tempore sunt omnis eum. Eos officia est quas tenetur nihil eveniet et. Officiis est ea excepturi excepturi dignissimos.\",\n        \"start_date\": \"2025-07-14T20:17:33.000000Z\",\n        \"end_date\": \"2025-09-18T13:54:19.000000Z\",\n        \"status\": \"Active\",\n        \"prospect_filter\": {\n            \"max_age\": 87,\n            \"source\": \"kueba\"\n        },\n        \"landingpage\": {\n            \"id\": \"687b96179895ea533e00102d\",\n            \"title\": \"Eveniet quas sunt mollitia.\",\n            \"slug\": \"voluptatem-distinctio-nisi\",\n            \"headline\": \"Omnis quis aut eaque laboriosam esse aut cum.\",\n            \"subline\": \"Quia aut animi ipsam et laborum quae quam excepturi.\",\n            \"sections\": [\n                {\n                    \"text\": \"Sit dolores minus maiores porro. Nisi quasi sed error sint ea occaecati et dolorem. Sit velit beatae magni magni suscipit hic in.\\n\\nFacilis dolor repellat quis voluptas similique nam. Et consectetur voluptas dolorum deleniti. Expedita facere optio distinctio non libero. Ducimus rerum asperiores quidem excepturi amet. Nobis nemo ut at saepe.\\n\\nUt eum non laborum blanditiis quaerat ad. Dolores omnis accusantium cum itaque veniam.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/003377?text=business+Landingpage+laboriosam\",\n                    \"cta_text\": \"Learn More\",\n                    \"cta_url\": \"http://predovic.com/debitis-laborum-ut-a-aperiam-dolor\"\n                },\n                {\n                    \"text\": \"Cum eligendi ab non dolorem debitis quidem velit. Omnis minus expedita praesentium deserunt iste assumenda. Et dignissimos rerum eius aut. Expedita iusto voluptatibus quia.\\n\\nVitae dolor quod aut est. Itaque impedit illo quia et aut eius eum aut. Neque dolores consectetur quae ducimus itaque iste consequatur. Est veniam sequi eum distinctio. Minima autem deserunt pariatur modi aperiam illum ipsum.\\n\\nOfficia quae atque voluptatem. Sunt ut error itaque ab et. Maxime earum harum cum iusto ut.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/000077?text=business+Landingpage+accusantium\",\n                    \"cta_text\": \"Learn More\",\n                    \"cta_url\": \"http://www.abbott.com/\"\n                }\n            ]\n        }\n    }\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"68a36943d7f5370a250556b8\",\n        \"title\": \"Officia quae rem reprehenderit.\",\n        \"slug\": \"officia-quae-rem-reprehenderit\",\n        \"description\": \"Dolorum maxime omnis soluta rem iusto et odio minima. Accusantium et ut sequi non. Cum vitae nihil ratione dolore et.\",\n        \"start_date\": \"2025-08-19T05:44:02.000000Z\",\n        \"end_date\": \"2025-10-19T06:52:58.000000Z\",\n        \"status\": \"Completed\",\n        \"prospect_filter\": {\n            \"max_age\": 81,\n            \"gender\": \"female\",\n            \"source\": \"erp\"\n        },\n        \"landingpage\": {\n            \"id\": \"68a36943d7f5370a250556a4\",\n            \"title\": \"Excepturi est ullam blanditiis.\",\n            \"headline\": \"Est iure eos esse autem voluptatem laudantium.\",\n            \"subline\": \"Explicabo inventore natus dolorem eum enim ut sed blanditiis.\",\n            \"sections\": [\n                {\n                    \"text\": \"Quia alias voluptas et consequuntur. Sit vitae repellendus et explicabo rem fugiat quisquam nam. Consectetur autem est placeat aut. Omnis repellat ut ipsam.\\n\\nNostrum ea et sequi quae. Enim quia aperiam est esse explicabo qui. Dolore officiis molestias expedita quod. Dicta accusantium hic optio asperiores eum ducimus facilis.\\n\\nNon vel fugit vero iusto. Ea soluta nihil ducimus aut et. Minus ea at quidem voluptate tempora est. Est modi debitis dolor eum officia sed.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/0033ff?text=business+Landingpage+iure\",\n                    \"cta_text\": \"Get Started\",\n                    \"cta_url\": \"http://www.lemke.com/\"\n                },\n                {\n                    \"text\": \"Pariatur eum modi sequi dolores. Aut distinctio quis atque. Adipisci recusandae quo et eos minus iste laboriosam.\\n\\nNon labore cupiditate deserunt aut et amet et veniam. Molestias perferendis cumque vel quis aut provident. Dicta veniam iusto blanditiis ducimus laborum. Quia culpa optio temporibus rerum odio fuga ab modi.\\n\\nSit illo voluptatem rerum velit sequi iusto. In praesentium asperiores temporibus quia totam quam quaerat nam. Adipisci tempora nostrum eaque itaque eos a assumenda. Sequi ut dolore non odit dolorem rerum.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/002299?text=business+Landingpage+ut\",\n                    \"cta_text\": \"Learn More\",\n                    \"cta_url\": \"http://kub.net/earum-optio-officia-omnis-repellendus-necessitatibus-quod\"\n                }\n            ]\n        }\n    }\n}"
+						},
+						{
+							"name": "200 OK - No LP",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b0",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b0"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Aug 2025 19:13:26 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6ImliVkoxTU1yaXpGTGUyVnlxMmlXNnc9PSIsInZhbHVlIjoiQkxmR0sya2NPY2hxQTZ5NWVIK3BTWkcyb1lpR2hIWFhRN3MydkQwMCsxUHFRSEdkMmM0THBQRVZyRzUwa0txa201Zko4QjVTNDNCbW1IZk45MWVHSGQyNUdQYTg1V3ZtbE96d3d4Sm55YmMyUzcyWWZIMzFYRm1JWXlwdjIwL2kiLCJtYWMiOiJjMGVkOTE2ZDhiYjM2NDU3NmU1YjhhYTMxYWE0MjllOTBiMzc3OWQ1ZTZhMzczOGE2OWJlMDVjMmQ2Njg1ZTI2IiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 21:13:26 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6IkpBVW41VG5kZVNZRXY2cW9yR2tCdEE9PSIsInZhbHVlIjoiNWRmWWR2NVVUczVTTGlUa2FvNDdsTWp5TTZWT0cxS1JuZnZ6enl0R0IyL0NTNGprSUtSbmxPeFVLRFZKdStldUduRTM2WjRXVHEvQkdKVFZXMmpKZitMalFmVDVyU3RBMVM4S0NabzFaT0J6LzFrd0tlLzZKN2VXR1FFaUdIVUUiLCJtYWMiOiIyMGIwODVkNjNmNDRhNGU4NjI0MjQ2ODY3MjI2YjEzOWNmNzA2NzhhOGU0YTJiMzFiNzU4ODhlN2E3MjM0NzdiIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 21:13:26 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "CTsPixU4KSImEVIixW3C7tj0wlBAowFdzuHiN2TY=eyJpdiI6IjJRZVUzN0VaRU5aQzJIN053d0U5S2c9PSIsInZhbHVlIjoieHN6UUlBaHlSK29lZ1E1NksvRm9kV081dmFzK0JQUFhmZXFnOGkzN3dRYkcxbFR6VnlhbnVTZ2lZNFdSWUNiTXFLRTNlNHIvZitKNkVqM3VJOVBHa2ZkbGIxanQydGVSemlhWVRjeHdYcEJ5QkJxd0FBNjVBcWFzOXJmaGpPaXJpVGFhTzZvRkNTRVRVSy9yTEp4cEJFMXJ4OCtZNTFNMkJUU3ZIRHR4djR4VWZiK3E3YTJwZkJyekZTSVo0U0JnT0lrVTF0bWdXaGJZSG5keVMwSWdrSmRIZk5uTUxxQmFVeGJvZ05SL0RBbXN4dlpJd0kxdHFqQUdCb2hzWGk4WUVpNjh2TFF6d2VLenZMMDl0SFlQWnNCcEs2Z0p5R0ZDYWpJKzBjeURQaUVzK2VJeVI2dEg2NENzTG1mMEpKUm9qdHNTeGZNaldwTENCK2FpRHVXdkhiVXVKQk93by9TQ0twM3NrQURULzNzQWVrd0JFbm52RkNWYjlKa1l6TXZsWDNTSFVVMVI3U0ZwOEdVU1ZWNVVReTA4MEVtbjV3SHI3czNvby9QZkJrdz0iLCJtYWMiOiJkMjU2YzE1YTg0YTlkMTNlZDJkM2E1ODhjNWEwZTljZmIwOWVkYmNhNGQ4Yjk4ZjhhODBhNTc3Y2Y3YzNmMjcyIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 21:13:26 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": \"68a36943d7f5370a250556b0\",\n        \"title\": \"Assumenda voluptatem omnis.\",\n        \"slug\": \"assumenda-voluptatem-omnis\",\n        \"description\": \"Et quibusdam labore et nam a ea eveniet voluptate. Eveniet non et labore accusamus repellat enim et dicta. Nostrum ullam et inventore necessitatibus voluptas quis nobis esse.\",\n        \"start_date\": \"2025-08-14T07:44:18.000000Z\",\n        \"end_date\": \"2025-10-04T15:30:52.000000Z\",\n        \"status\": \"Completed\",\n        \"prospect_filter\": {\n            \"min_age\": 39,\n            \"max_age\": 50,\n            \"gender\": \"male\",\n            \"source\": \"kueba\"\n        },\n        \"landingpage\": null\n    }\n}"
 						}
 					]
 				},
 				{
 					"name": "create",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
+							"raw": "{\n    \"title\": \"New Campaign 2\",\n    \"slug\": \"new-campaign-2\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"landingpage_id\": \"68a36943d7f5370a250556a8\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2586,11 +3025,17 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
+									"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"slug\": \"new-campaign-5\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2610,27 +3055,19 @@
 							},
 							"status": "Created",
 							"code": 201,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -2638,7 +3075,11 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:15:53 GMT"
+									"value": "Mon, 18 Aug 2025 18:04:59 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
 								},
 								{
 									"key": "Vary",
@@ -2646,7 +3087,80 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687bb6a98c6a6f3e8c058ac5\",\n        \"title\": \"New Campaign 5\",\n        \"description\": \"This is a Test of the Input Validation.\",\n        \"start_date\": null,\n        \"end_date\": null,\n        \"status\": \"Draft\",\n        \"prospect_filter\": {\n            \"address.plz\": 1012,\n            \"age\": 32\n        }\n    }\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"68a36b4b311442fae40cff86\",\n        \"title\": \"New Campaign 5\",\n        \"slug\": \"new-campaign-5\",\n        \"description\": \"This is a Test of the Input Validation.\",\n        \"start_date\": null,\n        \"end_date\": null,\n        \"status\": \"Draft\",\n        \"prospect_filter\": {\n            \"address.plz\": 1012,\n            \"age\": 32\n        }\n    }\n}"
+						},
+						{
+							"name": "201 Created with LP",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"New Campaign 2\",\n    \"slug\": \"new-campaign-2\",\n    \"description\": \"This is a Test of the Input Validation.\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"landingpage_id\": \"68a36943d7f5370a250556a8\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 32\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/api/campaigns",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Aug 2025 18:25:26 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": \"68a37016311442fae40cff88\",\n        \"title\": \"New Campaign 2\",\n        \"slug\": \"new-campaign-2\",\n        \"description\": \"This is a Test of the Input Validation.\",\n        \"start_date\": null,\n        \"end_date\": null,\n        \"status\": \"Draft\",\n        \"prospect_filter\": {\n            \"address.plz\": 1012,\n            \"age\": 32\n        },\n        \"landingpage\": {\n            \"id\": \"68a36943d7f5370a250556a8\",\n            \"title\": \"Blanditiis possimus.\",\n            \"headline\": \"Consequuntur vero labore praesentium natus sed et perferendis.\",\n            \"subline\": \"Et ratione doloremque necessitatibus delectus eos consectetur et numquam nostrum.\",\n            \"sections\": [\n                {\n                    \"text\": \"Facilis quos laudantium deleniti tenetur saepe nam. Rerum cum ducimus occaecati omnis ipsum tempora. Harum nulla ut inventore officiis corporis incidunt.\\n\\nLaborum dolorum impedit quia aut animi. Ratione tempora minus iusto quos impedit ut. Reprehenderit suscipit at et ea.\\n\\nAsperiores asperiores aut sunt corrupti quo sequi iste voluptas. Aut officiis consectetur eaque maiores itaque. Dicta provident alias aut doloremque aut sint. Aut reiciendis amet in enim quia.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/006600?text=business+Landingpage+molestiae\",\n                    \"cta_text\": \"Sign Up\",\n                    \"cta_url\": \"http://www.johns.com/\"\n                },\n                {\n                    \"text\": \"Asperiores ex qui saepe perspiciatis delectus. Eligendi nobis voluptas iusto laboriosam qui laborum. Adipisci aut eos voluptatem ut sint dolor facere officiis. Et quos dolorem similique quo et facilis.\\n\\nVoluptatem eos natus asperiores qui soluta sed. Distinctio aut quisquam error autem odio omnis sunt odio. In eaque dolor aut accusantium. Dolores voluptas est dolor dolores.\\n\\nTempore harum voluptatibus dolorem. Incidunt sit laboriosam esse natus natus consequatur deleniti.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00ee66?text=business+Landingpage+et\",\n                    \"cta_text\": \"Get Started\",\n                    \"cta_url\": \"https://boyle.com/officia-temporibus-repellendus-sed-ut-distinctio-iste.html\"\n                },\n                {\n                    \"text\": \"Velit itaque fugiat dolores. Commodi expedita consequatur aliquam eaque qui porro in. Cupiditate repudiandae qui modi ut. Qui quibusdam nobis mollitia corrupti dolore.\\n\\nAdipisci soluta ipsa dolore impedit facilis doloribus. Ut quia labore ut itaque cupiditate tempora dolorem. Quis quidem voluptate aut et. Nam dolor quisquam accusamus.\\n\\nAliquid iure quo ad. Et laudantium voluptate ut sit in nihil qui et. Laboriosam doloribus sint qui in sunt provident distinctio.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00ddee?text=business+Landingpage+nostrum\",\n                    \"cta_text\": \"Get Started\",\n                    \"cta_url\": \"http://www.hammes.com/\"\n                }\n            ]\n        }\n    }\n}"
 						},
 						{
 							"name": "422 failed InputValidation",
@@ -2724,27 +3238,23 @@
 				{
 					"name": "update",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"description\": \"This is a Test of the Input Validation! (updated)\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 40\n    }\n}\n",
+							"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"slug\": \"new-campaign-5\",\n    \"description\": \"This is a Test of the Input Validation! (updated)\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 40\n    }\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2752,14 +3262,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/api/campaigns/687bb6a98c6a6f3e8c058ac5",
+							"raw": "{{URL}}/api/campaigns/68a36b4b311442fae40cff86",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"campaigns",
-								"687bb6a98c6a6f3e8c058ac5"
+								"68a36b4b311442fae40cff86"
 							]
 						}
 					},
@@ -2773,11 +3283,17 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"description\": \"This is a Test of the Input Validation! (updated)\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 40\n    }\n}\n",
+									"raw": "{\n    \"title\": \"New Campaign 5\",\n    \"slug\": \"new-campaign-5\",\n    \"description\": \"This is a Test of the Input Validation! (updated)\",\n    \"status\": \"draft\",\n    \"start_date\": \"\",\n    \"end_date\": \"\",\n    \"prospect_filter\": {\n        \"address.plz\": 1012,\n        \"age\": 40\n    }\n}\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2785,48 +3301,32 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/api/campaigns/687bb6a98c6a6f3e8c058ac5",
+									"raw": "{{URL}}/api/campaigns/68a36b4b311442fae40cff86",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"api",
 										"campaigns",
-										"687bb6a98c6a6f3e8c058ac5"
+										"68a36b4b311442fae40cff86"
 									]
 								}
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -2834,15 +3334,19 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:16:57 GMT"
+									"value": "Mon, 18 Aug 2025 18:17:10 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687bb6a98c6a6f3e8c058ac5\",\n        \"title\": \"New Campaign 5\",\n        \"description\": \"This is a Test of the Input Validation! (updated)\",\n        \"start_date\": null,\n        \"end_date\": null,\n        \"status\": \"Draft\",\n        \"prospect_filter\": {\n            \"address.plz\": 1012,\n            \"age\": 40\n        },\n        \"landingpage\": null\n    }\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"68a36b4b311442fae40cff86\",\n        \"title\": \"New Campaign 5\",\n        \"slug\": \"new-campaign-5\",\n        \"description\": \"This is a Test of the Input Validation! (updated)\",\n        \"start_date\": null,\n        \"end_date\": null,\n        \"status\": \"Draft\",\n        \"prospect_filter\": {\n            \"address.plz\": 1012,\n            \"age\": 40\n        }\n    }\n}"
 						},
 						{
 							"name": "404 Not Found",
@@ -3001,22 +3505,18 @@
 				{
 					"name": "delete",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -3105,6 +3605,28 @@
 						}
 					]
 				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		},
 		{
@@ -3113,33 +3635,29 @@
 				{
 					"name": "send-emails",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/campaigns/687b96179895ea533e00102c/send-emails",
+							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b4/send-emails",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"campaigns",
-								"687b96179895ea533e00102c",
+								"68a36943d7f5370a250556b4",
 								"send-emails"
 							]
 						}
@@ -3154,52 +3672,42 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/api/campaigns/687b96179895ea533e00102c/send-emails",
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b1/send-emails",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"api",
 										"campaigns",
-										"687b96179895ea533e00102c",
+										"68a36943d7f5370a250556b1",
 										"send-emails"
 									]
 								}
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -3207,36 +3715,402 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 21:23:26 GMT"
+									"value": "Wed, 20 Aug 2025 16:38:32 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"message\": \"Campaign emails queued successfully. 1 emails sent to prospects.\",\n    \"emails_sent\": 1,\n    \"total_emails_sent\": 6,\n    \"notified_prospects\": 5,\n    \"available_prospects\": 94,\n    \"total_prospects\": 100\n}"
+							"body": "{\n    \"message\": \"Campaign emails queued successfully. 1 emails sent to prospects.\",\n    \"campaign\": {\n        \"id\": \"68a36943d7f5370a250556b1\",\n        \"title\": \"Reprehenderit ut optio autem.\"\n    },\n    \"emails_sent\": 1,\n    \"total_emails_sent\": 4,\n    \"notified_prospects\": 4,\n    \"available_prospects\": 285,\n    \"total_prospects\": 289\n}"
+						},
+						{
+							"name": "400 No LP associated",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b0/send-emails",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b0",
+										"send-emails"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 18 Aug 2025 18:50:23 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Campaign must have an associated landing page to send emails.\"\n}"
+						},
+						{
+							"name": "400 Not Active",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b4/send-emails",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b4",
+										"send-emails"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 20 Aug 2025 16:43:29 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Campaign must be active to send emails.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "send-emails sent",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b0/send-emails/sent",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"campaigns",
+								"68a36943d7f5370a250556b0",
+								"send-emails",
+								"sent"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b1/send-emails/sent",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b1",
+										"send-emails",
+										"sent"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 20 Aug 2025 16:42:07 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"campaign\": {\n        \"id\": \"68a36943d7f5370a250556b1\",\n        \"title\": \"Reprehenderit ut optio autem.\"\n    },\n    \"total_emails_sent\": 4,\n    \"notified_prospects\": 4,\n    \"available_prospects\": 285,\n    \"total_prospects\": 289\n}"
+						},
+						{
+							"name": "200 Inactive Campaign",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b4/send-emails/sent",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b4",
+										"send-emails",
+										"sent"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 20 Aug 2025 16:43:45 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"campaign\": {\n        \"id\": \"68a36943d7f5370a250556b4\",\n        \"title\": \"Beatae culpa aut.\"\n    },\n    \"total_emails_sent\": 0,\n    \"notified_prospects\": 0,\n    \"available_prospects\": 202,\n    \"total_prospects\": 202\n}"
+						},
+						{
+							"name": "200 No LP associated",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b0/send-emails/sent",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"api",
+										"campaigns",
+										"68a36943d7f5370a250556b0",
+										"send-emails",
+										"sent"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.11"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 20 Aug 2025 16:44:20 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"campaign\": {\n        \"id\": \"68a36943d7f5370a250556b0\",\n        \"title\": \"Assumenda voluptatem omnis.\"\n    },\n    \"total_emails_sent\": 0,\n    \"notified_prospects\": 0,\n    \"available_prospects\": 11,\n    \"total_prospects\": 11\n}"
 						}
 					]
 				},
 				{
 					"name": "force send-emails",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3340,6 +4214,28 @@
 						}
 					]
 				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		},
 		{
@@ -3348,33 +4244,28 @@
 				{
 					"name": "analytics",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/campaigns/687b96179895ea533e00102c/analytics",
+							"raw": "{{URL}}/api/campaigns/68a36943d7f5370a250556b0/analytics",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"campaigns",
-								"687b96179895ea533e00102c",
+								"68a36943d7f5370a250556b0",
 								"analytics"
 							]
 						}
@@ -3462,21 +4353,16 @@
 				{
 					"name": "index",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -3511,6 +4397,11 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text"
 									}
 								],
 								"url": {
@@ -3536,35 +4427,19 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -3572,48 +4447,59 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:24:16 GMT"
+									"value": "Mon, 18 Aug 2025 18:27:05 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6Ilo5aGh2TjVvdU9BQnpkczZ2RHBDeFE9PSIsInZhbHVlIjoiRGRmQ1ZiY2UrYS8rOU9lT3daSEsyb1ExS21wK3k3WHJnNnh5VWpwc0RkVDdiTFl4Q3dPNHNSTkVHTGNPRVkxSERQMmw5T0ZuQnY0L0VUVFhRZkVHOHVqRDEybXJkblpvbmtiRk00VDZqUSs1N0JmcS91VnUxc3RtMmVpWU8yZ2ciLCJtYWMiOiJmZDJkZTY0ZTAwMjg1YmM4NTk5ZGZiM2U1YTFjNDQxOGU4MzVhNTNmMDU1MzVkYzMzMDEwNGQ2OTRkMmY4YzY1IiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:27:05 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6Im9Sd2pMYVE4RWtkSW5qbWFIYXZXSkE9PSIsInZhbHVlIjoiRnZqcEhzT2dPMk00SkxlbG8wRUdOb1htZ1hIMUlQM084UVVvaXh5VS95NUV6UzRZeEFJTW1XeFpUcW40b2FCNFRObERjUitJdzJXY091NXFpdkZGR1JsU3ByTW9GQ1BwMlZpMEJDMjJJYUVraFBGM1YyOXkySTNJNnN6ZjVaUjgiLCJtYWMiOiIwOWUzYTJmM2MxODFhMjBjYjI1YmJkMTRkN2JiNDZhNGU1OTY5NmM1MjgyNGQ3ZGJjYWViMmEyMjE3MGJhNGM2IiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:27:05 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "CTsPixU4KSImEVIixW3C7tj0wlBAowFdzuHiN2TY=eyJpdiI6Im4vUkRqbTUxZzc2cWFlVFNPNk1kckE9PSIsInZhbHVlIjoiVVB5N09jTWtjSlRMb1JBbjFoN0diQk5UTGYvcHRFVW9VRHBGM21yajlFNm0zaDBMTzV2VVkrcklmbGNmUVZOd1NhTy9pbDd5cjFYZEJrYy9mTnhqdElLdDVlUTZXYzlPN0RpN2t0Mm1vNFI2UXZmU2JyYXNIdUFIVHBFNm05bzMxSE1tSy9mZ3kzc2s1bkFaV2hsOTVqMDk1WUdyS1BTcUVXSFljTVFXM0Q1SFBDWDdrZll0M2w4b2pNRDczcjhjblFtUkFQbFk5dFd1QW91ekNvTlg4Z1ZCSUVycWdmU0JUc0psaTdyaGJZMThDWk1LaW04SUhqblRYL1dCWUEyV1NnSTRTMXBqNDcwZ3dRcFV4ZU5hRFBicVpUTzB5MlZpVmc0bHlkc3I4VTZSMDA0cVcyY0lvL2EyTVFoam5kVXdwczhVQXgxRWozWU5OK3QyN1BIdEx6T1Vka2ZGcS83VVNZblZrVlZ3Y3d4L2trQzFIT3hRR0lLS21jTzBGUXg5R2tib1NFU2VLRGh3cnpidmpQSVhXR1lld0ErcG1uZzhvOHJTT2VONUx6Yz0iLCJtYWMiOiI1NzRjNThkZGZmNDE3YmZhZjE5YmZjYjU0NjY1NmM5MzJiMDI0M2I4ZGE3ZjM0ODY1MzJlZGI4YzdjNDRiNWZhIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:27:05 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": [\n        {\n            \"id\": \"687b96179895ea533e001035\",\n            \"campaign\": {\n                \"id\": \"687b96179895ea533e001034\",\n                \"title\": \"Doloremque cupiditate rem quia.\",\n                \"description\": \"Dignissimos voluptas suscipit sunt. Quia necessitatibus quia enim est placeat. Placeat accusantium qui doloremque praesentium libero.\",\n                \"start_date\": \"2025-06-20T16:22:28.000000Z\",\n                \"end_date\": \"2025-10-05T07:17:31.000000Z\",\n                \"status\": \"Completed\",\n                \"prospect_filter\": {\n                    \"max_age\": 51,\n                    \"source\": \"kueba\"\n                }\n            },\n            \"title\": \"Consectetur non et.\",\n            \"slug\": \"nihil-et-enim\",\n            \"headline\": \"Perspiciatis quasi excepturi cumque at.\",\n            \"subline\": \"Id consequuntur voluptates sed quisquam id consequuntur quia.\",\n            \"sections\": [\n                {\n                    \"text\": \"Quia sunt harum dolorem dolores. Asperiores autem minus id fugit saepe voluptates velit minima. Placeat aspernatur perferendis consequuntur eaque aut consectetur repellat. Asperiores ducimus voluptatum facere doloremque. Aut ad natus culpa nesciunt ad doloremque dolor.\\n\\nVelit nihil porro dolor rerum nihil est. Cumque non impedit temporibus aspernatur quia expedita. Quos recusandae aperiam enim. Esse maiores accusamus dolorem aperiam.\\n\\nUt rerum animi voluptas rem. Ut voluptate consequatur aliquid maxime rerum hic. Doloremque fugiat rerum ipsum nostrum autem. Nostrum sit iusto officia qui repellat omnis consequuntur unde.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00bbaa?text=business+Landingpage+perferendis\",\n                    \"cta_text\": \"Learn More\",\n                    \"cta_url\": \"http://hermiston.net/occaecati-vel-eum-sunt-et-similique-veritatis-cumque.html\"\n                },\n                {\n                    \"text\": \"Aliquam praesentium impedit et sint excepturi doloribus esse sunt. Reprehenderit odit ut commodi placeat consectetur nulla. Iure dolore enim perferendis quis voluptatem.\\n\\nDeserunt repudiandae accusamus suscipit ex assumenda. Atque sit magni expedita ab. Ullam asperiores minus aut voluptas. Quo non sint ab autem.\\n\\nFugiat quo nobis aut et. Qui aut qui ipsam tempore a. Beatae praesentium nesciunt et quod.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/003377?text=business+Landingpage+ut\",\n                    \"cta_text\": \"Learn More\",\n                    \"cta_url\": \"http://schaden.org/consectetur-et-ipsa-omnis-qui-qui-error-officiis\"\n                }\n            ]\n        },\n        {\n            \"id\": \"687b96179895ea533e001037\",\n            \"campaign\": {\n                \"id\": \"687b96179895ea533e001036\",\n                \"title\": \"Enim eius in laborum quasi.\",\n                \"description\": \"Atque eos reprehenderit voluptatem error nisi ut iusto. Quos voluptatibus voluptas alias ullam eos. Atque eveniet sit et quam ducimus aut quas laudantium. Recusandae accusamus omnis praesentium quos.\",\n                \"start_date\": \"2025-07-30T08:48:27.000000Z\",\n                \"end_date\": \"2025-08-22T05:22:19.000000Z\",\n                \"status\": \"Active\",\n                \"prospect_filter\": {\n                    \"min_age\": 22\n                }\n            },\n            \"title\": \"Vel vitae inventore dolore.\",\n            \"slug\": \"deserunt-animi-quidem\",\n            \"headline\": \"Dolorem praesentium modi omnis est occaecati dolorem sed.\",\n            \"subline\": \"Architecto est quis quod omnis nihil facilis.\",\n            \"sections\": [\n                {\n                    \"text\": \"Assumenda accusamus sequi rem tempore. Consequatur quasi tempora commodi ipsum dolores incidunt.\\n\\nDeserunt modi voluptatem dolores. Aut aliquam non quo illum perspiciatis ut et. Est ipsum dolorem maiores deleniti velit quasi eius. Magni voluptas laboriosam consequuntur ducimus sed.\\n\\nUt temporibus et sapiente iusto. Vel suscipit at ut at necessitatibus rem quia. Ut non qui vel quidem. Voluptatem consectetur eius eum voluptatem velit quia magni. Aperiam quae et adipisci recusandae.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/0011ff?text=business+Landingpage+rerum\",\n                    \"cta_text\": \"Sign Up\",\n                    \"cta_url\": \"http://www.schmeler.com/qui-id-illo-quasi-unde-eum-alias\"\n                },\n                {\n                    \"text\": \"Ullam temporibus nesciunt at voluptate magni doloribus. Qui occaecati reiciendis cupiditate porro consequatur a dolorem. Et ut rerum tempore suscipit. Dolores ut officia suscipit suscipit et distinctio et.\\n\\nAnimi impedit in ipsa ipsa eum. Molestiae labore tempora omnis nam minima aliquid. Consequuntur nesciunt dolor quis eum libero eligendi et.\\n\\nAut nesciunt esse numquam. Qui deleniti deserunt quo.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00ffff?text=business+Landingpage+hic\",\n                    \"cta_text\": \"Learn More\",\n                    \"cta_url\": \"https://jacobson.com/voluptatem-consectetur-nostrum-corrupti-aut.html\"\n                }\n            ]\n        },\n        {\n            \"id\": \"687b96179895ea533e001039\",\n            \"campaign\": {\n                \"id\": \"687b96179895ea533e001038\",\n                \"title\": \"Aperiam culpa itaque aut.\",\n                \"description\": \"Id maxime in iste impedit. Laboriosam qui qui suscipit et fugiat suscipit quia. Voluptatem molestiae velit sed non.\",\n                \"start_date\": \"2025-07-28T06:11:05.000000Z\",\n                \"end_date\": \"2025-09-13T17:50:56.000000Z\",\n                \"status\": \"Paused\",\n                \"prospect_filter\": {\n                    \"min_age\": 47,\n                    \"source\": \"erp\"\n                }\n            },\n            \"title\": \"Beatae sed nisi aut.\",\n            \"slug\": \"et-tempora\",\n            \"headline\": \"Et nemo ea rerum explicabo ipsa.\",\n            \"subline\": \"Vero eveniet numquam culpa iste voluptatem officiis enim quia vel vel eos quam.\",\n            \"sections\": [\n                {\n                    \"text\": \"Vel laudantium minima in. Voluptatem vel laudantium iste inventore impedit dicta. Dolor minus sit facere ex quidem officiis eveniet. Quis dolores sit qui ut incidunt.\\n\\nOmnis animi quidem id alias ipsa in vel. Autem nisi animi est et minus ab. Delectus libero reiciendis nihil quasi et molestias. Eaque dolorum ullam veritatis accusamus. Expedita saepe et quas eveniet omnis.\\n\\nEt fugit rerum cupiditate ut perspiciatis expedita dolore laborum. Aut itaque doloribus eum. Molestias rerum minus assumenda maiores nisi. Iusto a repellendus suscipit ex.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/002266?text=business+Landingpage+provident\",\n                    \"cta_text\": \"Contact Us\",\n                    \"cta_url\": \"http://donnelly.com/iusto-quia-libero-aut-similique-veritatis\"\n                },\n                {\n                    \"text\": \"Perferendis et facilis dicta cumque ut id repellat. Eius facilis nihil nisi necessitatibus vitae.\\n\\nLaudantium atque voluptas quia illum autem eligendi et. Provident et atque dolor fugiat perspiciatis. Officia sint recusandae repellat molestias minus ut.\\n\\nCupiditate earum ullam et delectus vel a minima. Vitae perspiciatis animi similique labore quaerat. Nulla harum optio pariatur ducimus.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00cc66?text=business+Landingpage+corrupti\",\n                    \"cta_text\": \"Contact Us\",\n                    \"cta_url\": \"http://ohara.com/soluta-nisi-sequi-consequatur-distinctio\"\n                }\n            ]\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://apde_be.test/api/landingpages?page=1\",\n        \"last\": \"http://apde_be.test/api/landingpages?page=7\",\n        \"prev\": \"http://apde_be.test/api/landingpages?page=4\",\n        \"next\": \"http://apde_be.test/api/landingpages?page=6\"\n    },\n    \"meta\": {\n        \"current_page\": 5,\n        \"from\": 13,\n        \"last_page\": 7,\n        \"links\": [\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=4\",\n                \"label\": \"&laquo; Previous\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=1\",\n                \"label\": \"1\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=2\",\n                \"label\": \"2\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=3\",\n                \"label\": \"3\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=4\",\n                \"label\": \"4\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=5\",\n                \"label\": \"5\",\n                \"active\": true\n            },\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=6\",\n                \"label\": \"6\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=7\",\n                \"label\": \"7\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://apde_be.test/api/landingpages?page=6\",\n                \"label\": \"Next &raquo;\",\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://apde_be.test/api/landingpages\",\n        \"per_page\": 3,\n        \"to\": 15,\n        \"total\": 20\n    }\n}"
+							"body": "{\n    \"data\": [\n        {\n            \"id\": \"68a36943d7f5370a250556a8\",\n            \"campaigns\": [\n                {\n                    \"id\": \"68a36943d7f5370a250556bc\",\n                    \"title\": \"Enim pariatur amet rerum.\",\n                    \"slug\": \"enim-pariatur-amet-rerum\",\n                    \"description\": \"Nostrum et voluptates libero. Reiciendis sit magnam quidem omnis. Sapiente excepturi sunt corrupti labore. Eum optio itaque et. Est ipsum a reiciendis quo est.\",\n                    \"start_date\": \"2025-08-12T22:07:36.000000Z\",\n                    \"end_date\": \"2025-11-08T14:48:05.000000Z\",\n                    \"status\": \"Paused\",\n                    \"prospect_filter\": {\n                        \"gender\": \"female\"\n                    }\n                },\n                {\n                    \"id\": \"68a36fab311442fae40cff87\",\n                    \"title\": \"New Campaign 1\",\n                    \"slug\": \"new-campaign-1\",\n                    \"description\": \"This is a Test of the Input Validation.\",\n                    \"start_date\": null,\n                    \"end_date\": null,\n                    \"status\": \"Draft\",\n                    \"prospect_filter\": {\n                        \"address.plz\": 1012,\n                        \"age\": 32\n                    }\n                },\n                {\n                    \"id\": \"68a37016311442fae40cff88\",\n                    \"title\": \"New Campaign 2\",\n                    \"slug\": \"new-campaign-2\",\n                    \"description\": \"This is a Test of the Input Validation.\",\n                    \"start_date\": null,\n                    \"end_date\": null,\n                    \"status\": \"Draft\",\n                    \"prospect_filter\": {\n                        \"address.plz\": 1012,\n                        \"age\": 32\n                    }\n                }\n            ],\n            \"title\": \"Blanditiis possimus.\",\n            \"headline\": \"Consequuntur vero labore praesentium natus sed et perferendis.\",\n            \"subline\": \"Et ratione doloremque necessitatibus delectus eos consectetur et numquam nostrum.\",\n            \"sections\": [\n                {\n                    \"text\": \"Facilis quos laudantium deleniti tenetur saepe nam. Rerum cum ducimus occaecati omnis ipsum tempora. Harum nulla ut inventore officiis corporis incidunt.\\n\\nLaborum dolorum impedit quia aut animi. Ratione tempora minus iusto quos impedit ut. Reprehenderit suscipit at et ea.\\n\\nAsperiores asperiores aut sunt corrupti quo sequi iste voluptas. Aut officiis consectetur eaque maiores itaque. Dicta provident alias aut doloremque aut sint. Aut reiciendis amet in enim quia.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/006600?text=business+Landingpage+molestiae\",\n                    \"cta_text\": \"Sign Up\",\n                    \"cta_url\": \"http://www.johns.com/\"\n                },\n                {\n                    \"text\": \"Asperiores ex qui saepe perspiciatis delectus. Eligendi nobis voluptas iusto laboriosam qui laborum. Adipisci aut eos voluptatem ut sint dolor facere officiis. Et quos dolorem similique quo et facilis.\\n\\nVoluptatem eos natus asperiores qui soluta sed. Distinctio aut quisquam error autem odio omnis sunt odio. In eaque dolor aut accusantium. Dolores voluptas est dolor dolores.\\n\\nTempore harum voluptatibus dolorem. Incidunt sit laboriosam esse natus natus consequatur deleniti.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00ee66?text=business+Landingpage+et\",\n                    \"cta_text\": \"Get Started\",\n                    \"cta_url\": \"https://boyle.com/officia-temporibus-repellendus-sed-ut-distinctio-iste.html\"\n                },\n                {\n                    \"text\": \"Velit itaque fugiat dolores. Commodi expedita consequatur aliquam eaque qui porro in. Cupiditate repudiandae qui modi ut. Qui quibusdam nobis mollitia corrupti dolore.\\n\\nAdipisci soluta ipsa dolore impedit facilis doloribus. Ut quia labore ut itaque cupiditate tempora dolorem. Quis quidem voluptate aut et. Nam dolor quisquam accusamus.\\n\\nAliquid iure quo ad. Et laudantium voluptate ut sit in nihil qui et. Laboriosam doloribus sint qui in sunt provident distinctio.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00ddee?text=business+Landingpage+nostrum\",\n                    \"cta_text\": \"Get Started\",\n                    \"cta_url\": \"http://www.hammes.com/\"\n                }\n            ]\n        },\n        {\n            \"id\": \"68a36943d7f5370a250556a9\",\n            \"campaigns\": [\n                {\n                    \"id\": \"68a36943d7f5370a250556bd\",\n                    \"title\": \"Non aut quae atque.\",\n                    \"slug\": \"non-aut-quae-atque\",\n                    \"description\": \"Suscipit tenetur sunt sit et eaque. Aut molestias aliquid est illum. Minus sit non autem dolores.\",\n                    \"start_date\": \"2025-08-04T11:36:22.000000Z\",\n                    \"end_date\": \"2025-11-02T15:25:37.000000Z\",\n                    \"status\": \"Paused\",\n                    \"prospect_filter\": {\n                        \"min_age\": 26\n                    }\n                }\n            ],\n            \"title\": \"Sapiente aut.\",\n            \"headline\": \"Repellat non non veniam autem vel.\",\n            \"subline\": \"Corporis rerum ex consectetur sapiente doloremque ratione.\",\n            \"sections\": [\n                {\n                    \"text\": \"Quod et asperiores neque. Deserunt consequatur sit est. Voluptatum hic aperiam consequuntur aut culpa.\\n\\nQuibusdam accusantium eum sit. Enim ea qui optio tempore sed omnis ipsum enim. Minus aut optio sit culpa alias quibusdam maxime non. Reprehenderit est qui molestiae dolor vel neque voluptas.\\n\\nEt velit dolor est quidem. Earum repellendus voluptatem nisi est. Porro officiis tempora omnis vero dolor et. Pariatur odit sint recusandae unde.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00ee33?text=business+Landingpage+exercitationem\",\n                    \"cta_text\": \"Get Started\",\n                    \"cta_url\": \"http://casper.com/\"\n                },\n                {\n                    \"text\": \"Quo atque necessitatibus consequatur. A autem et dolorem natus laboriosam. Exercitationem adipisci aperiam dolor accusantium ut sequi aut enim. Beatae dolores dolorem voluptas tempore eligendi dolorum id.\\n\\nIpsum assumenda aperiam voluptatem in. Quisquam ea non natus voluptatem est saepe exercitationem sapiente. Nulla provident sit eaque voluptatem aut totam.\\n\\nVoluptatibus voluptas at quo dolor voluptatum dolores amet voluptatum. Consequuntur et omnis ut veniam fuga quo deserunt. Facere porro et laboriosam natus quibusdam possimus inventore. Qui suscipit sapiente dolorem.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00bb44?text=business+Landingpage+et\",\n                    \"cta_text\": \"Learn More\",\n                    \"cta_url\": \"http://hills.com/\"\n                }\n            ]\n        },\n        {\n            \"id\": \"68a36943d7f5370a250556aa\",\n            \"campaigns\": [\n                {\n                    \"id\": \"68a36943d7f5370a250556be\",\n                    \"title\": \"Ut molestiae et nihil.\",\n                    \"slug\": \"ut-molestiae-et-nihil\",\n                    \"description\": \"Doloribus odio incidunt ex tempore. Laboriosam officiis voluptatibus est officia voluptatibus minus id. Sunt ducimus veritatis consequatur vel.\",\n                    \"start_date\": \"2025-07-30T23:32:36.000000Z\",\n                    \"end_date\": \"2025-11-18T00:32:52.000000Z\",\n                    \"status\": \"Draft\",\n                    \"prospect_filter\": {\n                        \"max_age\": 62,\n                        \"source\": \"kueba\"\n                    }\n                }\n            ],\n            \"title\": \"Temporibus dolorum qui enim.\",\n            \"headline\": \"Quia repellendus quis quod error.\",\n            \"subline\": \"Illum amet sed adipisci aut vero quo repellendus animi minus sed tempore adipisci labore quis.\",\n            \"sections\": [\n                {\n                    \"text\": \"Nam inventore eligendi adipisci repellat consequatur quia. Provident et quia maxime velit. Sit at sequi eos repudiandae temporibus voluptas. Non aperiam error repellat minus nesciunt nihil aut.\\n\\nQui similique quisquam delectus quisquam. Veniam corporis consequuntur explicabo id animi qui voluptas. Fugiat quod harum suscipit. Sit aut debitis fugit dolores.\\n\\nNemo et et qui unde. Laboriosam corporis suscipit laudantium impedit dolorum. Vitae iure et suscipit non rerum ut. Qui voluptatem dicta iure expedita omnis aperiam.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00bbff?text=business+Landingpage+quaerat\",\n                    \"cta_text\": \"Get Started\",\n                    \"cta_url\": \"http://www.koss.info/\"\n                },\n                {\n                    \"text\": \"Molestias aspernatur hic natus. Minus saepe rerum dolor et quos corporis repellendus. Modi a et qui non.\\n\\nFacere vero sit modi quibusdam accusantium. Facere molestiae explicabo autem laborum voluptas itaque.\\n\\nDignissimos ipsam similique qui ea sunt. Nostrum corporis rerum quis et. Ducimus voluptas sequi et officiis eum sed. Voluptate similique cum sequi ut officia aut ut qui.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/00ee44?text=business+Landingpage+quisquam\",\n                    \"cta_text\": \"Sign Up\",\n                    \"cta_url\": \"http://www.kuhic.com/\"\n                }\n            ]\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://127.0.0.1:8000/api/landingpages?page=1\",\n        \"last\": \"http://127.0.0.1:8000/api/landingpages?page=7\",\n        \"prev\": \"http://127.0.0.1:8000/api/landingpages?page=4\",\n        \"next\": \"http://127.0.0.1:8000/api/landingpages?page=6\"\n    },\n    \"meta\": {\n        \"current_page\": 5,\n        \"from\": 13,\n        \"last_page\": 7,\n        \"links\": [\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=4\",\n                \"label\": \"&laquo; Previous\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=1\",\n                \"label\": \"1\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=2\",\n                \"label\": \"2\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=3\",\n                \"label\": \"3\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=4\",\n                \"label\": \"4\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=5\",\n                \"label\": \"5\",\n                \"active\": true\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=6\",\n                \"label\": \"6\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=7\",\n                \"label\": \"7\",\n                \"active\": false\n            },\n            {\n                \"url\": \"http://127.0.0.1:8000/api/landingpages?page=6\",\n                \"label\": \"Next &raquo;\",\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://127.0.0.1:8000/api/landingpages\",\n        \"per_page\": 3,\n        \"to\": 15,\n        \"total\": 20\n    }\n}"
 						}
 					]
 				},
 				{
-					"name": "show Id",
+					"name": "show",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/landingpages/687b96179895ea533e001035",
+							"raw": "{{URL}}/api/landingpages/68a38bb145ba99549b0fa772",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"landingpages",
-								"687b96179895ea533e001035"
+								"68a38bb145ba99549b0fa772"
 							]
 						}
 					},
@@ -3627,158 +4513,40 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{URL}}/api/landingpages/687b96179895ea533e001035",
-									"host": [
-										"{{URL}}"
-									],
-									"path": [
-										"api",
-										"landingpages",
-										"687b96179895ea533e001035"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
-								},
-								{
-									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
-								},
-								{
-									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
-								},
-								{
-									"key": "Cache-Control",
-									"value": "no-cache, private"
-								},
-								{
-									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:24:34 GMT"
-								},
-								{
-									"key": "Content-Encoding",
-									"value": "gzip"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687b96179895ea533e001035\",\n        \"campaign\": {\n            \"id\": \"687b96179895ea533e001034\",\n            \"title\": \"Doloremque cupiditate rem quia.\",\n            \"description\": \"Dignissimos voluptas suscipit sunt. Quia necessitatibus quia enim est placeat. Placeat accusantium qui doloremque praesentium libero.\",\n            \"start_date\": \"2025-06-20T16:22:28.000000Z\",\n            \"end_date\": \"2025-10-05T07:17:31.000000Z\",\n            \"status\": \"Completed\",\n            \"prospect_filter\": {\n                \"max_age\": 51,\n                \"source\": \"kueba\"\n            }\n        },\n        \"title\": \"Consectetur non et.\",\n        \"slug\": \"nihil-et-enim\",\n        \"headline\": \"Perspiciatis quasi excepturi cumque at.\",\n        \"subline\": \"Id consequuntur voluptates sed quisquam id consequuntur quia.\",\n        \"sections\": [\n            {\n                \"text\": \"Quia sunt harum dolorem dolores. Asperiores autem minus id fugit saepe voluptates velit minima. Placeat aspernatur perferendis consequuntur eaque aut consectetur repellat. Asperiores ducimus voluptatum facere doloremque. Aut ad natus culpa nesciunt ad doloremque dolor.\\n\\nVelit nihil porro dolor rerum nihil est. Cumque non impedit temporibus aspernatur quia expedita. Quos recusandae aperiam enim. Esse maiores accusamus dolorem aperiam.\\n\\nUt rerum animi voluptas rem. Ut voluptate consequatur aliquid maxime rerum hic. Doloremque fugiat rerum ipsum nostrum autem. Nostrum sit iusto officia qui repellat omnis consequuntur unde.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/00bbaa?text=business+Landingpage+perferendis\",\n                \"cta_text\": \"Learn More\",\n                \"cta_url\": \"http://hermiston.net/occaecati-vel-eum-sunt-et-similique-veritatis-cumque.html\"\n            },\n            {\n                \"text\": \"Aliquam praesentium impedit et sint excepturi doloribus esse sunt. Reprehenderit odit ut commodi placeat consectetur nulla. Iure dolore enim perferendis quis voluptatem.\\n\\nDeserunt repudiandae accusamus suscipit ex assumenda. Atque sit magni expedita ab. Ullam asperiores minus aut voluptas. Quo non sint ab autem.\\n\\nFugiat quo nobis aut et. Qui aut qui ipsam tempore a. Beatae praesentium nesciunt et quod.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/003377?text=business+Landingpage+ut\",\n                \"cta_text\": \"Learn More\",\n                \"cta_url\": \"http://schaden.org/consectetur-et-ipsa-omnis-qui-qui-error-officiis\"\n            }\n        ]\n    }\n}"
-						}
-					]
-				},
-				{
-					"name": "show Slug (requires Campaign = active!",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/landingpages/nihil-et-enim",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"landingpages",
-								"nihil-et-enim"
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "200 OK",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
+									},
 									{
-										"key": "Accept",
-										"value": "application/json",
+										"key": "Referer",
+										"value": "{{SPA}}",
 										"type": "text"
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/api/landingpages/nihil-et-enim",
+									"raw": "{{URL}}/api/landingpages/68a36943d7f5370a250556a8",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"api",
 										"landingpages",
-										"nihil-et-enim"
+										"68a36943d7f5370a250556a8"
 									]
 								}
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -3786,42 +4554,54 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:28:46 GMT"
+									"value": "Mon, 18 Aug 2025 18:27:20 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6IkZQK0JwNVhvM1RUQlF0Q01EeG9sSEE9PSIsInZhbHVlIjoiTmlsU1U3WEt2eDNtYzVTV0FaWEV5OEpYTjVGKzUxZTUwZXN3TnBRS3dsM0VYOWwxQTFLWEQ1M05xSURRejQxeWJYU3ZtK21LK2h1Q2xEbEhKMVhkTmE3OGUzK2RnVFlGb1lDV05VUitIMXVXQk5rZnFqS1gyVlZDNTFybGRjcXYiLCJtYWMiOiJhNGMyMzNkNGFmODhjMjdjMzgyY2Y1NTg1NzYyNTU4M2QwYjRmNmNhM2U5OWQ4MWI3OTZkNjNmYTk0MWVmN2QzIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:27:20 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6Ik5yYkdVaDRQY0M5OFZhS2M1UTZmWlE9PSIsInZhbHVlIjoiSlJCYU4wRFVuSGhDMHBXYkpaMERRbmMxai91Wi8xRGtLZVlvdjBSQ1R6Skdxemh5SWgvSXNwejBIZ2NWK0lWSE9TOExYcm13SHo5RThXNk9tMmJSNlR1S1JrbnF4YlZnVWNKOVZhcXNRSG5scThnMW94UTcraXgrT0xuSHk0dFUiLCJtYWMiOiJmYTNiNWNjOTJkY2FkNGEwNGYyZTAzMjcwZGUwZTk1MzQ5ZGY4NWI0Mjg3NTg5M2ZkZGRkNDI2N2I1ODQzMDVkIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:27:20 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "CTsPixU4KSImEVIixW3C7tj0wlBAowFdzuHiN2TY=eyJpdiI6IjBzZ21qZWJnQ01PVkdEdFZOdWlET1E9PSIsInZhbHVlIjoiVjBCb29uanE5QmNZOUtLc2theVhySjNLcEpIMHVualdrcjF3dnNkQm1abGpDQXRGMmlUNm5jbFg2QVo0TkV4QmtWMTdjQmRUNyt6U0U0amVnTlYwNm0zRzhNR3pJN3Z6V1hxdFNEd1ZpK0JOZWtyMTJrMGNrc2hMRHhMcTZML3M5WkRGVGxRWWhWQUdOaDMzYUMwVG1UZXBnN05qM0tocEZRYXhNTU0zM080QWdyZXdOOVhnUC9PNzhrZURZNGcvZHp1Nkg2V2JyWS9yb3RuR2RPSUlQdXZKYndmdVZHTWJFTVQ1M211bk9JMjhnMnduOHF3aUl1cTBJQ1F0amZubWpyNzIzd09tUzZkN0dLQjY0NUEzdlRFTEZkNWw1NnlaNnZRSmt3am5xNUh4Z2Iwd2o1dWpTNENQeVRqVHZuSXZUeVZmWURSUUZDQkY4by9iUnU5RTluRW9EUEkzMUhtMWJueDUzeHZROWgzcnRqNFh1b1hlSE5CUDRVM2x4bUNldWtrb0cweC9oNXIwNHZvVUNhSjFMWGlzb0RzOVlCRUQ2bzE2RW1rT1NqYz0iLCJtYWMiOiIxYzlmYTFmYmIxYTMzNGUyY2ZjNWY0NGQyMGMwNzJhMjA2NzcwNTcxNjYxZjg1MDFmNDcxZTM2ZGEyZjZkMDgwIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:27:20 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687b96179895ea533e001035\",\n        \"campaign\": {\n            \"id\": \"687b96179895ea533e001034\",\n            \"title\": \"Doloremque cupiditate rem quia.\",\n            \"description\": \"Dignissimos voluptas suscipit sunt. Quia necessitatibus quia enim est placeat. Placeat accusantium qui doloremque praesentium libero.\",\n            \"start_date\": \"2025-06-20T16:22:28.000000Z\",\n            \"end_date\": \"2025-10-05T07:17:31.000000Z\",\n            \"status\": \"Active\",\n            \"prospect_filter\": {\n                \"max_age\": 51,\n                \"source\": \"kueba\"\n            }\n        },\n        \"title\": \"Consectetur non et.\",\n        \"slug\": \"nihil-et-enim\",\n        \"headline\": \"Perspiciatis quasi excepturi cumque at.\",\n        \"subline\": \"Id consequuntur voluptates sed quisquam id consequuntur quia.\",\n        \"sections\": [\n            {\n                \"text\": \"Quia sunt harum dolorem dolores. Asperiores autem minus id fugit saepe voluptates velit minima. Placeat aspernatur perferendis consequuntur eaque aut consectetur repellat. Asperiores ducimus voluptatum facere doloremque. Aut ad natus culpa nesciunt ad doloremque dolor.\\n\\nVelit nihil porro dolor rerum nihil est. Cumque non impedit temporibus aspernatur quia expedita. Quos recusandae aperiam enim. Esse maiores accusamus dolorem aperiam.\\n\\nUt rerum animi voluptas rem. Ut voluptate consequatur aliquid maxime rerum hic. Doloremque fugiat rerum ipsum nostrum autem. Nostrum sit iusto officia qui repellat omnis consequuntur unde.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/00bbaa?text=business+Landingpage+perferendis\",\n                \"cta_text\": \"Learn More\",\n                \"cta_url\": \"http://hermiston.net/occaecati-vel-eum-sunt-et-similique-veritatis-cumque.html\"\n            },\n            {\n                \"text\": \"Aliquam praesentium impedit et sint excepturi doloribus esse sunt. Reprehenderit odit ut commodi placeat consectetur nulla. Iure dolore enim perferendis quis voluptatem.\\n\\nDeserunt repudiandae accusamus suscipit ex assumenda. Atque sit magni expedita ab. Ullam asperiores minus aut voluptas. Quo non sint ab autem.\\n\\nFugiat quo nobis aut et. Qui aut qui ipsam tempore a. Beatae praesentium nesciunt et quod.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/003377?text=business+Landingpage+ut\",\n                \"cta_text\": \"Learn More\",\n                \"cta_url\": \"http://schaden.org/consectetur-et-ipsa-omnis-qui-qui-error-officiis\"\n            }\n        ]\n    }\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"68a36943d7f5370a250556a8\",\n        \"campaigns\": [\n            {\n                \"id\": \"68a36943d7f5370a250556bc\",\n                \"title\": \"Enim pariatur amet rerum.\",\n                \"slug\": \"enim-pariatur-amet-rerum\",\n                \"description\": \"Nostrum et voluptates libero. Reiciendis sit magnam quidem omnis. Sapiente excepturi sunt corrupti labore. Eum optio itaque et. Est ipsum a reiciendis quo est.\",\n                \"start_date\": \"2025-08-12T22:07:36.000000Z\",\n                \"end_date\": \"2025-11-08T14:48:05.000000Z\",\n                \"status\": \"Paused\",\n                \"prospect_filter\": {\n                    \"gender\": \"female\"\n                }\n            },\n            {\n                \"id\": \"68a36fab311442fae40cff87\",\n                \"title\": \"New Campaign 1\",\n                \"slug\": \"new-campaign-1\",\n                \"description\": \"This is a Test of the Input Validation.\",\n                \"start_date\": null,\n                \"end_date\": null,\n                \"status\": \"Draft\",\n                \"prospect_filter\": {\n                    \"address.plz\": 1012,\n                    \"age\": 32\n                }\n            },\n            {\n                \"id\": \"68a37016311442fae40cff88\",\n                \"title\": \"New Campaign 2\",\n                \"slug\": \"new-campaign-2\",\n                \"description\": \"This is a Test of the Input Validation.\",\n                \"start_date\": null,\n                \"end_date\": null,\n                \"status\": \"Draft\",\n                \"prospect_filter\": {\n                    \"address.plz\": 1012,\n                    \"age\": 32\n                }\n            }\n        ],\n        \"title\": \"Blanditiis possimus.\",\n        \"headline\": \"Consequuntur vero labore praesentium natus sed et perferendis.\",\n        \"subline\": \"Et ratione doloremque necessitatibus delectus eos consectetur et numquam nostrum.\",\n        \"sections\": [\n            {\n                \"text\": \"Facilis quos laudantium deleniti tenetur saepe nam. Rerum cum ducimus occaecati omnis ipsum tempora. Harum nulla ut inventore officiis corporis incidunt.\\n\\nLaborum dolorum impedit quia aut animi. Ratione tempora minus iusto quos impedit ut. Reprehenderit suscipit at et ea.\\n\\nAsperiores asperiores aut sunt corrupti quo sequi iste voluptas. Aut officiis consectetur eaque maiores itaque. Dicta provident alias aut doloremque aut sint. Aut reiciendis amet in enim quia.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/006600?text=business+Landingpage+molestiae\",\n                \"cta_text\": \"Sign Up\",\n                \"cta_url\": \"http://www.johns.com/\"\n            },\n            {\n                \"text\": \"Asperiores ex qui saepe perspiciatis delectus. Eligendi nobis voluptas iusto laboriosam qui laborum. Adipisci aut eos voluptatem ut sint dolor facere officiis. Et quos dolorem similique quo et facilis.\\n\\nVoluptatem eos natus asperiores qui soluta sed. Distinctio aut quisquam error autem odio omnis sunt odio. In eaque dolor aut accusantium. Dolores voluptas est dolor dolores.\\n\\nTempore harum voluptatibus dolorem. Incidunt sit laboriosam esse natus natus consequatur deleniti.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/00ee66?text=business+Landingpage+et\",\n                \"cta_text\": \"Get Started\",\n                \"cta_url\": \"https://boyle.com/officia-temporibus-repellendus-sed-ut-distinctio-iste.html\"\n            },\n            {\n                \"text\": \"Velit itaque fugiat dolores. Commodi expedita consequatur aliquam eaque qui porro in. Cupiditate repudiandae qui modi ut. Qui quibusdam nobis mollitia corrupti dolore.\\n\\nAdipisci soluta ipsa dolore impedit facilis doloribus. Ut quia labore ut itaque cupiditate tempora dolorem. Quis quidem voluptate aut et. Nam dolor quisquam accusamus.\\n\\nAliquid iure quo ad. Et laudantium voluptate ut sit in nihil qui et. Laboriosam doloribus sint qui in sunt provident distinctio.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/00ddee?text=business+Landingpage+nostrum\",\n                \"cta_text\": \"Get Started\",\n                \"cta_url\": \"http://www.hammes.com/\"\n            }\n        ]\n    }\n}"
 						}
 					]
 				},
 				{
 					"name": "create",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"LP2\",\n    \"headline\": \"This is an Amazing LP.\",\n    \"subline\": \"\",\n    \"campaign_id\": \"687b96179895ea533e001034\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
+							"raw": "{\n    \"title\": \"LP1\",\n    \"headline\": \"This is an Amazing LP.\",\n    \"subline\": \"\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3849,11 +4629,17 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"title\": \"LP2\",\n    \"headline\": \"This is an Amazing LP.\",\n    \"subline\": \"\",\n    \"campaign_id\": \"687b96179895ea533e001034\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
+									"raw": "{\n    \"title\": \"LP1\",\n    \"headline\": \"This is an Amazing LP.\",\n    \"subline\": \"\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3873,27 +4659,19 @@
 							},
 							"status": "Created",
 							"code": 201,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -3901,7 +4679,11 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:31:37 GMT"
+									"value": "Mon, 18 Aug 2025 18:27:52 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
 								},
 								{
 									"key": "Vary",
@@ -3909,7 +4691,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687bba5927133c64020d3234\",\n        \"title\": \"LP2\",\n        \"slug\": \"lp2\",\n        \"headline\": \"This is an Amazing LP.\",\n        \"subline\": null,\n        \"sections\": [\n            {\n                \"text\": \"Text 1\",\n                \"cta_text\": \"Get Started\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            },\n            {\n                \"text\": \"Text 2\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n                \"cta_text\": \"CTA Text 2\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            }\n        ]\n    }\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"68a370a8311442fae40cff89\",\n        \"title\": \"LP1\",\n        \"headline\": \"This is an Amazing LP.\",\n        \"subline\": null,\n        \"sections\": [\n            {\n                \"text\": \"Text 1\",\n                \"cta_text\": \"Get Started\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            },\n            {\n                \"text\": \"Text 2\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n                \"cta_text\": \"CTA Text 2\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            }\n        ]\n    }\n}"
 						},
 						{
 							"name": "422 failed InputValidation",
@@ -3987,27 +4769,23 @@
 				{
 					"name": "update",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"LP2\",\n    \"headline\": \"This is an Amazing LP! (updated)\",\n    \"subline\": \"\",\n    \"campaign_id\": \"687b96179895ea533e001034\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 3\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
+							"raw": "{\n    \"title\": \"LP1\",\n    \"headline\": \"This is an Amazing LP! (updated)\",\n    \"subline\": \"\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 3\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4015,14 +4793,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/api/landingpages/687bba5927133c64020d3234",
+							"raw": "{{URL}}/api/landingpages/68a370a8311442fae40cff89",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
 								"landingpages",
-								"687bba5927133c64020d3234"
+								"68a370a8311442fae40cff89"
 							]
 						}
 					},
@@ -4036,11 +4814,17 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"title\": \"LP2\",\n    \"headline\": \"This is an Amazing LP! (updated)\",\n    \"subline\": \"\",\n    \"campaign_id\": \"687b96179895ea533e001034\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 3\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
+									"raw": "{\n    \"title\": \"LP1\",\n    \"headline\": \"This is an Amazing LP! (updated)\",\n    \"subline\": \"\",\n    \"sections\": [\n        {\n            \"text\": \"Text 1\",\n            \"cta_text\": \"Get Started\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 2\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        },\n        {\n            \"text\": \"Text 3\",\n            \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n            \"cta_text\": \"CTA Text 2\",\n            \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n        }\n    ]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4048,48 +4832,32 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/api/landingpages/687bba5927133c64020d3234",
+									"raw": "{{URL}}/api/landingpages/68a370a8311442fae40cff89",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"api",
 										"landingpages",
-										"687bba5927133c64020d3234"
+										"68a370a8311442fae40cff89"
 									]
 								}
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -4097,15 +4865,19 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:33:20 GMT"
+									"value": "Mon, 18 Aug 2025 18:38:40 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687bba5927133c64020d3234\",\n        \"campaign\": {\n            \"id\": \"687b96179895ea533e001034\",\n            \"title\": \"Doloremque cupiditate rem quia.\",\n            \"description\": \"Dignissimos voluptas suscipit sunt. Quia necessitatibus quia enim est placeat. Placeat accusantium qui doloremque praesentium libero.\",\n            \"start_date\": \"2025-06-20T16:22:28.000000Z\",\n            \"end_date\": \"2025-10-05T07:17:31.000000Z\",\n            \"status\": \"Active\",\n            \"prospect_filter\": {\n                \"max_age\": 51,\n                \"source\": \"kueba\"\n            }\n        },\n        \"title\": \"LP2\",\n        \"slug\": \"lp2\",\n        \"headline\": \"This is an Amazing LP! (updated)\",\n        \"subline\": null,\n        \"sections\": [\n            {\n                \"text\": \"Text 1\",\n                \"cta_text\": \"Get Started\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            },\n            {\n                \"text\": \"Text 2\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n                \"cta_text\": \"CTA Text 2\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            },\n            {\n                \"text\": \"Text 3\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n                \"cta_text\": \"CTA Text 2\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            }\n        ]\n    }\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"68a370a8311442fae40cff89\",\n        \"campaigns\": [],\n        \"title\": \"LP1\",\n        \"headline\": \"This is an Amazing LP! (updated)\",\n        \"subline\": null,\n        \"sections\": [\n            {\n                \"text\": \"Text 1\",\n                \"cta_text\": \"Get Started\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            },\n            {\n                \"text\": \"Text 2\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n                \"cta_text\": \"CTA Text 2\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            },\n            {\n                \"text\": \"Text 3\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/008855?text=business+Landingpage+molestiae\",\n                \"cta_text\": \"CTA Text 2\",\n                \"cta_url\": \"http://www.mcdermott.com/animi-quos-aut-molestiae-magnam.html\"\n            }\n        ]\n    }\n}"
 						},
 						{
 							"name": "404 Not Found",
@@ -4264,21 +5036,16 @@
 				{
 					"name": "delete",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Accept",
 								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
 								"type": "text"
 							}
 						],
@@ -4439,6 +5206,28 @@
 						}
 					]
 				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		},
 		{
@@ -4456,17 +5245,23 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/lp/quia-et-ex-fugit",
+							"raw": "{{URL}}/api/cp/reprehenderit-ut-optio-autem",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
-								"lp",
-								"quia-et-ex-fugit"
+								"cp",
+								"reprehenderit-ut-optio-autem"
 							]
 						}
 					},
@@ -4480,51 +5275,41 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/api/lp/quia-et-ex-fugit",
+									"raw": "{{URL}}/api/cp/reprehenderit-ut-optio-autem",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"api",
-										"lp",
-										"quia-et-ex-fugit"
+										"cp",
+										"reprehenderit-ut-optio-autem"
 									]
 								}
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -4532,15 +5317,19 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:38:34 GMT"
+									"value": "Mon, 18 Aug 2025 18:46:48 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687b96179895ea533e001043\",\n        \"campaign\": {\n            \"id\": \"687b96179895ea533e001042\",\n            \"title\": \"Eaque nihil deleniti.\",\n            \"description\": \"Tempore rem eum omnis ad corrupti amet. Expedita et unde architecto non voluptatem molestias voluptate. Est voluptatum incidunt atque mollitia. Eius voluptas numquam omnis error facilis nulla.\"\n        },\n        \"title\": \"Modi nostrum inventore.\",\n        \"slug\": \"quia-et-ex-fugit\",\n        \"headline\": \"Voluptatem quidem et consequatur dolor nobis atque ut.\",\n        \"subline\": \"Rerum enim illo dolorum quo a iure aliquid est.\",\n        \"sections\": [\n            {\n                \"text\": \"Quis repudiandae tempora dolorem nostrum. Sed dolor dolorum quasi voluptatibus ut consectetur. Vitae qui eveniet facilis cumque et ea dolore.\\n\\nEt sed non sed temporibus. Nihil totam dignissimos sint perferendis qui voluptas. Consequuntur qui cupiditate aut quos.\\n\\nPlaceat harum sed eius. Provident esse vel et non. Consequatur perferendis blanditiis sunt autem.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/0033cc?text=business+Landingpage+placeat\",\n                \"cta_text\": \"Sign Up\",\n                \"cta_url\": \"http://www.williamson.net/\"\n            }\n        ]\n    }\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"68a36943d7f5370a250556b1\",\n        \"title\": \"Reprehenderit ut optio autem.\",\n        \"slug\": \"reprehenderit-ut-optio-autem\",\n        \"description\": \"Dolore fugit quam ipsa sapiente. Impedit dolor itaque deserunt mollitia qui eaque numquam. Totam minima unde suscipit assumenda saepe tempore.\",\n        \"landingpage\": {\n            \"id\": \"68a36943d7f5370a2505569d\",\n            \"title\": \"Iure nam explicabo.\",\n            \"headline\": \"Aliquid aut pariatur quisquam.\",\n            \"subline\": \"Sit perferendis omnis eum laboriosam eum dignissimos qui accusamus nostrum dolorum atque eaque id.\",\n            \"sections\": [\n                {\n                    \"text\": \"Hic placeat et quidem sed et. Rem placeat dicta distinctio non totam veritatis. Repudiandae sit natus rerum iste eius mollitia perspiciatis. Quia quibusdam rem quo necessitatibus est voluptas.\\n\\nAtque qui non omnis ut provident aliquam. Optio repudiandae nisi doloribus numquam ut quos.\\n\\nQui sed et harum aut ipsa ea. Et necessitatibus eos laborum eligendi recusandae voluptas. Ad possimus nesciunt est commodi consequatur aliquid. Mollitia nostrum voluptas est blanditiis ea omnis. Maiores cumque qui magnam ut quo.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/003355?text=business+Landingpage+ut\",\n                    \"cta_text\": \"Contact Us\",\n                    \"cta_url\": \"http://breitenberg.biz/officia-eius-ad-autem-rerum-fugit.html\"\n                }\n            ]\n        }\n    }\n}"
 						},
 						{
 							"name": "404 Not Found",
@@ -4627,22 +5416,27 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "{{SPA}}",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/api/lp/quia-et-ex-fugit?prospect=686a3afeca7748f6b807cb48&utm_source=mail&utm_medium=web&utm_campaign=686a3affca7748f6b807cbec&utm_content=none&utm_term=none&gclid=12&fbclid=13",
+							"raw": "{{URL}}/api/cp/reprehenderit-ut-optio-autem?prospect=68a36940d7f5370a25055569&utm_source=mail&utm_medium=web&utm_campaign=686a3affca7748f6b807cbec&utm_content=none&utm_term=none&gclid=12&fbclid=13",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"api",
-								"lp",
-								"quia-et-ex-fugit"
+								"cp",
+								"reprehenderit-ut-optio-autem"
 							],
 							"query": [
 								{
 									"key": "prospect",
-									"value": "686a3afeca7748f6b807cb48"
+									"value": "68a36940d7f5370a25055569"
 								},
 								{
 									"key": "utm_source",
@@ -4685,22 +5479,27 @@
 										"key": "Accept",
 										"value": "application/json",
 										"type": "text"
+									},
+									{
+										"key": "Referer",
+										"value": "{{SPA}}",
+										"type": "text"
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/api/lp/quia-et-ex-fugit?prospect=686a3afeca7748f6b807cb48&utm_source=mail&utm_medium=web&utm_campaign=686a3affca7748f6b807cbec&utm_content=none&utm_term=none&gclid=12&fbclid=13",
+									"raw": "{{URL}}/api/cp/reprehenderit-ut-optio-autem?prospect=68a36940d7f5370a25055569&utm_source=mail&utm_medium=web&utm_campaign=686a3affca7748f6b807cbec&utm_content=none&utm_term=none&gclid=12&fbclid=13",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"api",
-										"lp",
-										"quia-et-ex-fugit"
+										"cp",
+										"reprehenderit-ut-optio-autem"
 									],
 									"query": [
 										{
 											"key": "prospect",
-											"value": "686a3afeca7748f6b807cb48"
+											"value": "68a36940d7f5370a25055569"
 										},
 										{
 											"key": "utm_source",
@@ -4735,35 +5534,19 @@
 							},
 							"status": "OK",
 							"code": 200,
-							"_postman_previewlanguage": "json",
+							"_postman_previewlanguage": null,
 							"header": [
 								{
-									"key": "Server",
-									"value": "nginx/1.25.4"
-								},
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								},
-								{
-									"key": "Transfer-Encoding",
-									"value": "chunked"
+									"key": "Host",
+									"value": "127.0.0.1:8000"
 								},
 								{
 									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Vary",
-									"value": "Accept-Encoding"
-								},
-								{
-									"key": "Vary",
-									"value": "Origin"
+									"value": "close"
 								},
 								{
 									"key": "X-Powered-By",
-									"value": "PHP/8.4.10"
+									"value": "PHP/8.4.11"
 								},
 								{
 									"key": "Cache-Control",
@@ -4771,15 +5554,31 @@
 								},
 								{
 									"key": "Date",
-									"value": "Sat, 19 Jul 2025 15:39:23 GMT"
+									"value": "Mon, 18 Aug 2025 18:48:00 GMT"
 								},
 								{
-									"key": "Content-Encoding",
-									"value": "gzip"
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "XSRF-TOKEN=eyJpdiI6IlJ0RXJnQmNIb2xpVW1wcUFyK0FiUVE9PSIsInZhbHVlIjoiTEVsT0FJYkRubVcyc09aSjcvRFhmZnNLNElsNTdNdFZZdTlJOE9pNU1XclR1WW5jYk1NZ05iVTZIYk9iZWFaZ0dqOGE3cmRXL0N0L3podVpjS1hBWk5SVVlzay9WRFFrQnBmanVqMVd4NGNFbEFsK21CaXRzWTVjRm5ZRnZ5NlEiLCJtYWMiOiI5NzU4YWUxM2ExNDY5ZGI1YzIxYzg2ODI3Y2ZmNmRjNjJlYzY5ODIyZWYxMzQ2Zjc2N2RmOGNhN2FmN2EzZDVjIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:48:00 GMT; Max-Age=7200; path=/; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "cm_grand_pilatus_session=eyJpdiI6IkhnNjBhbHlVdUtLZndibDVvUlhwSWc9PSIsInZhbHVlIjoiMWhKalZiRmtha0VNUk9tclJYR1Z2K1ZwUzNySmpEVWZhMlVYbVl1ak91dGRRYmdxRFNPWkZZTU9HVzliSmdBbldYVFZJN1U4cFJIclNIcEswTGhqTUFLSzg3NW5Oelp5RHFxZDUyWFFoeGg3TkxhZ09yeDZMV2ZkZjRCN01kYW8iLCJtYWMiOiI0MmQ3NjJmMjY5OGU2MTNkOTcyM2FkN2M2ZDEwY2Y1MjQ3YWU2NmJkMzUyMWJjMWIzODdkMGUwYmE4NTBkMjY2IiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:48:00 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "CTsPixU4KSImEVIixW3C7tj0wlBAowFdzuHiN2TY=eyJpdiI6IkNya093RFl0Z25oZHBNNjIvV25tL1E9PSIsInZhbHVlIjoiaGVYMkxSSHpGdzJHbnBlbGFKMW1tS25zRHcwL1hPYTdiMkk2cnNZcVk3UStjTXU0dlUybEpWdzlVT25yaGhGY1ZvcVorMWRPa1lVbmNtOTBRVE84eU5qbUhnR3JYYVFHSkNGUGt0ajRPMVdCSFM0NWNYRVlHdW9IRUkwYm82YkxPdXNEYU5Nd2NhQkpoY1I1eEdUWEhJeHRNa1g0M1N5U2REMUFUM0RMQnVoV3ZqWUxqVm1EMHovQmdRdHZhMU5UODB3Nk93ZlpNQmNRVDBjanRlR1duY0dFRWhjUGJPVWU1aW5JNUNTeVFLdVNqa3NJVklkcUd0eDh4Q0FTQUhXTmU0SnJFT3ErTjEveG1maEFkWS9YaysrdisyWXl6ZEFVZjhTVDFvS3NJU2ZTeFQ3aHI2VzM4KzlHOFU2WGNpUDdXdG9ydXFTOG40Vlhtb0lZMkhJSFhKa25odHJLWStpUHR4UURiTUNtaGVUY2tDVE9saUhJeFN2VVNrVFNKcVAyNEgvK3laWjU5aEdXRkQ1MU9tNDZmSGV1aXpKK25kbTRXMEw2TFIzdzM2NTB0emV2aG1zUlJLSXVqUEttMkFTRWpPWktEcFRsUVVFLzAybDFSdVRHVVJTQWdGUzJWMkxVQkdVNS9uaXhSSy90QkI2K1d2dW5CSWRLZDdwa21sdEI3dUFnSVMwbTJDaEpYWDRqOERVOVkzb0pTai81RWRVd0tXZStWem0zZG1ZZVJUcGlIVmFWWE5ONUd1VzFSd0p6Yi9KdXhQV3FDQk1KRVhXNkRSTzV1V1NCN2VFZnhmUTRrWmcyOTd2USttST0iLCJtYWMiOiJmMDM0NGU0YmRhZWYyMzdmNjRlOTUxMjUxODFiODY5ZjIyMmY2YmViZGI2MDViZTA2N2UwNTA5ZjI2ODRhMzliIiwidGFnIjoiIn0%3D; expires=Mon, 18 Aug 2025 20:48:00 GMT; Max-Age=7200; path=/; httponly; samesite=lax"
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"data\": {\n        \"id\": \"687b96179895ea533e001043\",\n        \"campaign\": {\n            \"id\": \"687b96179895ea533e001042\",\n            \"title\": \"Eaque nihil deleniti.\",\n            \"description\": \"Tempore rem eum omnis ad corrupti amet. Expedita et unde architecto non voluptatem molestias voluptate. Est voluptatum incidunt atque mollitia. Eius voluptas numquam omnis error facilis nulla.\"\n        },\n        \"title\": \"Modi nostrum inventore.\",\n        \"slug\": \"quia-et-ex-fugit\",\n        \"headline\": \"Voluptatem quidem et consequatur dolor nobis atque ut.\",\n        \"subline\": \"Rerum enim illo dolorum quo a iure aliquid est.\",\n        \"sections\": [\n            {\n                \"text\": \"Quis repudiandae tempora dolorem nostrum. Sed dolor dolorum quasi voluptatibus ut consectetur. Vitae qui eveniet facilis cumque et ea dolore.\\n\\nEt sed non sed temporibus. Nihil totam dignissimos sint perferendis qui voluptas. Consequuntur qui cupiditate aut quos.\\n\\nPlaceat harum sed eius. Provident esse vel et non. Consequatur perferendis blanditiis sunt autem.\",\n                \"image_url\": \"https://via.placeholder.com/800x400.png/0033cc?text=business+Landingpage+placeat\",\n                \"cta_text\": \"Sign Up\",\n                \"cta_url\": \"http://www.williamson.net/\"\n            }\n        ]\n    }\n}"
+							"body": "{\n    \"data\": {\n        \"id\": \"68a36943d7f5370a250556b1\",\n        \"title\": \"Reprehenderit ut optio autem.\",\n        \"slug\": \"reprehenderit-ut-optio-autem\",\n        \"description\": \"Dolore fugit quam ipsa sapiente. Impedit dolor itaque deserunt mollitia qui eaque numquam. Totam minima unde suscipit assumenda saepe tempore.\",\n        \"landingpage\": {\n            \"id\": \"68a36943d7f5370a2505569d\",\n            \"title\": \"Iure nam explicabo.\",\n            \"headline\": \"Aliquid aut pariatur quisquam.\",\n            \"subline\": \"Sit perferendis omnis eum laboriosam eum dignissimos qui accusamus nostrum dolorum atque eaque id.\",\n            \"sections\": [\n                {\n                    \"text\": \"Hic placeat et quidem sed et. Rem placeat dicta distinctio non totam veritatis. Repudiandae sit natus rerum iste eius mollitia perspiciatis. Quia quibusdam rem quo necessitatibus est voluptas.\\n\\nAtque qui non omnis ut provident aliquam. Optio repudiandae nisi doloribus numquam ut quos.\\n\\nQui sed et harum aut ipsa ea. Et necessitatibus eos laborum eligendi recusandae voluptas. Ad possimus nesciunt est commodi consequatur aliquid. Mollitia nostrum voluptas est blanditiis ea omnis. Maiores cumque qui magnam ut quo.\",\n                    \"image_url\": \"https://via.placeholder.com/800x400.png/003355?text=business+Landingpage+ut\",\n                    \"cta_text\": \"Contact Us\",\n                    \"cta_url\": \"http://breitenberg.biz/officia-eius-ad-autem-rerum-fugit.html\"\n                }\n            ]\n        }\n    }\n}"
 						},
 						{
 							"name": "404 Not Found",
@@ -4888,9 +5687,44 @@
 						}
 					]
 				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -4930,6 +5764,11 @@
 		{
 			"key": "password",
 			"value": "1234",
+			"type": "default"
+		},
+		{
+			"key": "SPA",
+			"value": "127.0.0.1:5173",
 			"type": "default"
 		}
 	]

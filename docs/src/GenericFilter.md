@@ -129,6 +129,16 @@ sequenceDiagram
     Route-->>Client: 200 OK + search criteria
 ```
 
+## Enhanced Array Support
+
+The system now supports multiple ways to pass array values for filtering:
+
+1. **Traditional PHP Array Format**: `?field_in[]=value1&field_in[]=value2`
+2. **Direct Array Detection**: When a parameter value is detected as an array, it automatically uses the 'IN' operator
+3. **JSON Array Format**: `?field=["value1","value2"]` (when parsed as array by client)
+
+This enhancement provides greater flexibility for API consumers and automatically handles array values regardless of how they're passed.
+
 ## Filter Types and Operations
 
 ```mermaid
@@ -415,8 +425,9 @@ GET /api/{model}/search-criteria
 
 ### Array Filters
 ```
-?field_in[]=value1&field_in[]=value2    // IN array
-?field_not_in[]=value1&field_not_in[]=value2    // NOT IN array
+?field_in[]=value1&field_in[]=value2    // IN array (PHP array format)
+?field_not_in[]=value1&field_not_in[]=value2    // NOT IN array (PHP array format)
+?field=["value1","value2"]    // IN array (JSON array format)
 ```
 
 **Examples:**
@@ -424,6 +435,7 @@ GET /api/{model}/search-criteria
 ?gender_in[]=male&gender_in[]=female
 ?source_not_in[]=erp
 ?blood_group_in[]=A+&blood_group_in[]=O+
+?gender=["male","female"]    // Direct array value support
 ```
 
 ### Dot Notation Support
@@ -566,6 +578,7 @@ GET /api/prospects/filter?min_age=25&max_age=40
 ### Multiple Values
 ```
 GET /api/prospects/filter?gender_in[]=male&gender_in[]=female
+GET /api/prospects/filter?gender=["male","female"]
 ```
 
 ### Complex Filtering
@@ -586,6 +599,7 @@ GET /api/prospects/filter?address_country=UK&min_address_latitude=50.0&max_addre
 ### Combined Filters
 ```
 GET /api/prospects/filter?source=kueba&min_age=30&max_age=50&blood_group_in[]=A+&blood_group_in[]=O+&address_city=Berlin
+GET /api/prospects/filter?source=kueba&min_age=30&max_age=50&blood_group=["A+","O+"]&address_city=Berlin
 ```
 
 ## Value Casting
@@ -675,6 +689,7 @@ switch (true) {
         $baseField = Str::replaceEnd('_not_in', '', $key);
         break;
     case Str::endsWith($key, '_in'):
+    case is_array($value):
         $operator = 'in';
         $baseField = Str::replaceEnd('_in', '', $key);
         break;

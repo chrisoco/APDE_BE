@@ -20,7 +20,7 @@ This document provides comprehensive documentation for the Campaign Mailing syst
 
 The Campaign Mailing system allows authorized users to send personalized emails to prospects based on campaign-specific filters. The system integrates with the prospect filtering mechanism and includes tracking capabilities for campaign analytics.
 
-## API Endpoint
+## API Endpoints
 
 ### Send Campaign Emails
 
@@ -37,6 +37,19 @@ The Campaign Mailing system allows authorized users to send personalized emails 
 **Authentication:** Required (Bearer token)
 
 **Authorization:** ADMIN or SUPER_ADMIN role required
+
+### Get Email Statistics
+
+**Endpoint:** `GET /api/campaigns/{campaign}/send-emails/sent`
+
+**Description:** Returns email statistics for a campaign without sending any emails. Shows the same metrics as the send endpoint but only displays current statistics.
+
+**URL Parameters:**
+- `campaign` (string, required): Campaign ID or UUID
+
+**Authentication:** Required (Bearer token)
+
+**Authorization:** Campaign view permission required
 
 ## Authentication & Authorization
 
@@ -341,11 +354,29 @@ catch (Exception $e) {
 
 ### Response Format
 
-**Success Response:**
+**Send Emails Success Response:**
 ```json
 {
     "message": "Campaign emails queued successfully. 1 emails sent to prospects.",
+    "campaign": {
+        "id": 1,
+        "title": "Summer Sale 2024"
+    },
     "emails_sent": 1,
+    "total_emails_sent": 6,
+    "notified_prospects": 5,
+    "available_prospects": 94,
+    "total_prospects": 100
+}
+```
+
+**Email Statistics Response:**
+```json
+{
+    "campaign": {
+        "id": 1,
+        "title": "Summer Sale 2024"
+    },
     "total_emails_sent": 6,
     "notified_prospects": 5,
     "available_prospects": 94,
@@ -355,11 +386,18 @@ catch (Exception $e) {
 
 ### Response Fields
 
-The API response includes the following fields:
-
+**Send Emails Response Fields:**
 - `message`: Success message with email count
+- `campaign`: Campaign information (ID and title)
 - `emails_sent`: Number of emails sent in this request
 - `total_emails_sent`: Total number of emails sent for this campaign (including all previous sends)
+- `notified_prospects`: Number of unique prospects that have received at least one email
+- `available_prospects`: Number of prospects that haven't been contacted yet
+- `total_prospects`: Total number of prospects matching the campaign filters
+
+**Email Statistics Response Fields:**
+- `campaign`: Campaign information (ID and title)
+- `total_emails_sent`: Total number of emails sent for this campaign
 - `notified_prospects`: Number of unique prospects that have received at least one email
 - `available_prospects`: Number of prospects that haven't been contacted yet
 - `total_prospects`: Total number of prospects matching the campaign filters
@@ -421,11 +459,25 @@ curl -X POST "http://localhost:8000/api/campaigns/{campaign_id}/send-emails?forc
   -H "Accept: application/json"
 ```
 
-### 3. Example Response
+### 3. Get Email Statistics
 
+```bash
+# Get email statistics without sending emails
+curl -X GET "http://localhost:8000/api/campaigns/{campaign_id}/send-emails/sent" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Accept: application/json"
+```
+
+### 4. Example Responses
+
+**Send Emails Response:**
 ```json
 {
     "message": "Campaign emails queued successfully. 1 emails sent to prospects.",
+    "campaign": {
+        "id": 1,
+        "title": "Summer Sale 2024"
+    },
     "emails_sent": 1,
     "total_emails_sent": 6,
     "notified_prospects": 5,
@@ -434,7 +486,21 @@ curl -X POST "http://localhost:8000/api/campaigns/{campaign_id}/send-emails?forc
 }
 ```
 
-### 4. Filter Examples
+**Email Statistics Response:**
+```json
+{
+    "campaign": {
+        "id": 1,
+        "title": "Summer Sale 2024"
+    },
+    "total_emails_sent": 6,
+    "notified_prospects": 5,
+    "available_prospects": 94,
+    "total_prospects": 100
+}
+```
+
+### 5. Filter Examples
 
 #### Basic Filter
 ```php
@@ -555,30 +621,44 @@ sequenceDiagram
 
 1. **CampaignEmailController** (`app/Http/Controllers/Api/CampaignEmailController.php`)
    - Handles the email sending endpoint
+   - Delegates validation and email sending to CampaignEmailService
+   - Provides thin controller layer for email operations
+
+2. **CampaignAnalyticsController** (`app/Http/Controllers/Api/CampaignAnalyticsController.php`)
+   - Handles email statistics endpoint (`/send-emails/sent`)
+   - Delegates statistics calculation to CampaignAnalyticsService
+   - Provides email metrics without sending emails
+
+3. **CampaignEmailService** (`app/Services/CampaignEmailService.php`)
    - Validates campaign requirements (landing page, filters, active status)
-   - Manages email sending process
-   - Implements local development safety
+   - Manages prospect filtering and email sending process
+   - Implements local development safety limits
    - Prevents duplicate notifications using unique prospect IDs
    - Supports force parameter to override duplicate prevention
    - Tracks each email send individually for complete history
 
-2. **CampainProspect Model** (`app/Models/CampainProspect.php`)
+4. **CampaignAnalyticsService** (`app/Services/CampaignAnalyticsService.php`)
+   - Provides comprehensive campaign analytics including email statistics
+   - Calculates email metrics (sent count, notified prospects, available prospects)
+   - Integrates with prospect filtering to provide accurate statistics
+
+5. **CampainProspect Model** (`app/Models/CampainProspect.php`)
    - Manages campaign-prospect associations
    - Tracks each individual email send for complete history
    - Provides relationship methods for campaigns and prospects
    - Enables duplicate prevention using unique prospect IDs
 
-3. **CampaignEmail Mailable** (`app/Mail/CampaignEmail.php`)
+6. **CampaignEmail Mailable** (`app/Mail/CampaignEmail.php`)
    - Laravel mailable class for campaign emails
    - Uses markdown template for email content
    - Includes campaign, prospect, and tracking URL
 
-4. **CampaignTrackingService** (`app/Services/CampaignTrackingService.php`)
+7. **CampaignTrackingService** (`app/Services/CampaignTrackingService.php`)
    - Generates tracking URLs with UTM parameters
    - Tracks landing page visits
    - Extracts tracking data from requests
 
-5. **HasFilterable Trait** (`app/Traits/HasFilterable.php`)
+8. **HasFilterable Trait** (`app/Traits/HasFilterable.php`)
    - Provides filtering functionality for prospects
    - Supports enum and range filters
    - Handles automatic value casting
@@ -616,12 +696,13 @@ The system integrates with the landing page tracking system:
 ### Common Issues
 
 1. **No Emails Sent:** Check if prospects match the filter criteria
-2. **Authorization Errors:** Ensure user has ADMIN or SUPER_ADMIN role
+2. **Authorization Errors:** Ensure user has ADMIN or SUPER_ADMIN role for sending emails, or appropriate view permissions for statistics
 3. **Missing Landing Page:** Create and associate a landing page with the campaign
 4. **Filter Syntax Errors:** Verify filter structure matches expected format
 5. **Email Delivery Issues:** Check mail configuration and logs
 6. **All Prospects Already Contacted:** Use `force=true` parameter to resend to all prospects
 7. **Campaign Not Active:** Ensure campaign status is set to ACTIVE before sending emails
+8. **Statistics Show Zero:** Ensure campaign has prospect filters defined to calculate statistics
 
 ### Debugging Steps
 

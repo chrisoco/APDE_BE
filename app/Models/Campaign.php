@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Eloquent\SoftDeletes;
+use MongoDB\Laravel\Relations\BelongsTo;
 use MongoDB\Laravel\Relations\HasMany;
-use MongoDB\Laravel\Relations\HasOne;
 
 /**
  * @property string $id
+ * @property string|null $landingpage_id
  * @property string $title
+ * @property string $slug
  * @property string|null $description
  * @property CampaignStatus $status
  * @property \Illuminate\Support\Carbon|null $start_date
@@ -31,7 +33,7 @@ final class Campaign extends Model
     /** @use HasFactory<\Database\Factories\CampaignFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['id', 'title', 'description', 'status', 'start_date', 'end_date', 'prospect_filter', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['id', 'landingpage_id', 'title', 'slug', 'description', 'status', 'start_date', 'end_date', 'prospect_filter', 'created_at', 'updated_at', 'deleted_at'];
 
     protected $casts = [
         'status' => CampaignStatus::class,
@@ -43,13 +45,26 @@ final class Campaign extends Model
     ];
 
     /**
-     * Get the landingpage associated with the campaign.
-     *
-     * @return HasOne<Landingpage, Campaign>
+     * Override getAttribute to handle missing landingpage_id gracefully
      */
-    public function landingpage(): HasOne
+    public function getAttribute($key)
     {
-        return $this->hasOne(Landingpage::class);
+        // If landingpage_id is requested but not set, return null
+        if ($key === 'landingpage_id' && ! array_key_exists('landingpage_id', $this->attributes)) {
+            return null;
+        }
+
+        return parent::getAttribute($key);
+    }
+
+    /**
+     * Get the landingpage that owns the campaign.
+     *
+     * @return BelongsTo<Landingpage, Campaign>
+     */
+    public function landingpage(): BelongsTo
+    {
+        return $this->belongsTo(Landingpage::class);
     }
 
     /**

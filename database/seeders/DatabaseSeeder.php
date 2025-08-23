@@ -7,7 +7,6 @@ namespace Database\Seeders;
 use App\Enums\UserRole;
 use App\Models\Campaign;
 use App\Models\CampaignTracking;
-use App\Models\Landingpage;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -32,9 +31,7 @@ final class DatabaseSeeder extends Seeder
 
         Artisan::call('app:import-prospects');
 
-        Campaign::factory()->count(20)
-            ->has(Landingpage::factory()->count(1))
-            ->create();
+        Campaign::factory()->count(20)->create();
 
         CampaignTracking::factory()->count(200)->create();
     }
