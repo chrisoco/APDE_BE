@@ -24,6 +24,7 @@ final class CampaignResource extends JsonResource
         return [
             'id' => $campaign->id,
             'title' => $campaign->title,
+            'slug' => $campaign->slug,
             'description' => $campaign->description,
             $this->mergeWhen(Gate::allows('viewAny', Campaign::class), [
                 'start_date' => $campaign->start_date,

@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\CampaignStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LandingpageRequest;
 use App\Models\Landingpage;
-use App\Services\CampaignTrackingService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Gate;
@@ -24,7 +21,7 @@ final class LandingpageController extends Controller
     {
         Gate::authorize('viewAny', Landingpage::class);
 
-        return Landingpage::with('campaign')->paginate(request()->integer('per_page', 10))->toResourceCollection();
+        return Landingpage::with('campaigns')->paginate(request()->integer('per_page', 10))->toResourceCollection();
     }
 
     /**
@@ -39,35 +36,12 @@ final class LandingpageController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  string  $identifier  The landingpage identifier (can be uuid or slug)
      */
-    public function show(Request $request, CampaignTrackingService $campaignTrackingService, $identifier): JsonResource
+    public function show(Landingpage $landingpage): JsonResource
     {
-        if ($landingpage = Landingpage::find($identifier)) {
-            Gate::authorize('view', $landingpage);
+        Gate::authorize('view', $landingpage);
 
-            return $landingpage->load('campaign')->toResource();
-        }
-
-        $landingpage = Landingpage::with('campaign')
-            ->where('slug', $identifier)
-            ->whereHas('campaign', function ($query): void {
-                $query->where('status', CampaignStatus::ACTIVE)
-                    ->where(function ($q): void {
-                        $q->whereNull('start_date')
-                            ->orWhere('start_date', '<=', now());
-                    })
-                    ->where(function ($q): void {
-                        $q->whereNull('end_date')
-                            ->orWhere('end_date', '>=', now());
-                    });
-            })
-            ->firstOrFail();
-
-        $campaignTrackingService->trackLandingPageVisit($request, $landingpage);
-
-        return $landingpage->load('campaign')->toResource();
+        return $landingpage->load('campaigns')->toResource();
     }
 
     /**
@@ -79,7 +53,7 @@ final class LandingpageController extends Controller
 
         $landingpage->update($request->validated());
 
-        return $landingpage->load('campaign')->toResource();
+        return $landingpage->load('campaigns')->toResource();
     }
 
     /**

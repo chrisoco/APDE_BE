@@ -28,7 +28,6 @@ final class LandingpageFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence(3),
-            'slug' => $this->faker->slug(3),
             'headline' => $this->faker->sentence(6),
             'subline' => $this->faker->sentence(10),
             'sections' => array_map(fn (): array => [

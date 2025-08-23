@@ -12,10 +12,11 @@ use App\Http\Controllers\Api\ProspectController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/lp/{identifier}', [LandingpageController::class, 'show'])->name('lp.show');
+Route::get('/cp/{identifier}', [CampaignController::class, 'showLandingpage'])->name('lp.show');
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
+    Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/{model}/filter', [GenericFilterController::class, 'filter']);
@@ -26,6 +27,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('landingpages', LandingpageController::class);
 
     Route::get('/campaigns/{campaign}/analytics', [CampaignAnalyticsController::class, 'show']);
+    Route::get('/campaigns/{campaign}/send-emails/sent', [CampaignAnalyticsController::class, 'emailStatistics']);
     Route::post('/campaigns/{campaign}/send-emails', [CampaignEmailController::class, 'send']);
 
     Route::get('/cp-cookie', function () {
