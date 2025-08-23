@@ -4,7 +4,8 @@ A modern, responsive web application for managing and analyzing targeted email c
 
 ## Features
 
-- Campaign creation with custom landing pages
+- Campaign creation with reusable landing page templates
+- Campaign-based public access with slug or UUID identification
 - Audience segmentation via ERP & Küba APIs
 - Scheduled campaign sending with Mailtrap testing
 - Prospect interaction tracking & analytics dashboard
@@ -40,6 +41,7 @@ A modern, responsive web application for managing and analyzing targeted email c
 - **[OpenAPI Documentation](./docs/openapi/README.md)** - API documentation setup and viewing instructions
 - **[OpenAPI YAML](./docs/openapi/openapi.yaml)** - Complete API specification with all endpoints, schemas, and examples
 - **[Local Swagger](https://apde_be.test/api/docs/openapi/#/)** - Interactive API documentation (requires local server)
+- **[Release Notes](./docs/release/)** - Version history and change documentation
 
 ## Setup (Local Dev)
 
@@ -69,6 +71,9 @@ php artisan serve
 # http://localhost:8000/api/docs/openapi/
 
 # Import Postman collection and run Token Based > Token Login to generate auth token
+
+# Access public landing pages via campaign
+# http://localhost:8000/api/cp/{campaign-slug-or-uuid}
 ```
 
 ## Static Code Analysis
@@ -82,7 +87,6 @@ php artisan serve
   - [Laravel Rules](https://github.com/driftingly/rector-laravel/blob/main/docs/rector_rules_overview.md)
 
 ## Roles
-
 - **Marketing Team (Admins)**: Manage campaigns, view analytics
 - **Prospects (Guests)**: Receive emails, view landing pages, submit interest
 
@@ -101,8 +105,8 @@ php artisan serve
 ## Authentication
 - https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/user-authentication/
 - https://laravel.com/docs/12.x/sanctum
-- (tbd) https://laravel.com/docs/12.x/sanctum#spa-authentication
-- (tbd) https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/user-authentication/#create-the-user-controller
+- https://laravel.com/docs/12.x/sanctum#spa-authentication
+- https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/user-authentication/#create-the-user-controller
 
 ## DTO
 - https://spatie.be/docs/laravel-data/v4/introduction
