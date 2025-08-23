@@ -55,6 +55,7 @@ final class CampaignAnalyticsService
         // Filter prospects based on campaign filters
         $filteredProspects = Prospect::applyFilters($campaign->prospect_filter);
         $totalProspects = $filteredProspects->count();
+        $notifiedUniqueProspects = $campaign->campaignProspects()->pluck('prospect_id')->unique()->count();
 
         return [
             'campaign' => [
@@ -62,8 +63,8 @@ final class CampaignAnalyticsService
                 'title' => $campaign->title,
             ],
             'total_emails_sent' => $campaign->campaignProspects()->count(),
-            'notified_prospects' => $campaign->campaignProspects()->pluck('prospect_id')->unique()->count(),
-            'available_prospects' => $totalProspects - $campaign->campaignProspects()->count(),
+            'notified_prospects' => $notifiedUniqueProspects,
+            'available_prospects' => $totalProspects - $notifiedUniqueProspects,
             'total_prospects' => $totalProspects,
         ];
     }

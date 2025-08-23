@@ -47,7 +47,7 @@ final class CampaignEmailController extends Controller
             'emails_sent' => $results['emails_sent'],
             'total_emails_sent' => $results['total_emails_sent'],
             'notified_prospects' => $results['notified_prospects'],
-            'available_prospects' => $totalProspects - $results['total_emails_sent'],
+            'available_prospects' => $totalProspects - $results['notified_prospects'],
             'total_prospects' => $totalProspects,
         ]);
     }
