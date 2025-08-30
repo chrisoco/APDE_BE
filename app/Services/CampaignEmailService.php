@@ -47,7 +47,7 @@ final readonly class CampaignEmailService
      */
     public function getProspectsToEmail(Campaign $campaign, bool $force): Collection
     {
-        $filteredProspects = Prospect::applyFilters($campaign->prospect_filter);
+        $filteredProspects = Prospect::applyFilters($campaign->prospect_filter ?? []);
 
         if ($force) {
             return $filteredProspects->get();
@@ -62,7 +62,7 @@ final readonly class CampaignEmailService
      * Send emails to prospects for a campaign.
      *
      * @param  Collection<int, Prospect>  $prospects
-     * @return array<string, mixed>
+     * @return array{emails_sent: int, total_emails_sent: int, notified_prospects: int}
      */
     public function sendEmailsToProspects(Campaign $campaign, Collection $prospects, bool $force): array
     {

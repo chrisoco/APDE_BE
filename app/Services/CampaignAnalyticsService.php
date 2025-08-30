@@ -35,7 +35,7 @@ final class CampaignAnalyticsService
     /**
      * Get email statistics for the specified campaign.
      *
-     * @return array<string, int>
+     * @return array<string, array<string, mixed>|int>
      */
     public function getEmailStatistics(Campaign $campaign): array
     {

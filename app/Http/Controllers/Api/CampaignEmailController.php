@@ -39,7 +39,7 @@ final class CampaignEmailController extends Controller
         $totalProspects = $this->campaignEmailService->getTotalProspectsCount($campaign);
 
         return response()->json([
-            'message' => "Campaign emails queued successfully. {$results['emails_sent']} emails sent to prospects.",
+            'message' => 'Campaign emails queued successfully. '.(int) $results['emails_sent'].' emails sent to prospects.',
             'campaign' => [
                 'id' => $campaign->id,
                 'title' => $campaign->title,
@@ -47,7 +47,7 @@ final class CampaignEmailController extends Controller
             'emails_sent' => $results['emails_sent'],
             'total_emails_sent' => $results['total_emails_sent'],
             'notified_prospects' => $results['notified_prospects'],
-            'available_prospects' => $totalProspects - $results['notified_prospects'],
+            'available_prospects' => $totalProspects - (int) $results['notified_prospects'],
             'total_prospects' => $totalProspects,
         ]);
     }
