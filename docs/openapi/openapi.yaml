@@ -25,7 +25,7 @@ info:
     
     ## Base URL
     
-    All API requests should be made to: `http://apde_be.test`
+    All API requests should be made to: `http://localhost:8000`
     
     ## Rate Limiting
     
@@ -609,29 +609,29 @@ paths:
                           latitude: 41.331324
                           longitude: 151.782727
                     links:
-                      first: "http://apde_be.test/api/prospects?page=1"
-                      last: "http://apde_be.test/api/prospects?page=154"
-                      prev: "http://apde_be.test/api/prospects?page=4"
-                      next: "http://apde_be.test/api/prospects?page=6"
+                      first: "http://localhost:8000/api/prospects?page=1"
+                      last: "http://localhost:8000/api/prospects?page=154"
+                      prev: "http://localhost:8000/api/prospects?page=4"
+                      next: "http://localhost:8000/api/prospects?page=6"
                     meta:
                       current_page: 5
                       from: 9
                       last_page: 154
-                      path: "http://apde_be.test/api/prospects"
+                      path: "http://localhost:8000/api/prospects"
                       per_page: 2
                       to: 10
                       total: 308
                       links:
-                        - url: "http://apde_be.test/api/prospects?page=4"
+                        - url: "http://localhost:8000/api/prospects?page=4"
                           label: "&laquo; Previous"
                           active: false
-                        - url: "http://apde_be.test/api/prospects?page=1"
+                        - url: "http://localhost:8000/api/prospects?page=1"
                           label: "1"
                           active: false
-                        - url: "http://apde_be.test/api/prospects?page=5"
+                        - url: "http://localhost:8000/api/prospects?page=5"
                           label: "5"
                           active: true
-                        - url: "http://apde_be.test/api/prospects?page=6"
+                        - url: "http://localhost:8000/api/prospects?page=6"
                           label: "Next &raquo;"
                           active: false
         '401':

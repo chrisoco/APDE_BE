@@ -31,7 +31,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureCarbon();
         $this->configureModels();
         $this->configureVite();
-        $this->configureUrl();
+        // $this->configureUrl();
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
 

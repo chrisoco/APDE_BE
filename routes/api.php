@@ -39,10 +39,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::get('/docs/openapi/', function () {
     return view('docs.openapi.index');
-});
+})->name('docs.openapi');
 
 Route::get('/docs/openapi/openapi.yaml', function () {
     return response()->file(base_path('docs/openapi/openapi.yaml'), [
         'Content-Type' => 'application/x-yaml',
     ]);
-});
+})->name('docs.openapi.yaml');

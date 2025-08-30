@@ -22,3 +22,9 @@ yarn-error.log
 /.vscode
 /.zed
 .DS_Store
+/.cursor
+/.idea
+/.junie
+/.github
+CLAUDE.md
+.mcp.json
