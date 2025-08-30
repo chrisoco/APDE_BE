@@ -39,7 +39,7 @@
     <script>
         window.onload = function() {
             const ui = SwaggerUIBundle({
-                url: './openapi.yaml',
+                url: '{{ route('docs.openapi.yaml') }}',
                 dom_id: '#swagger-ui',
                 deepLinking: true,
                 presets: [
