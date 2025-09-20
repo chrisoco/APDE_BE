@@ -1,61 +1,61 @@
-# Campaign Mailing Documentation
+# Kampagnen-Mailing Dokumentation
 
-This document provides comprehensive documentation for the Campaign Mailing system in the APDE backend API.
+Diese Dokumentation bietet eine umfassende Anleitung für das Kampagnen-Mailing-System in der APDE Backend-API.
 
-## Table of Contents
+## Inhaltsverzeichnis
 
-- [Overview](#overview)
-- [API Endpoint](#api-endpoint)
-- [Authentication & Authorization](#authentication--authorization)
-- [Campaign Requirements](#campaign-requirements)
-- [Prospect Filtering](#prospect-filtering)
-- [Email Generation](#email-generation)
+- [Überblick](#überblick)
+- [API-Endpunkte](#api-endpunkte)
+- [Authentifizierung & Autorisierung](#authentifizierung--autorisierung)
+- [Kampagnen-Anforderungen](#kampagnen-anforderungen)
+- [Prospect-Filterung](#prospect-filterung)
+- [E-Mail-Generierung](#e-mail-generierung)
 - [Tracking & Analytics](#tracking--analytics)
-- [Local Development Behavior](#local-development-behavior)
-- [Error Handling](#error-handling)
-- [Example Usage](#example-usage)
-- [Sequence Diagram](#sequence-diagram)
+- [Lokales Entwicklungsverhalten](#lokales-entwicklungsverhalten)
+- [Fehlerbehandlung](#fehlerbehandlung)
+- [Beispielverwendung](#beispielverwendung)
+- [Sequenzdiagramm](#sequenzdiagramm)
 
-## Overview
+## Überblick
 
-The Campaign Mailing system allows authorized users to send personalized emails to prospects based on campaign-specific filters. The system integrates with the prospect filtering mechanism and includes tracking capabilities for campaign analytics.
+Das Kampagnen-Mailing-System ermöglicht es autorisierten Benutzern, personalisierte E-Mails an Prospects basierend auf kampagnenspezifischen Filtern zu senden. Das System integriert sich mit dem Prospect-Filterungsmechanismus und verfügt über Tracking-Funktionen für Kampagnen-Analytics.
 
-## API Endpoints
+## API-Endpunkte
 
-### Send Campaign Emails
+### Kampagnen-E-Mails senden
 
-**Endpoint:** `POST /api/campaigns/{campaign}/send-emails`
+**Endpunkt:** `POST /api/campaigns/{campaign}/send-emails`
 
-**Description:** Sends personalized emails to prospects matching the campaign's filter criteria. Duplicate sends to the same prospect are prevented by default.
+**Beschreibung:** Sendet personalisierte E-Mails an Prospects, die den Filterkriterien der Kampagne entsprechen. Doppelte Sendungen an denselben Prospect werden standardmäßig verhindert.
 
-**URL Parameters:**
-- `campaign` (string, required): Campaign ID or UUID
+**URL-Parameter:**
+- `campaign` (string, erforderlich): Kampagnen-ID oder UUID
 
-**Query Parameters:**
-- `force` (boolean, optional): Force sending emails to prospects who have already been contacted. Default: `false`
+**Query-Parameter:**
+- `force` (boolean, optional): Erzwingt das Senden von E-Mails an Prospects, die bereits kontaktiert wurden. Standard: `false`
 
-**Authentication:** Required (Bearer token)
+**Authentifizierung:** Erforderlich (Bearer Token)
 
-**Authorization:** ADMIN or SUPER_ADMIN role required
+**Autorisierung:** ADMIN oder SUPER_ADMIN Rolle erforderlich
 
-### Get Email Statistics
+### E-Mail-Statistiken abrufen
 
-**Endpoint:** `GET /api/campaigns/{campaign}/send-emails/sent`
+**Endpunkt:** `GET /api/campaigns/{campaign}/send-emails/sent`
 
-**Description:** Returns email statistics for a campaign without sending any emails. Shows the same metrics as the send endpoint but only displays current statistics.
+**Beschreibung:** Gibt E-Mail-Statistiken für eine Kampagne zurück, ohne E-Mails zu senden. Zeigt dieselben Metriken wie der Send-Endpunkt, aber nur aktuelle Statistiken.
 
-**URL Parameters:**
-- `campaign` (string, required): Campaign ID or UUID
+**URL-Parameter:**
+- `campaign` (string, erforderlich): Kampagnen-ID oder UUID
 
-**Authentication:** Required (Bearer token)
+**Authentifizierung:** Erforderlich (Bearer Token)
 
-**Authorization:** Campaign view permission required
+**Autorisierung:** Kampagnen-Ansichtsberechtigung erforderlich
 
-## Authentication & Authorization
+## Authentifizierung & Autorisierung
 
-### Required Permissions
+### Erforderliche Berechtigungen
 
-The `sendEmails` action requires ADMIN or SUPER_ADMIN role:
+Die `sendEmails`-Aktion erfordert die ADMIN- oder SUPER_ADMIN-Rolle:
 
 ```php
 // app/Policies/CampaignPolicy.php
@@ -68,19 +68,19 @@ public function sendEmails(User $user): bool
 }
 ```
 
-### Authentication Flow
+### Authentifizierungsablauf
 
-1. User must be authenticated via Laravel Sanctum
-2. User must have appropriate role (ADMIN or SUPER_ADMIN)
-3. Campaign must exist and be accessible to the user
+1. Benutzer muss über Laravel Sanctum authentifiziert sein
+2. Benutzer muss die entsprechende Rolle haben (ADMIN oder SUPER_ADMIN)
+3. Kampagne muss existieren und für den Benutzer zugänglich sein
 
-## Campaign Requirements
+## Kampagnen-Anforderungen
 
-Before sending emails, the campaign must meet specific criteria:
+Bevor E-Mails gesendet werden, muss die Kampagne bestimmte Kriterien erfüllen:
 
-### 1. Associated Landing Page
+### 1. Verknüpfte Landing Page
 
-The campaign must have an associated landing page:
+Die Kampagne muss eine verknüpfte Landing Page haben:
 
 ```php
 if (! $campaign->landingpage) {
@@ -90,9 +90,9 @@ if (! $campaign->landingpage) {
 }
 ```
 
-### 2. Prospect Filters
+### 2. Prospect-Filter
 
-The campaign must have prospect filters defined:
+Die Kampagne muss definierte Prospect-Filter haben:
 
 ```php
 if (! $campaign->prospect_filter) {
@@ -102,9 +102,9 @@ if (! $campaign->prospect_filter) {
 }
 ```
 
-### 3. Active Status
+### 3. Aktiver Status
 
-The campaign must be in ACTIVE status to send emails:
+Die Kampagne muss im ACTIVE-Status sein, um E-Mails zu senden:
 
 ```php
 if ($campaign->status !== CampaignStatus::ACTIVE) {
@@ -114,22 +114,22 @@ if ($campaign->status !== CampaignStatus::ACTIVE) {
 }
 ```
 
-**Available Campaign Statuses:**
-- `draft` - Campaign is in draft mode
-- `active` - Campaign is active and can send emails
-- `paused` - Campaign is paused
-- `completed` - Campaign is completed
+**Verfügbare Kampagnen-Status:**
+- `draft` - Kampagne ist im Entwurfsmodus
+- `active` - Kampagne ist aktiv und kann E-Mails senden
+- `paused` - Kampagne ist pausiert
+- `completed` - Kampagne ist abgeschlossen
 
-## Prospect Filtering
+## Prospect-Filterung
 
-The system uses the `applyFilters` method from the `HasFilterable` trait to filter prospects based on campaign criteria. The system automatically filters out prospects who have already been contacted for this campaign unless the `force` parameter is set to `true`. The system tracks each email send individually while using unique prospect IDs to prevent duplicates in default mode.
+Das System verwendet die `applyFilters`-Methode vom `HasFilterable`-Trait, um Prospects basierend auf Kampagnenkriterien zu filtern. Das System filtert automatisch Prospects heraus, die bereits für diese Kampagne kontaktiert wurden, es sei denn, der `force`-Parameter ist auf `true` gesetzt. Das System verfolgt jeden E-Mail-Versand einzeln und verwendet eindeutige Prospect-IDs, um Duplikate im Standardmodus zu verhindern.
 
-### Filter Structure
+### Filter-Struktur
 
-Campaign filters are stored in the `prospect_filter` field as an array:
+Kampagnenfilter werden im `prospect_filter`-Feld als Array gespeichert:
 
 ```php
-// Example campaign filter
+// Beispiel Kampagnenfilter
 [
     "min_age" => 39,
     "max_age" => 40,
@@ -138,32 +138,32 @@ Campaign filters are stored in the `prospect_filter` field as an array:
 ]
 ```
 
-### Available Filter Types
+### Verfügbare Filtertypen
 
-The Prospect model supports the following filterable attributes:
+Das Prospect-Modell unterstützt die folgenden filterbaren Attribute:
 
-#### Enum Filters
-- `source` - Data source (erp, kueba)
-- `gender` - Gender (male, female)
-- `blood_group` - Blood group
-- `eye_color` - Eye color
-- `hair_color` - Hair color
-- `address.city` - City
-- `address.state` - State
-- `address.country` - Country
+#### Enum-Filter
+- `source` - Datenquelle (erp, kueba)
+- `gender` - Geschlecht (male, female)
+- `blood_group` - Blutgruppe
+- `eye_color` - Augenfarbe
+- `hair_color` - Haarfarbe
+- `address.city` - Stadt
+- `address.state` - Bundesland
+- `address.country` - Land
 
-#### Range Filters
-- `age` - Age (use min_age, max_age)
-- `birth_date` - Birth date (use min_birth_date, max_birth_date)
-- `height` - Height (use min_height, max_height)
-- `weight` - Weight (use min_weight, max_weight)
-- `address.plz` - Postal code (use min_address_plz, max_address_plz)
-- `address.latitude` - Latitude (use min_address_latitude, max_address_latitude)
-- `address.longitude` - Longitude (use min_address_longitude, max_address_longitude)
+#### Bereichsfilter
+- `age` - Alter (verwende min_age, max_age)
+- `birth_date` - Geburtsdatum (verwende min_birth_date, max_birth_date)
+- `height` - Größe (verwende min_height, max_height)
+- `weight` - Gewicht (verwende min_weight, max_weight)
+- `address.plz` - Postleitzahl (verwende min_address_plz, max_address_plz)
+- `address.latitude` - Breitengrad (verwende min_address_latitude, max_address_latitude)
+- `address.longitude` - Längengrad (verwende min_address_longitude, max_address_longitude)
 
-### Filter Syntax
+### Filter-Syntax
 
-#### Basic Filters
+#### Grundlegende Filter
 ```php
 [
     "source" => "erp",
@@ -171,7 +171,7 @@ The Prospect model supports the following filterable attributes:
 ]
 ```
 
-#### Range Filters
+#### Bereichsfilter
 ```php
 [
     "min_age" => 25,
@@ -179,7 +179,7 @@ The Prospect model supports the following filterable attributes:
 ]
 ```
 
-#### Array Filters
+#### Array-Filter
 ```php
 [
     "gender_in" => ["male", "female"],
@@ -187,7 +187,7 @@ The Prospect model supports the following filterable attributes:
 ]
 ```
 
-#### Nested Field Filters
+#### Verschachtelte Feld-Filter
 ```php
 [
     "address_city" => "Berlin",
@@ -196,11 +196,11 @@ The Prospect model supports the following filterable attributes:
 ]
 ```
 
-## Email Generation
+## E-Mail-Generierung
 
-### Email Content
+### E-Mail-Inhalt
 
-Emails are generated using the `CampaignEmail` mailable class with the following template:
+E-Mails werden mit der `CampaignEmail`-Mailable-Klasse und folgendem Template generiert:
 
 ```blade
 @component('mail::message')
@@ -221,18 +221,18 @@ Your Hotel Grand Pilatus Team
 @endcomponent
 ```
 
-### Email Properties
+### E-Mail-Eigenschaften
 
-- **Subject:** Campaign title
-- **Recipient:** Prospect email address
-- **Content:** Personalized message with prospect name and campaign description
-- **Call-to-Action:** Tracking URL to landing page
+- **Betreff:** Kampagnentitel
+- **Empfänger:** Prospect E-Mail-Adresse
+- **Inhalt:** Personalisierte Nachricht mit Prospect-Name und Kampagnenbeschreibung
+- **Call-to-Action:** Tracking-URL zur Landing Page
 
 ## Tracking & Analytics
 
-### Tracking URL Generation
+### Tracking-URL-Generierung
 
-Each email includes a unique tracking URL generated by the `CampaignTrackingService`:
+Jede E-Mail enthält eine eindeutige Tracking-URL, die vom `CampaignTrackingService` generiert wird:
 
 ```php
 public function generateCampaignEmailUrl(Campaign $campaign, Prospect $prospect): string
@@ -251,17 +251,17 @@ public function generateCampaignEmailUrl(Campaign $campaign, Prospect $prospect)
 }
 ```
 
-### UTM Parameters
+### UTM-Parameter
 
-The tracking URL includes the following UTM parameters:
+Die Tracking-URL enthält folgende UTM-Parameter:
 - `utm_source`: "mail"
 - `utm_medium`: "web"
-- `utm_campaign`: Campaign title
-- `prospect`: Prospect ID for tracking
+- `utm_campaign`: Kampagnentitel
+- `prospect`: Prospect-ID für Tracking
 
-### Visit Tracking
+### Besuchs-Tracking
 
-When prospects click the email link, the system tracks the visit:
+Wenn Prospects auf den E-Mail-Link klicken, verfolgt das System den Besuch:
 
 ```php
 public function trackLandingPageVisit(Request $request, Landingpage $landingpage): CampaignTracking
@@ -285,18 +285,18 @@ public function trackLandingPageVisit(Request $request, Landingpage $landingpage
 }
 ```
 
-## Local Development Behavior
+## Lokales Entwicklungsverhalten
 
-**Important:** In local development environment, the system has safety features to prevent accidental mass emails:
-- **Default behavior:** Only sends **1 email** to the first matching prospect
-- **Force mode:** Sends up to **3 emails** to prevent excessive testing emails
+**Wichtig:** In der lokalen Entwicklungsumgebung hat das System Sicherheitsfeatures, um versehentliche Massen-E-Mails zu verhindern:
+- **Standardverhalten:** Sendet nur **1 E-Mail** an den ersten passenden Prospect
+- **Force-Modus:** Sendet bis zu **3 E-Mails**, um übermäßige Test-E-Mails zu verhindern
 
 ```php
 foreach ($prospects as $prospect) {
     try {
         $trackingUrl = $this->trackingService->generateCampaignEmailUrl($campaign, $prospect);
 
-        // Create association record to track this email send
+        // Erstelle Verknüpfungsrecord zum Verfolgen dieses E-Mail-Versands
         $campaign->campaignProspects()->create([
             'prospect_id' => $prospect->id,
         ]);
@@ -307,16 +307,12 @@ foreach ($prospects as $prospect) {
 
         $emailsSent++;
 
-        if (! $force && app()->isLocal()) {
-            break; // Only send 1 email in local development (default mode)
-        }
-
-        if ($force && app()->isLocal() && $emailsSent >= 3) {
-            break; // Send up to 3 emails in local development (force mode)
+        if ($this->shouldStopSending($force, $emailsSent)) {
+            break;
         }
 
     } catch (Exception $e) {
-        // Log the error but continue with other prospects
+        // Logge den Fehler, aber setze mit anderen Prospects fort
         logger()->error('Failed to send campaign email', [
             'campaign_id' => $campaign->id,
             'prospect_id' => $prospect->id,
@@ -326,21 +322,21 @@ foreach ($prospects as $prospect) {
 }
 ```
 
-## Error Handling
+## Fehlerbehandlung
 
-### Validation Errors
+### Validierungsfehler
 
-The system performs several validations before sending emails:
+Das System führt mehrere Validierungen durch, bevor E-Mails gesendet werden:
 
-1. **Campaign Authorization:** User must have permission to send emails
-2. **Landing Page Required:** Campaign must have an associated landing page
-3. **Filters Required:** Campaign must have prospect filters defined
-4. **Active Status Required:** Campaign must be in ACTIVE status
-5. **Prospects Found:** At least one prospect must match the filters
+1. **Kampagnen-Autorisierung:** Benutzer muss Berechtigung zum Senden von E-Mails haben
+2. **Landing Page erforderlich:** Kampagne muss eine verknüpfte Landing Page haben
+3. **Filter erforderlich:** Kampagne muss definierte Prospect-Filter haben
+4. **Aktiver Status erforderlich:** Kampagne muss im ACTIVE-Status sein
+5. **Prospects gefunden:** Mindestens ein Prospect muss den Filtern entsprechen
 
-### Email Sending Errors
+### E-Mail-Versandfehler
 
-Individual email failures are logged but don't stop the entire process:
+Einzelne E-Mail-Fehler werden protokolliert, stoppen aber nicht den gesamten Prozess:
 
 ```php
 catch (Exception $e) {
@@ -352,9 +348,9 @@ catch (Exception $e) {
 }
 ```
 
-### Response Format
+### Antwortformat
 
-**Send Emails Success Response:**
+**E-Mails senden Erfolgsantwort:**
 ```json
 {
     "message": "Campaign emails queued successfully. 1 emails sent to prospects.",
@@ -370,7 +366,7 @@ catch (Exception $e) {
 }
 ```
 
-**Email Statistics Response:**
+**E-Mail-Statistiken Antwort:**
 ```json
 {
     "campaign": {
@@ -384,25 +380,25 @@ catch (Exception $e) {
 }
 ```
 
-### Response Fields
+### Antwortfelder
 
-**Send Emails Response Fields:**
-- `message`: Success message with email count
-- `campaign`: Campaign information (ID and title)
-- `emails_sent`: Number of emails sent in this request
-- `total_emails_sent`: Total number of emails sent for this campaign (including all previous sends)
-- `notified_prospects`: Number of unique prospects that have received at least one email
-- `available_prospects`: Number of prospects that haven't been contacted yet
-- `total_prospects`: Total number of prospects matching the campaign filters
+**E-Mails senden Antwortfelder:**
+- `message`: Erfolgsmeldung mit E-Mail-Anzahl
+- `campaign`: Kampagneninformationen (ID und Titel)
+- `emails_sent`: Anzahl der in dieser Anfrage gesendeten E-Mails
+- `total_emails_sent`: Gesamtanzahl der für diese Kampagne gesendeten E-Mails (einschließlich aller vorherigen Sendungen)
+- `notified_prospects`: Anzahl der eindeutigen Prospects, die mindestens eine E-Mail erhalten haben
+- `available_prospects`: Anzahl der Prospects, die noch nicht kontaktiert wurden
+- `total_prospects`: Gesamtanzahl der Prospects, die den Kampagnenfiltern entsprechen
 
-**Email Statistics Response Fields:**
-- `campaign`: Campaign information (ID and title)
-- `total_emails_sent`: Total number of emails sent for this campaign
-- `notified_prospects`: Number of unique prospects that have received at least one email
-- `available_prospects`: Number of prospects that haven't been contacted yet
-- `total_prospects`: Total number of prospects matching the campaign filters
+**E-Mail-Statistiken Antwortfelder:**
+- `campaign`: Kampagneninformationen (ID und Titel)
+- `total_emails_sent`: Gesamtanzahl der für diese Kampagne gesendeten E-Mails
+- `notified_prospects`: Anzahl der eindeutigen Prospects, die mindestens eine E-Mail erhalten haben
+- `available_prospects`: Anzahl der Prospects, die noch nicht kontaktiert wurden
+- `total_prospects`: Gesamtanzahl der Prospects, die den Kampagnenfiltern entsprechen
 
-**Error Responses:**
+**Fehlerantworten:**
 ```json
 {
     "message": "Campaign must have an associated landing page to send emails."
@@ -427,14 +423,14 @@ catch (Exception $e) {
 }
 ```
 
-## Example Usage
+## Beispielverwendung
 
-### 1. Create Campaign with Filters
+### 1. Kampagne mit Filtern erstellen
 
 ```php
 $campaign = Campaign::create([
     'title' => 'Summer Sale 2024',
-    'description' => 'Exclusive summer offers for our valued customers',
+    'description' => 'Exklusive Sommerangebote für unsere geschätzten Kunden',
     'status' => CampaignStatus::ACTIVE,
     'prospect_filter' => [
         'min_age' => 39,
@@ -445,64 +441,32 @@ $campaign = Campaign::create([
 ]);
 ```
 
-### 2. Send Campaign Emails
+### 2. Kampagnen-E-Mails senden
 
 ```bash
-# Send emails to new prospects only (default behavior)
+# E-Mails nur an neue Prospects senden (Standardverhalten)
 curl -X POST "http://localhost:8000/api/campaigns/{campaign_id}/send-emails" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Accept: application/json"
 
-# Force send emails to all prospects (including already contacted)
+# E-Mails an alle Prospects zwingen (einschließlich bereits kontaktierter)
 curl -X POST "http://localhost:8000/api/campaigns/{campaign_id}/send-emails?force=true" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 3. Get Email Statistics
+### 3. E-Mail-Statistiken abrufen
 
 ```bash
-# Get email statistics without sending emails
+# E-Mail-Statistiken abrufen ohne E-Mails zu senden
 curl -X GET "http://localhost:8000/api/campaigns/{campaign_id}/send-emails/sent" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Accept: application/json"
 ```
 
-### 4. Example Responses
+### 4. Filter-Beispiele
 
-**Send Emails Response:**
-```json
-{
-    "message": "Campaign emails queued successfully. 1 emails sent to prospects.",
-    "campaign": {
-        "id": 1,
-        "title": "Summer Sale 2024"
-    },
-    "emails_sent": 1,
-    "total_emails_sent": 6,
-    "notified_prospects": 5,
-    "available_prospects": 94,
-    "total_prospects": 100
-}
-```
-
-**Email Statistics Response:**
-```json
-{
-    "campaign": {
-        "id": 1,
-        "title": "Summer Sale 2024"
-    },
-    "total_emails_sent": 6,
-    "notified_prospects": 5,
-    "available_prospects": 94,
-    "total_prospects": 100
-}
-```
-
-### 5. Filter Examples
-
-#### Basic Filter
+#### Grundlegender Filter
 ```php
 [
     "source" => "erp",
@@ -510,7 +474,7 @@ curl -X GET "http://localhost:8000/api/campaigns/{campaign_id}/send-emails/sent"
 ]
 ```
 
-#### Age Range Filter
+#### Altersbereich-Filter
 ```php
 [
     "min_age" => 25,
@@ -518,7 +482,7 @@ curl -X GET "http://localhost:8000/api/campaigns/{campaign_id}/send-emails/sent"
 ]
 ```
 
-#### Complex Filter
+#### Komplexer Filter
 ```php
 [
     "source" => "erp",
@@ -529,7 +493,7 @@ curl -X GET "http://localhost:8000/api/campaigns/{campaign_id}/send-emails/sent"
 ]
 ```
 
-#### Multiple Values Filter
+#### Mehrwerte-Filter
 ```php
 [
     "gender_in" => ["male", "female"],
@@ -538,7 +502,7 @@ curl -X GET "http://localhost:8000/api/campaigns/{campaign_id}/send-emails/sent"
 ]
 ```
 
-## Sequence Diagram
+## Sequenzdiagramm
 
 ```mermaid
 sequenceDiagram
@@ -555,10 +519,10 @@ sequenceDiagram
 
     Client->>API: POST /campaigns/{id}/send-emails
     API->>Controller: send($campaign)
-    
+
     Controller->>Policy: Gate::authorize('sendEmails', $campaign)
     Policy-->>Controller: Authorization result
-    
+
     alt Authorization fails
         Controller-->>API: 403 Forbidden
         API-->>Client: 403 Forbidden
@@ -582,7 +546,7 @@ sequenceDiagram
                     Prospect->>Filter: scopeApplyFilters($query, $filters)
                     Filter-->>Prospect: Filtered query
                     Prospect-->>Controller: Filtered prospects collection
-                    
+
                     alt No prospects found
                         Controller-->>API: 400 Bad Request
                         API-->>Client: 400 + "No prospects match filters"
@@ -590,22 +554,22 @@ sequenceDiagram
                         loop For each prospect
                             Controller->>Tracking: generateCampaignEmailUrl($campaign, $prospect)
                             Tracking-->>Controller: Tracking URL
-                            
+
                             Controller->>Campaign: Create campaignProspects association
                             Campaign-->>Controller: Association created
-                            
+
                             Controller->>Mail: Mail::to($prospect->email)->send()
                             Mail->>Email: new CampaignEmail($campaign, $prospect, $trackingUrl)
                             Email-->>Mail: Email sent
                             Mail-->>Controller: Email sent successfully
-                            
+
                             Controller->>Controller: $emailsSent++
-                            
+
                             alt Local development
                                 Controller->>Controller: break (only send 1 email)
                             end
                         end
-                        
+
                         Controller-->>API: 200 OK + success message
                         API-->>Client: 200 OK + emails sent count
                     end
@@ -615,128 +579,158 @@ sequenceDiagram
     end
 ```
 
-## Implementation Details
+## Implementierungsdetails
 
-### Core Components
+### Kernkomponenten
 
 1. **CampaignEmailController** (`app/Http/Controllers/Api/CampaignEmailController.php`)
-   - Handles the email sending endpoint
-   - Delegates validation and email sending to CampaignEmailService
-   - Provides thin controller layer for email operations
+   - **Zweck:** Behandelt den E-Mail-Versand-Endpunkt `POST /api/campaigns/{campaign}/send-emails`
+   - **Funktionalität:**
+     - Autorisierungsprüfung über Gate::authorize('sendEmails', $campaign)
+     - Delegiert Kampagnen-Validierung an CampaignEmailService
+     - Verarbeitet den 'force' Query-Parameter für erneutes Senden
+     - Orchestriert den E-Mail-Versandprozess
+     - Formatiert API-Antworten mit detaillierten Statistiken
+   - **Architektur:** Dünne Controller-Schicht, die ausschließlich HTTP-Logik behandelt
+   - **Sicherheit:** Implementiert lokale Entwicklungslimits (1-3 E-Mails max)
+   - **Antwortformat:** Strukturierte JSON-Antworten mit Kampagnen-ID, Titel und E-Mail-Statistiken
 
 2. **CampaignAnalyticsController** (`app/Http/Controllers/Api/CampaignAnalyticsController.php`)
-   - Handles email statistics endpoint (`/send-emails/sent`)
-   - Delegates statistics calculation to CampaignAnalyticsService
-   - Provides email metrics without sending emails
+   - **Zweck:** Behandelt E-Mail-Statistiken-Endpunkt `GET /api/campaigns/{campaign}/send-emails/sent`
+   - **Funktionalität:**
+     - Autorisierungsprüfung über Gate::authorize('view', $campaign)
+     - Delegiert Statistikberechnung an CampaignAnalyticsService
+     - Bietet E-Mail-Metriken ohne tatsächlichen E-Mail-Versand
+   - **Anwendungsfall:** Vorschau der E-Mail-Statistiken vor dem Versand
 
 3. **CampaignEmailService** (`app/Services/CampaignEmailService.php`)
-   - Validates campaign requirements (landing page, filters, active status)
-   - Manages prospect filtering and email sending process
-   - Implements local development safety limits
-   - Prevents duplicate notifications using unique prospect IDs
-   - Supports force parameter to override duplicate prevention
-   - Tracks each email send individually for complete history
+   - **Kernfunktionalitäten:**
+     - `validateCampaignForSending()`: Prüft Landing Page, Filter und ACTIVE-Status
+     - `getProspectsToEmail()`: Filtert Prospects und schließt bereits kontaktierte aus (außer bei force=true)
+     - `sendEmailsToProspects()`: Hauptlogik für E-Mail-Versand mit Tracking und Fehlerbehandlung
+     - `getTotalProspectsCount()`: Berechnet Gesamtanzahl passender Prospects
+   - **Sicherheitsfeatures:**
+     - Lokale Entwicklungslimits: 1 E-Mail (Standard), 3 E-Mails (Force-Modus)
+     - Duplikatsprävention über eindeutige Prospect-IDs
+     - Individuelle Fehlerbehandlung pro E-Mail ohne Prozessabbruch
+   - **Tracking:** Erstellt CampaignProspect-Verknüpfungen für jeden Versand
 
 4. **CampaignAnalyticsService** (`app/Services/CampaignAnalyticsService.php`)
-   - Provides comprehensive campaign analytics including email statistics
-   - Calculates email metrics (sent count, notified prospects, available prospects)
-   - Integrates with prospect filtering to provide accurate statistics
+   - **E-Mail-Statistiken:**
+     - `getEmailStatistics()`: Berechnet detaillierte E-Mail-Metriken
+     - Unterscheidet zwischen gesendeten E-Mails und eindeutigen benachrichtigten Prospects
+     - Berechnet verfügbare Prospects (noch nicht kontaktiert)
+   - **Integration:** Arbeitet mit Prospect-Filterung für präzise Statistiken
+   - **Datenquellen:** CampaignProspect-Verknüpfungen und Prospect-Filter
 
-5. **CampainProspect Model** (`app/Models/CampainProspect.php`)
-   - Manages campaign-prospect associations
-   - Tracks each individual email send for complete history
-   - Provides relationship methods for campaigns and prospects
-   - Enables duplicate prevention using unique prospect IDs
+5. **CampaignProspect Modell** (`app/Models/CampaignProspect.php`)
+   - **Datenschema:** MongoDB-Dokument mit campaign_id, prospect_id, Timestamps
+   - **Zweck:**
+     - Verfolgt jeden einzelnen E-Mail-Versand (nicht nur eindeutige Contacts)
+     - Ermöglicht Duplikatsprävention durch Prospect-ID-Abfragen
+     - Basis für E-Mail-Statistiken und Analytics
+   - **Relationships:** BelongsTo zu Campaign und Prospect
+   - **Besonderheit:** Modellname hat Tippfehler "CampainProspect" (aber funktional korrekt)
 
 6. **CampaignEmail Mailable** (`app/Mail/CampaignEmail.php`)
-   - Laravel mailable class for campaign emails
-   - Uses markdown template for email content
-   - Includes campaign, prospect, and tracking URL
+   - **Laravel Mailable:** Implementiert ShouldQueue für asynchronen Versand
+   - **Template:** Verwendet `emails.campaign` Markdown-View
+   - **Datenstruktur:**
+     - Campaign-Objekt für Titel und Beschreibung
+     - Prospect-Objekt für Personalisierung
+     - Tracking-URL für Click-Analytics
+   - **Features:** Automatisches Queuing, Serialisierung für Background-Jobs
 
 7. **CampaignTrackingService** (`app/Services/CampaignTrackingService.php`)
-   - Generates tracking URLs with UTM parameters
-   - Tracks landing page visits
-   - Extracts tracking data from requests
+   - **URL-Generierung:**
+     - `generateCampaignEmailUrl()`: Erstellt Landing Page-URLs mit UTM-Parametern
+     - Verwendet Landing Page Slug und Prospect-ID
+     - Fügt automatisch utm_source=mail, utm_medium=web hinzu
+   - **Tracking:** Verfolgt Klicks und Landing Page-Besuche
+   - **Datenextraktion:** Sammelt Browser, Gerät und Referrer-Informationen
 
 8. **HasFilterable Trait** (`app/Traits/HasFilterable.php`)
-   - Provides filtering functionality for prospects
-   - Supports enum and range filters
-   - Handles automatic value casting
+   - **Filterlogik:** Zentrale Prospect-Filterung für das gesamte System
+   - **Unterstützte Filter:**
+     - Enum-Filter: source, gender, blood_group, eye_color, etc.
+     - Bereichsfilter: age, height, weight, birth_date mit min/max-Syntax
+     - Nested-Felder: address.city, address.latitude mit Präfix-Notation
+   - **Integration:** Wird von Campaign.prospect_filter und GenericFilterController verwendet
 
-### Email Template
+### E-Mail-Template
 
-The email template (`resources/views/emails/campaign.blade.php`) provides:
-- Personalized greeting with prospect name
-- Campaign description
-- Call-to-action button with tracking URL
-- Professional signature
+Das E-Mail-Template (`resources/views/emails/campaign.blade.php`) bietet:
+- Personalisierte Begrüßung mit Prospect-Name
+- Kampagnenbeschreibung
+- Call-to-Action-Button mit Tracking-URL
+- Professionelle Signatur
 
-### Tracking Integration
+### Tracking-Integration
 
-The system integrates with the landing page tracking system:
-- Each email includes a unique tracking URL
-- Click tracking via UTM parameters
-- Visit analytics stored in `campaign_trackings` collection
-- Device and browser detection
-- Prospect-campaign associations stored in `campain_prospects` collection for email tracking and duplicate prevention
+Das System integriert sich mit dem Landing Page-Tracking-System:
+- Jede E-Mail enthält eine eindeutige Tracking-URL
+- Klick-Tracking über UTM-Parameter
+- Besuchs-Analytics gespeichert in `campaign_trackings`-Collection
+- Geräte- und Browser-Erkennung
+- Prospect-Kampagnen-Verknüpfungen gespeichert in `campaign_prospects`-Collection für E-Mail-Tracking und Duplikatsprävention
 
 ## Best Practices
 
-1. **Test Filters First:** Use the generic filter endpoint to test your filters before creating campaigns
-2. **Monitor Email Sending:** Check logs for any email sending failures
-3. **Use Local Development:** Always test in local environment first (sends only 1 email)
-4. **Validate Campaign Setup:** Ensure landing page and filters are properly configured
-5. **Review Analytics:** Monitor campaign performance through tracking data
-6. **Avoid Duplicate Sends:** Use the default behavior to prevent duplicate notifications
-7. **Use Force Parameter Carefully:** Only use `force=true` when you need to resend to all prospects
-8. **Check Campaign Status:** Ensure campaigns are in ACTIVE status before sending emails
+1. **Filter zuerst testen:** Verwende den generischen Filter-Endpunkt, um deine Filter zu testen, bevor du Kampagnen erstellst
+2. **E-Mail-Versand überwachen:** Überprüfe Logs auf E-Mail-Versandfehler
+3. **Lokale Entwicklung nutzen:** Teste immer zuerst in der lokalen Umgebung (sendet nur 1 E-Mail)
+4. **Kampagnen-Setup validieren:** Stelle sicher, dass Landing Page und Filter ordnungsgemäß konfiguriert sind
+5. **Analytics überprüfen:** Überwache Kampagnen-Performance durch Tracking-Daten
+6. **Duplikate vermeiden:** Verwende das Standardverhalten, um doppelte Benachrichtigungen zu verhindern
+7. **Force-Parameter vorsichtig verwenden:** Verwende `force=true` nur, wenn du an alle Prospects erneut senden musst
+8. **Kampagnen-Status überprüfen:** Stelle sicher, dass Kampagnen im ACTIVE-Status sind, bevor E-Mails gesendet werden
 
-## Troubleshooting
+## Fehlerbehebung
 
-### Common Issues
+### Häufige Probleme
 
-1. **No Emails Sent:** Check if prospects match the filter criteria
-2. **Authorization Errors:** Ensure user has ADMIN or SUPER_ADMIN role for sending emails, or appropriate view permissions for statistics
-3. **Missing Landing Page:** Create and associate a landing page with the campaign
-4. **Filter Syntax Errors:** Verify filter structure matches expected format
-5. **Email Delivery Issues:** Check mail configuration and logs
-6. **All Prospects Already Contacted:** Use `force=true` parameter to resend to all prospects
-7. **Campaign Not Active:** Ensure campaign status is set to ACTIVE before sending emails
-8. **Statistics Show Zero:** Ensure campaign has prospect filters defined to calculate statistics
+1. **Keine E-Mails gesendet:** Überprüfe, ob Prospects den Filterkriterien entsprechen
+2. **Autorisierungsfehler:** Stelle sicher, dass der Benutzer ADMIN- oder SUPER_ADMIN-Rolle für E-Mail-Versand hat, oder entsprechende Ansichtsberechtigungen für Statistiken
+3. **Fehlende Landing Page:** Erstelle und verknüpfe eine Landing Page mit der Kampagne
+4. **Filter-Syntaxfehler:** Überprüfe, ob die Filterstruktur dem erwarteten Format entspricht
+5. **E-Mail-Zustellungsprobleme:** Überprüfe Mail-Konfiguration und Logs
+6. **Alle Prospects bereits kontaktiert:** Verwende `force=true`-Parameter, um an alle Prospects erneut zu senden
+7. **Kampagne nicht aktiv:** Stelle sicher, dass der Kampagnenstatus auf ACTIVE gesetzt ist, bevor E-Mails gesendet werden
+8. **Statistiken zeigen Null:** Stelle sicher, dass die Kampagne Prospect-Filter definiert hat, um Statistiken zu berechnen
 
-### Debugging Steps
+### Debugging-Schritte
 
-1. **Verify Campaign Setup:**
+1. **Kampagnen-Setup überprüfen:**
    ```php
    $campaign = Campaign::find($id);
    dd($campaign->landingpage, $campaign->prospect_filter, $campaign->status);
    ```
 
-2. **Test Prospect Filters:**
+2. **Prospect-Filter testen:**
    ```bash
    curl -X GET "http://localhost:8000/api/prospects/filter?source=erp&gender=female" \
      -H "Authorization: Bearer YOUR_TOKEN"
    ```
 
-3. **Check Campaign-Prospect Associations:**
+3. **Kampagnen-Prospect-Verknüpfungen überprüfen:**
    ```php
    $campaign = Campaign::find($id);
-   dd($campaign->campaignProspects()->count()); // Total emails sent
-   dd($campaign->campaignProspects()->pluck('prospect_id')->unique()->count()); // Unique prospects notified
+   dd($campaign->campaignProspects()->count()); // Gesendete E-Mails insgesamt
+   dd($campaign->campaignProspects()->pluck('prospect_id')->unique()->count()); // Eindeutige benachrichtigte Prospects
    ```
 
-4. **Check Email Logs:**
+4. **E-Mail-Logs überprüfen:**
    ```bash
    tail -f storage/logs/laravel.log
    ```
 
-5. **Verify Local Development:**
+5. **Lokale Entwicklung überprüfen:**
    ```php
-   dd(app()->isLocal()); // Should return true in local environment
+   dd(app()->isLocal()); // Sollte true in lokaler Umgebung zurückgeben
    ```
 
-6. **Check Campaign Status:**
+6. **Kampagnen-Status überprüfen:**
    ```php
    $campaign = Campaign::find($id);
-   dd($campaign->status); // Should be CampaignStatus::ACTIVE
+   dd($campaign->status); // Sollte CampaignStatus::ACTIVE sein
    ```

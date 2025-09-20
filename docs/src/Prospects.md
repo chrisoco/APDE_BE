@@ -1,45 +1,45 @@
-# Prospects
+# Prospekte
 
-The Prospects system manages customer/prospect data imported from multiple external sources and provides API access for retrieving prospect information. The system is built with a modular architecture that supports multiple data sources and provides a unified interface for prospect management.
+Das Prospekte-System verwaltet Kunden-/Prospektdaten, die aus mehreren externen Quellen importiert werden und bietet API-Zugriff für den Abruf von Prospektinformationen. Das System ist mit einer modularen Architektur aufgebaut, die mehrere Datenquellen unterstützt und eine einheitliche Schnittstelle für das Prospektmanagement bereitstellt.
 
-## System Architecture
+## System-Architektur
 
 ```mermaid
 graph TB
-    subgraph "External Sources"
+    subgraph "Externe Quellen"
         ERP[ERP System API]
         KUEBA[Küba API]
     end
-    
-    subgraph "Import Layer"
+
+    subgraph "Import-Schicht"
         ImportCmd[Import Command]
         AbstractImport[AbstractImportProspectsAction]
         ErpImport[ImportErpProspects]
         KuebaImport[ImportKuebaProspects]
     end
-    
-    subgraph "Data Layer"
+
+    subgraph "Daten-Schicht"
         DTOs[Data Transfer Objects]
         ErpDTO[ErpProspectData]
         KuebaDTO[KuebaProspectData]
         AddressDTOs[Address DTOs]
     end
-    
-    subgraph "Model Layer"
+
+    subgraph "Model-Schicht"
         Prospect[Prospect Model]
         SourceEnum[ProspectDataSource]
     end
-    
-    subgraph "API Layer"
+
+    subgraph "API-Schicht"
         Controller[ProspectController]
         Resource[ProspectResource]
         Routes[API Routes]
     end
-    
-    subgraph "Database"
+
+    subgraph "Datenbank"
         MongoDB[(MongoDB)]
     end
-    
+
     ERP --> ErpImport
     KUEBA --> KuebaImport
     ImportCmd --> AbstractImport
@@ -54,7 +54,7 @@ graph TB
     Controller --> Prospect
     Controller --> Resource
     Routes --> Controller
-    
+
     style ERP fill:#e3f2fd
     style KUEBA fill:#e3f2fd
     style AbstractImport fill:#f3e5f5
@@ -62,15 +62,15 @@ graph TB
     style MongoDB fill:#fff3e0
 ```
 
-## Import Process Flow
+## Import-Prozess-Flow
 
 ```mermaid
 sequenceDiagram
-    participant User as User/System
+    participant User as Benutzer/System
     participant Cmd as Import Command
     participant Enum as ProspectDataSource
     participant Import as Import Action
-    participant API as External API
+    participant API as Externe API
     participant DTO as Data DTO
     participant Model as Prospect Model
     participant DB as MongoDB
@@ -78,54 +78,54 @@ sequenceDiagram
     User->>Cmd: php artisan app:import-prospects
     Cmd->>Enum: cases()
     Enum-->>Cmd: [ERP, KUEBA]
-    
-    loop For each data source
-        Cmd->>Import: Create importer instance
+
+    loop Für jede Datenquelle
+        Cmd->>Import: Erstelle Importer-Instanz
         Import->>Import: getDataSource()
         Import->>Import: getBaseUrl()
-        
-        Import->>API: Fetch prospects data
-        Note over Import,API: GET /prospects with pagination
-        
-        API-->>Import: Raw API response
-        
+
+        Import->>API: Hole Prospektdaten
+        Note over Import,API: GET /prospects mit Paginierung
+
+        API-->>Import: Rohe API-Antwort
+
         Import->>Import: createProspectData()
-        Note over Import: Convert to DTOs
-        
-        loop For each prospect
-            Import->>DTO: Create DTO instance
-            DTO->>DTO: Map and validate data
-            DTO-->>Import: Validated prospect data
-            
-            Import->>Model: Find by email (withTrashed)
-            Model->>DB: Query existing prospect
-            DB-->>Model: Existing prospect or null
-            
-            alt Prospect exists
+        Note over Import: Konvertiere zu DTOs
+
+        loop Für jeden Prospekt
+            Import->>DTO: Erstelle DTO-Instanz
+            DTO->>DTO: Mappe und validiere Daten
+            DTO-->>Import: Validierte Prospektdaten
+
+            Import->>Model: Finde per E-Mail (withTrashed)
+            Model->>DB: Abfrage existierender Prospekt
+            DB-->>Model: Existierender Prospekt oder null
+
+            alt Prospekt existiert
                 Import->>Model: update()
-                Model->>DB: Update record
-                Note over Import,DB: Update with new data
-                Import->>Model: restore() if trashed
-            else New prospect
+                Model->>DB: Aktualisiere Datensatz
+                Note over Import,DB: Aktualisiere mit neuen Daten
+                Import->>Model: restore() falls gelöscht
+            else Neuer Prospekt
                 Import->>Model: create()
-                Model->>DB: Insert new record
-                Note over Import,DB: Create new prospect
+                Model->>DB: Füge neuen Datensatz ein
+                Note over Import,DB: Erstelle neuen Prospekt
             end
-            
-            DB-->>Model: Saved prospect
-            Model-->>Import: Prospect instance
+
+            DB-->>Model: Gespeicherter Prospekt
+            Model-->>Import: Prospekt-Instanz
         end
-        
-        Import->>Import: Soft delete missing prospects
-        Note over Import: Remove prospects not in source
-        
-        Import-->>Cmd: Import completed
+
+        Import->>Import: Soft Delete fehlende Prospekte
+        Note over Import: Entferne Prospekte nicht in Quelle
+
+        Import-->>Cmd: Import abgeschlossen
     end
-    
-    Cmd-->>User: All imports completed
+
+    Cmd-->>User: Alle Imports abgeschlossen
 ```
 
-## Data Import Architecture
+## Datenimport-Architektur
 
 ```mermaid
 classDiagram
@@ -143,7 +143,7 @@ classDiagram
         +supportsPagination() bool*
         +getPaginationParameters() array*
     }
-    
+
     class ImportErpProspects {
         +getDataSource() ProspectDataSource
         +getBaseUrl() string
@@ -153,7 +153,7 @@ classDiagram
         +supportsPagination() bool
         +getPaginationParameters() array
     }
-    
+
     class ImportKuebaProspects {
         +getDataSource() ProspectDataSource
         +getBaseUrl() string
@@ -163,7 +163,7 @@ classDiagram
         +supportsPagination() bool
         +getPaginationParameters() array
     }
-    
+
     class ProspectDataSource {
         <<enum>>
         ERP
@@ -171,7 +171,7 @@ classDiagram
         +importAction() string
         +label() string
     }
-    
+
     class ErpProspectData {
         +string $external_id
         +string $first_name
@@ -191,7 +191,7 @@ classDiagram
         +ErpAddressData $address
         +ProspectDataSource $source
     }
-    
+
     class KuebaProspectData {
         +string $external_id
         +string $first_name
@@ -205,7 +205,7 @@ classDiagram
         +KuebaAddressData $address
         +ProspectDataSource $source
     }
-    
+
     AbstractImportProspectsAction <|-- ImportErpProspects
     AbstractImportProspectsAction <|-- ImportKuebaProspects
     ImportErpProspects --> ErpProspectData
@@ -213,7 +213,7 @@ classDiagram
     ProspectDataSource --> AbstractImportProspectsAction
 ```
 
-## API Request Flow
+## API-Anfrage-Flow
 
 ```mermaid
 sequenceDiagram
@@ -227,52 +227,52 @@ sequenceDiagram
 
     Client->>Route: GET /api/prospects
     Route->>Auth: auth:sanctum middleware
-    Auth-->>Route: Authenticated user
-    
+    Auth-->>Route: Authentifizierter Benutzer
+
     Route->>Controller: index()
     Controller->>Model: paginate(10)
-    Model->>DB: Query prospects
-    DB-->>Model: Paginated results
+    Model->>DB: Abfrage Prospekte
+    DB-->>Model: Paginierte Ergebnisse
     Model-->>Controller: Collection
-    
+
     Controller->>Resource: toResourceCollection()
-    Resource->>Resource: Transform data
-    Note over Resource: Apply conditional field inclusion
-    
-    Resource-->>Controller: Formatted response
-    Controller-->>Route: JSON response
-    Route-->>Client: 200 OK + prospects data
+    Resource->>Resource: Transformiere Daten
+    Note over Resource: Wende bedingte Feldeinschluss an
+
+    Resource-->>Controller: Formatierte Antwort
+    Controller-->>Route: JSON-Antwort
+    Route-->>Client: 200 OK + Prospektdaten
 ```
 
-## Data Transformation Flow
+## Datentransformations-Flow
 
 ```mermaid
 flowchart TD
-    A[External API Response] --> B{Data Source?}
-    
+    A[Externe API-Antwort] --> B{Datenquelle?}
+
     B -->|ERP| C[ErpProspectData DTO]
     B -->|Küba| D[KuebaProspectData DTO]
-    
-    C --> E[Map ERP Fields]
-    D --> F[Map Küba Fields]
-    
-    E --> G[Validate Data]
+
+    C --> E[Mappe ERP-Felder]
+    D --> F[Mappe Küba-Felder]
+
+    E --> G[Validiere Daten]
     F --> G
-    
-    G --> H{Valid?}
-    H -->|No| I[Skip Record]
-    H -->|Yes| J[Find by Email]
-    
-    J --> K{Prospect Exists?}
-    K -->|Yes| L[Update Existing]
-    K -->|No| M[Create New]
-    
-    L --> N[Restore if Trashed]
+
+    G --> H{Gültig?}
+    H -->|Nein| I[Überspringe Datensatz]
+    H -->|Ja| J[Finde per E-Mail]
+
+    J --> K{Prospekt existiert?}
+    K -->|Ja| L[Aktualisiere Existierenden]
+    K -->|Nein| M[Erstelle Neuen]
+
+    L --> N[Stelle wieder her falls gelöscht]
     M --> N
-    N --> O[Store in MongoDB]
-    O --> P[Apply Soft Deletes]
-    P --> Q[Import Complete]
-    
+    N --> O[Speichere in MongoDB]
+    O --> P[Wende Soft Deletes an]
+    P --> Q[Import abgeschlossen]
+
     style A fill:#e3f2fd
     style C fill:#f3e5f5
     style D fill:#f3e5f5
@@ -281,7 +281,7 @@ flowchart TD
     style Q fill:#e8f5e8
 ```
 
-## Upsert Process
+## Upsert-Prozess
 
 ```mermaid
 sequenceDiagram
@@ -290,39 +290,39 @@ sequenceDiagram
     participant DB as MongoDB
 
     Import->>Model: withTrashed()->where('email', $dto->email)
-    Model->>DB: Find existing prospect by email
-    DB-->>Model: Existing prospect or null
-    
-    alt Prospect exists
+    Model->>DB: Finde existierenden Prospekt per E-Mail
+    DB-->>Model: Existierender Prospekt oder null
+
+    alt Prospekt existiert
         Import->>Model: update($dto->toArray())
-        Model->>DB: Update record
-        Note over Import,DB: Update with new data from source
-        
+        Model->>DB: Aktualisiere Datensatz
+        Note over Import,DB: Aktualisiere mit neuen Daten aus Quelle
+
         Import->>Model: trashed()?
         Model-->>Import: true/false
-        
-        alt Prospect was trashed
+
+        alt Prospekt war gelöscht
             Import->>Model: restore()
-            Model->>DB: Restore record
+            Model->>DB: Stelle Datensatz wieder her
         end
-    else New prospect
+    else Neuer Prospekt
         Import->>Model: create($dto->toArray())
-        Model->>DB: Insert new record
-        Note over Import,DB: Create new prospect
+        Model->>DB: Füge neuen Datensatz ein
+        Note over Import,DB: Erstelle neuen Prospekt
     end
-    
-    DB-->>Model: Saved prospect
-    Model-->>Import: Prospect instance
-    
+
+    DB-->>Model: Gespeicherter Prospekt
+    Model-->>Import: Prospekt-Instanz
+
     Import->>Import: handleSoftDeletes()
-    Note over Import: Remove prospects not in current import
+    Note over Import: Entferne Prospekte nicht im aktuellen Import
 ```
 
-## Address Data Mapping
+## Adress-Daten-Mapping
 
 ```mermaid
 graph LR
-    subgraph "ERP Address"
+    subgraph "ERP-Adresse"
         ErpAddr[address]
         ErpCity[city]
         ErpState[state]
@@ -331,8 +331,8 @@ graph LR
         ErpLat[coordinates.lat]
         ErpLng[coordinates.lng]
     end
-    
-    subgraph "Küba Address"
+
+    subgraph "Küba-Adresse"
         KuebaStreet[street.name + street.number]
         KuebaCity[city]
         KuebaState[state]
@@ -341,8 +341,8 @@ graph LR
         KuebaLat[coordinates.latitude]
         KuebaLng[coordinates.longitude]
     end
-    
-    subgraph "Unified Address"
+
+    subgraph "Vereinheitlichte Adresse"
         UnifiedAddr[address]
         UnifiedCity[city]
         UnifiedState[state]
@@ -351,7 +351,7 @@ graph LR
         UnifiedLat[latitude]
         UnifiedLng[longitude]
     end
-    
+
     ErpAddr --> UnifiedAddr
     ErpCity --> UnifiedCity
     ErpState --> UnifiedState
@@ -359,7 +359,7 @@ graph LR
     ErpCountry --> UnifiedCountry
     ErpLat --> UnifiedLat
     ErpLng --> UnifiedLng
-    
+
     KuebaStreet --> UnifiedAddr
     KuebaCity --> UnifiedCity
     KuebaState --> UnifiedState
@@ -367,97 +367,47 @@ graph LR
     KuebaCountry --> UnifiedCountry
     KuebaLat --> UnifiedLat
     KuebaLng --> UnifiedLng
-    
+
     style ErpAddr fill:#e3f2fd
     style KuebaStreet fill:#e3f2fd
     style UnifiedAddr fill:#e8f5e8
 ```
 
-## Scheduled Import Flow
+## Überblick
 
-```mermaid
-gantt
-    title Scheduled Prospect Imports
-    dateFormat  HH:mm
-    axisFormat %H:%M
-    
-    section Daily Schedule
-    Morning Import    :07:00, 07:30
-    Afternoon Import  :13:00, 13:30
-    
-    section Import Process
-    ERP Import        :07:00, 07:15
-    Küba Import       :07:15, 07:30
-    ERP Import        :13:00, 13:15
-    Küba Import       :13:15, 13:30
-```
+Das Prospekte-System besteht aus mehreren Hauptkomponenten:
 
-## Error Handling Flow
+- **Datenimport-System**: Modulare Importer für verschiedene externe Datenquellen
+- **Datenmodelle**: MongoDB-basierte Prospektspeicherung mit Soft Deletes
+- **API-Endpunkte**: RESTful API für Prospektabruf (index, show)
+- **Data Transfer Objects**: Typsichere Datenbehandlung mit quellenspezifischem Mapping
+- **Geplante Imports**: Automatisierte Datensynchronisation
+- **Generische Filterung**: Erweiterte Filterfähigkeiten mit Bereichs- und Enum-Unterstützung
 
-```mermaid
-flowchart TD
-    A[Import Process] --> B{Configuration Valid?}
-    B -->|No| C[Configuration Error]
-    B -->|Yes| D[API Request]
-    
-    D --> E{API Response OK?}
-    E -->|No| F[API Error]
-    E -->|Yes| G[Data Validation]
-    
-    G --> H{Data Valid?}
-    H -->|No| I[Validation Error]
-    H -->|Yes| J[Database Operation]
-    
-    J --> K{DB Success?}
-    K -->|No| L[Database Error]
-    K -->|Yes| M[Continue Import]
-    
-    M --> N{More Records?}
-    N -->|Yes| G
-    N -->|No| O[Import Complete]
-    
-    style C fill:#ffebee
-    style F fill:#ffebee
-    style I fill:#ffebee
-    style L fill:#ffebee
-    style O fill:#e8f5e8
-```
+## Architektur
 
-## Overview
+### Kernkomponenten
 
-The Prospects system consists of several key components:
+- **`Prospect` Model**: MongoDB Eloquent-Model mit Soft Deletes und Filterfähigkeiten
+- **`AbstractImportProspectsAction`**: Basis-Abstraktklasse für Importoperationen
+- **`ImportErpProspects`**: ERP-System-Datenimporter
+- **`ImportKuebaProspects`**: Küba-API-Datenimporter
+- **`ProspectDataSource`**: Enum, das verfügbare Datenquellen definiert
+- **`ProspectController`**: API-Controller für Prospektoperationen
+- **`ProspectResource`**: API-Ressource für Datentransformation
+- **Daten-DTOs**: `ErpProspectData`, `KuebaProspectData` und Adress-DTOs
 
-- **Data Import System**: Modular importers for different external data sources
-- **Data Models**: MongoDB-based prospect storage with soft deletes
-- **API Endpoints**: RESTful API for prospect retrieval (index, show)
-- **Data Transfer Objects**: Type-safe data handling with source-specific mapping
-- **Scheduled Imports**: Automated data synchronization
-- **Generic Filtering**: Advanced filtering capabilities with range and enum support
-
-## Architecture
-
-### Core Components
-
-- **`Prospect` Model**: MongoDB Eloquent model with soft deletes and filtering capabilities
-- **`AbstractImportProspectsAction`**: Base abstract class for import operations
-- **`ImportErpProspects`**: ERP system data importer
-- **`ImportKuebaProspects`**: Küba API data importer
-- **`ProspectDataSource`**: Enum defining available data sources
-- **`ProspectController`**: API controller for prospect operations
-- **`ProspectResource`**: API resource for data transformation
-- **Data DTOs**: `ErpProspectData`, `KuebaProspectData`, and address DTOs
-
-### Data Flow
+### Datenfluss
 
 ```
-External APIs → Import Actions → DTOs → Prospect Model → API Resources → Client
+Externe APIs → Import Actions → DTOs → Prospect Model → API Resources → Client
 ```
 
-## Data Model
+## Datenmodell
 
 ### Prospect Model
 
-The `Prospect` model is stored in MongoDB and includes comprehensive prospect information with advanced filtering capabilities:
+Das `Prospect`-Model wird in MongoDB gespeichert und enthält umfassende Prospektinformationen mit erweiterten Filterfähigkeiten:
 
 ```php
 #[UsePolicy(ProspectPolicy::class)]
@@ -530,67 +480,67 @@ final class Prospect extends Model
 }
 ```
 
-### Database Schema
+### Datenbankschema
 
 ```php
 [
     'id' => 'string',                    // MongoDB ObjectId
-    'external_id' => 'string',           // External system ID
-    'first_name' => 'string',            // First name
-    'last_name' => 'string',             // Last name
-    'email' => 'string',                 // Email address (unique identifier)
-    'phone' => 'string|null',            // Phone number
-    'gender' => 'string|null',           // Gender
-    'age' => 'int|null',                 // Age
-    'birth_date' => 'Carbon|null',       // Birth date
-    'image' => 'string|null',            // Profile image URL
-    'blood_group' => 'string|null',      // Blood group
-    'height' => 'float|null',            // Height in cm
-    'weight' => 'float|null',            // Weight in kg
-    'eye_color' => 'string|null',        // Eye color
-    'hair_color' => 'string|null',       // Hair color
-    'hair_type' => 'string|null',        // Hair type
-    'address' => 'array|null',           // Address information
-    'source' => 'ProspectDataSource',    // Data source enum
-    'created_at' => 'Carbon',            // Creation timestamp
-    'updated_at' => 'Carbon',            // Last update timestamp
-    'deleted_at' => 'Carbon|null',       // Soft delete timestamp
+    'external_id' => 'string',           // Externe System-ID
+    'first_name' => 'string',            // Vorname
+    'last_name' => 'string',             // Nachname
+    'email' => 'string',                 // E-Mail-Adresse (eindeutige Kennung)
+    'phone' => 'string|null',            // Telefonnummer
+    'gender' => 'string|null',           // Geschlecht
+    'age' => 'int|null',                 // Alter
+    'birth_date' => 'Carbon|null',       // Geburtsdatum
+    'image' => 'string|null',            // Profilbild-URL
+    'blood_group' => 'string|null',      // Blutgruppe
+    'height' => 'float|null',            // Grösse in cm
+    'weight' => 'float|null',            // Gewicht in kg
+    'eye_color' => 'string|null',        // Augenfarbe
+    'hair_color' => 'string|null',       // Haarfarbe
+    'hair_type' => 'string|null',        // Haartyp
+    'address' => 'array|null',           // Adressinformationen
+    'source' => 'ProspectDataSource',    // Datenquellen-Enum
+    'created_at' => 'Carbon',            // Erstellungszeitstempel
+    'updated_at' => 'Carbon',            // Letzter Update-Zeitstempel
+    'deleted_at' => 'Carbon|null',       // Soft Delete-Zeitstempel
 ]
 ```
 
-### Data Types
+### Datentypen
 
-- **`ProspectDataSource`**: Enum with values `ERP` and `KUEBA`
-- **Address**: Array containing address components (varies by source)
-- **Timestamps**: Carbon instances for date/time handling
-- **Soft Deletes**: Records are soft deleted, not permanently removed
-- **Filterable Attributes**: Support for range (min, max), enum, in, not_in and nested filtering
+- **`ProspectDataSource`**: Enum mit Werten `ERP` und `KUEBA`
+- **Adresse**: Array mit Adresskomponenten (variiert je nach Quelle)
+- **Zeitstempel**: Carbon-Instanzen für Datum/Zeit-Behandlung
+- **Soft Deletes**: Datensätze werden soft gelöscht, nicht permanent entfernt
+- **Filterbare Attribute**: Unterstützung für Bereich (min, max), Enum, in, not_in und verschachtelte Filterung
 
-## API Endpoints
+## API-Endpunkte
 
-### Authentication
+### Authentifizierung
 
-All prospect endpoints require authentication via Laravel Sanctum:
+Alle Prospekt-Endpunkte erfordern Authentifizierung über Laravel Sanctum:
 
 ```bash
-# Login to get token
+# Login um Token zu erhalten
 curl -X POST /api/login \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com", "password": "password"}'
 
-# Use token in subsequent requests
+# Token in nachfolgenden Anfragen verwenden
 curl -H "Authorization: Bearer {token}" /api/prospects
 ```
 
-### Available Endpoints
+### Verfügbare Endpunkte
 
-#### List Prospects
+#### Prospekte auflisten
 
 ```http
 GET /api/prospects
 ```
 
-**Response**: Paginated list of prospects (10 per page)
+**Antwort**: Paginierte Liste von Prospekten (10 pro Seite)
 
 ```json
 {
@@ -635,13 +585,13 @@ GET /api/prospects
 }
 ```
 
-#### Get Single Prospect
+#### Einzelnen Prospekt abrufen
 
 ```http
 GET /api/prospects/{id}
 ```
 
-**Response**: Detailed prospect information
+**Antwort**: Detaillierte Prospektinformationen
 
 ```json
 {
@@ -675,13 +625,13 @@ GET /api/prospects/{id}
 }
 ```
 
-#### Generic Filtering
+#### Generische Filterung
 
 ```http
 GET /api/prospects/filter?gender=male&source=erp&age[min]=25&age[max]=35
 ```
 
-**Response**: Filtered prospects based on criteria
+**Antwort**: Gefilterte Prospekte basierend auf Kriterien
 
 ```json
 {
@@ -720,103 +670,103 @@ GET /api/prospects/filter?gender=male&source=erp&age[min]=25&age[max]=35
 }
 ```
 
-### API Resource Transformation
+### API-Ressourcen-Transformation
 
-The `ProspectResource` handles data transformation with conditional field inclusion:
+Die `ProspectResource` behandelt Datentransformation mit bedingter Feldeinschluss:
 
-- **List View**: Basic fields only (no personal information)
-- **Detail View**: Full prospect information including name, email, phone, and source
+- **Listenansicht**: Nur Grundfelder (keine persönlichen Informationen)
+- **Detailansicht**: Vollständige Prospektinformationen einschliesslich Name, E-Mail, Telefon und Quelle
 
-## Data Import System
+## Datenimport-System
 
-The Prospect Import system allows importing prospect data from multiple external sources into the MongoDB database. The system is designed with a modular architecture that makes it easy to add new data sources.
+Das Prospekt-Import-System ermöglicht den Import von Prospektdaten aus mehreren externen Quellen in die MongoDB-Datenbank. Das System ist mit einer modularen Architektur konzipiert, die es einfach macht, neue Datenquellen hinzuzufügen.
 
-### Architecture
+### Architektur
 
-The import system follows a template method pattern with the following components:
+Das Import-System folgt einem Template-Method-Pattern mit den folgenden Komponenten:
 
-- **`AbstractImportProspectsAction`**: Base abstract class containing shared import logic
-- **`ImportErpProspects`**: Concrete implementation for ERP system imports
-- **`ImportKuebaProspects`**: Concrete implementation for Küba API imports
-- **`ProspectDataSource`**: Enum defining available data sources
-- **Data Transfer Objects**: `ErpProspectData` and `KuebaProspectData` for type-safe data handling
+- **`AbstractImportProspectsAction`**: Basis-Abstraktklasse mit gemeinsamer Import-Logik
+- **`ImportErpProspects`**: Konkrete Implementierung für ERP-System-Imports
+- **`ImportKuebaProspects`**: Konkrete Implementierung für Küba-API-Imports
+- **`ProspectDataSource`**: Enum, das verfügbare Datenquellen definiert
+- **Data Transfer Objects**: `ErpProspectData` und `KuebaProspectData` für typsichere Datenbehandlung
 
-### Data Sources
+### Datenquellen
 
-#### ERP System
-- **Configuration**: `services.erp.prospects.url`
-- **Pagination**: Supported (limit/skip parameters)
-- **Response Structure**: `{ "users": [...], "total": number }`
-- **Data Fields**: Comprehensive prospect information including personal details, physical attributes, and address
+#### ERP-System
+- **Konfiguration**: `services.erp.prospects.url`
+- **Paginierung**: Unterstützt (limit/skip Parameter)
+- **Antwortstruktur**: `{ "users": [...], "total": number }`
+- **Datenfelder**: Umfassende Prospektinformationen einschliesslich persönlicher Details, physischer Attribute und Adresse
 
-#### Küba API
-- **Configuration**: `services.kueba.prospects.url`
-- **Pagination**: Not supported (single request)
-- **Response Structure**: `{ "results": [...] }`
-- **Data Fields**: Basic prospect information with Swiss nationality filter (`nat=ch`)
+#### Küba-API
+- **Konfiguration**: `services.kueba.prospects.url`
+- **Paginierung**: Nicht unterstützt (einzelne Anfrage)
+- **Antwortstruktur**: `{ "results": [...] }`
+- **Datenfelder**: Grundlegende Prospektinformationen mit Schweizer Nationalitätsfilter (`nat=ch`)
 
-### Usage
+### Verwendung
 
-#### Command Line Import
+#### Kommandozeilen-Import
 
-Import prospects from all configured sources:
+Importiere Prospekte aus allen konfigurierten Quellen:
 
 ```bash
 php artisan app:import-prospects
 ```
 
-This command will:
-1. Iterate through all available data sources (`ProspectDataSource::cases()`)
-2. Create the appropriate importer instance for each source
-3. Execute the import process
-4. Display progress information
+Dieser Befehl wird:
+1. Durch alle verfügbaren Datenquellen iterieren (`ProspectDataSource::cases()`)
+2. Die entsprechende Importer-Instanz für jede Quelle erstellen
+3. Den Import-Prozess ausführen
+4. Fortschrittsinformationen anzeigen
 
-#### Programmatic Usage
+#### Programmatische Verwendung
 
-Import prospects from a specific source:
+Importiere Prospekte aus einer bestimmten Quelle:
 
 ```php
 use App\Actions\Import\ImportErpProspects;
 use App\Actions\Import\ImportKuebaProspects;
 
-// Import from ERP
+// Import aus ERP
 $erpImporter = new ImportErpProspects();
 $erpImporter->handle();
 
-// Import from Küba
+// Import aus Küba
 $kuebaImporter = new ImportKuebaProspects();
 $kuebaImporter->handle();
 ```
 
-### Import Process
+### Import-Prozess
 
-The import process follows these steps:
+Der Import-Prozess folgt diesen Schritten:
 
-1. **Fetch Data**: Retrieve prospect data from the external API
-2. **Transform Data**: Convert API response to standardized DTOs
-3. **Upsert Records**: Create new prospects, update or restore existing ones
-4. **Soft Delete**: Remove prospects that no longer exist in the source
+1. **Daten abrufen**: Prospektdaten von der externen API abrufen
+2. **Daten transformieren**: API-Antwort zu standardisierten DTOs konvertieren
+3. **Datensätze upserten**: Neue Prospekte erstellen, existierende aktualisieren oder wiederherstellen
+4. **Soft Delete**: Prospekte entfernen, die nicht mehr in der Quelle existieren
 
-#### Data Handling
+#### Datenbehandlung
 
-- **New Prospects**: Created with all available data
-- **Existing Prospects**: Updated with latest information from source (matched by email)
-- **Soft Deleted Prospects**: Restored if they reappear in the source
-- **Missing Prospects**: Soft deleted if they no longer exist in the source
+- **Neue Prospekte**: Erstellt mit allen verfügbaren Daten
+- **Existierende Prospekte**: Aktualisiert mit neuesten Informationen aus Quelle (abgeglichen per E-Mail)
+- **Soft gelöschte Prospekte**: Wiederhergestellt, wenn sie wieder in der Quelle erscheinen
+- **Fehlende Prospekte**: Soft gelöscht, wenn sie nicht mehr in der Quelle existieren
 
-### Configuration
+### Konfiguration
 
-Add the following to your `.env` file:
+Fügen Sie folgendes zu Ihrer `.env`-Datei hinzu:
 
 ```env
-# ERP System
+# ERP-System
 ERP_PROSPECTS_URL=https://api.erp-system.com/prospects
 
-# Küba API
+# Küba-API
 KUEBA_PROSPECTS_URL=https://api.kueba.ch/users
 ```
 
-And in `config/services.php`:
+Und in `config/services.php`:
 
 ```php
 'erp' => [
@@ -831,78 +781,78 @@ And in `config/services.php`:
 ],
 ```
 
-### Adding New Data Sources
+### Neue Datenquellen hinzufügen
 
-To add a new data source:
+Um eine neue Datenquelle hinzuzufügen:
 
-1. **Create Data DTO**: Extend the base Data class with source-specific mapping
-2. **Create Import Action**: Extend `AbstractImportProspectsAction` and implement required methods
-3. **Update Enum**: Add new case to `ProspectDataSource` enum
-4. **Add Configuration**: Configure the new source in `config/services.php`
+1. **DTO erstellen**: Erweitern Sie die Basis-Data-Klasse mit quellenspezifischem Mapping
+2. **Import Action erstellen**: Erweitern Sie `AbstractImportProspectsAction` und implementieren Sie erforderliche Methoden
+3. **Enum aktualisieren**: Fügen Sie neuen Fall zu `ProspectDataSource` Enum hinzu
+4. **Konfiguration hinzufügen**: Konfigurieren Sie die neue Quelle in `config/services.php`
 
-Example implementation:
+Beispiel-Implementierung:
 
 ```php
-// 1. Create DTO
+// 1. DTO erstellen
 final class NewSourceProspectData extends Data
 {
     public ProspectDataSource $source = ProspectDataSource::NEW_SOURCE;
-    
+
     public function __construct(
         public string $external_id,
         public string $first_name,
         public string $last_name,
         public string $email,
-        // ... other fields
+        // ... andere Felder
     ) {}
 }
 
-// 2. Create Import Action
+// 2. Import Action erstellen
 final readonly class ImportNewSourceProspects extends AbstractImportProspectsAction
 {
     protected function getDataSource(): ProspectDataSource
     {
         return ProspectDataSource::NEW_SOURCE;
     }
-    
+
     protected function getBaseUrl(): string
     {
         return Config::string('services.new_source.prospects.url');
     }
-    
+
     protected function getApiParameters(): array
     {
         return [];
     }
-    
+
     protected function getResponseDataKey(): string
     {
         return 'data';
     }
-    
+
     protected function createProspectData(array $data): NewSourceProspectData
     {
         return NewSourceProspectData::from($data);
     }
-    
+
     protected function supportsPagination(): bool
     {
         return false;
     }
-    
+
     protected function getPaginationParameters(int $limit, int $skip): array
     {
         return [];
     }
 }
 
-// 3. Update Enum
+// 3. Enum aktualisieren
 enum ProspectDataSource: string
 {
     case ERP = 'erp';
     case KUEBA = 'kueba';
     case NEW_SOURCE = 'new_source';
-    
+
     public function importAction(): string
     {
         return match ($this) {
@@ -914,29 +864,29 @@ enum ProspectDataSource: string
 }
 ```
 
-### Error Handling
+### Fehlerbehandlung
 
-The import system includes comprehensive error handling:
+Das Import-System beinhaltet umfassende Fehlerbehandlung:
 
-- **Configuration Errors**: Validates URL configuration before making requests
-- **API Errors**: Handles HTTP failures and invalid response structures
-- **Data Validation**: Skips invalid records that can't be converted to DTOs
-- **Database Errors**: Gracefully handles database operation failures
+- **Konfigurationsfehler**: Validiert URL-Konfiguration vor Anfragen
+- **API-Fehler**: Behandelt HTTP-Fehler und ungültige Antwortstrukturen
+- **Datenvalidierung**: Überspringt ungültige Datensätze, die nicht zu DTOs konvertiert werden können
+- **Datenbankfehler**: Behandelt Datenbankoperationsfehler elegant
 
-### Monitoring
+### Überwachung
 
-The import command provides real-time feedback:
+Der Import-Befehl bietet Echtzeit-Feedback:
 
-- Progress messages for each data source
-- Success confirmations
-- Error messages with details
-- Return codes for automation (0 = success, 1 = failure)
+- Fortschrittsmeldungen für jede Datenquelle
+- Erfolgsbestätigungen
+- Fehlermeldungen mit Details
+- Rückgabecodes für Automatisierung (0 = Erfolg, 1 = Fehler)
 
 ## Data Transfer Objects (DTOs)
 
 ### ErpProspectData
 
-Comprehensive prospect data from ERP system:
+Umfassende Prospektdaten vom ERP-System:
 
 ```php
 #[MapInputName(CamelCaseMapper::class)]
@@ -971,7 +921,7 @@ final class ErpProspectData extends Data
 
 ### KuebaProspectData
 
-Basic prospect data from Küba API:
+Grundlegende Prospektdaten von der Küba-API:
 
 ```php
 #[MapInputName(CamelCaseMapper::class)]
@@ -1002,7 +952,7 @@ final class KuebaProspectData extends Data
 }
 ```
 
-### Address DTOs
+### Adress-DTOs
 
 #### ErpAddressData
 
@@ -1056,64 +1006,64 @@ final class KuebaAddressData extends Data
 }
 ```
 
-## Generic Filtering System
+## Generisches Filtersystem
 
-The Prospects system includes a powerful generic filtering system that supports:
+Das Prospekte-System beinhaltet ein mächtiges generisches Filtersystem, das unterstützt:
 
-### Filter Types
+### Filtertypen
 
-- **Enum Filters**: `source`, `gender`, `blood_group`, `eye_color`, `hair_color`, `address.city`, `address.state`, `address.country`
-- **Range Filters**: `age`, `birth_date`, `height`, `weight`, `address.plz`, `address.latitude`, `address.longitude`
+- **Enum-Filter**: `source`, `gender`, `blood_group`, `eye_color`, `hair_color`, `address.city`, `address.state`, `address.country`
+- **Bereichs-Filter**: `age`, `birth_date`, `height`, `weight`, `address.plz`, `address.latitude`, `address.longitude`
 
-### Usage Examples
+### Verwendungsbeispiele
 
 ```bash
-# Filter by enum values
+# Nach Enum-Werten filtern
 GET /api/prospects/filter?gender=male&source=erp
 
-# Filter by ranges
+# Nach Bereichen filtern
 GET /api/prospects/filter?age[min]=25&age[max]=35
 
-# Filter by address
+# Nach Adresse filtern
 GET /api/prospects/filter?address.city=Zurich&address.country=Switzerland
 
-# Combined filters
+# Kombinierte Filter
 GET /api/prospects/filter?gender=male&age[min]=25&source=erp
 ```
 
-### Search Criteria
+### Suchkriterien
 
 ```http
 GET /api/prospects/search-criteria
 ```
 
-Returns available filter options for the prospects model.
+Gibt verfügbare Filteroptionen für das Prospekte-Model zurück.
 
-## Scheduled Operations
+## Geplante Operationen
 
-### Automated Imports
+### Automatisierte Imports
 
-The system includes scheduled import operations:
+Das System beinhaltet geplante Import-Operationen:
 
 ```php
 // routes/console.php
 Schedule::command('app:import-prospects')->twiceDaily(7, 13);
 ```
 
-This runs the import process twice daily at 7:00 AM and 1:00 PM.
+Dies führt den Import-Prozess zweimal täglich um 7:00 Uhr und 13:00 Uhr aus.
 
-## Security Considerations
+## Sicherheitsüberlegungen
 
-### Data Privacy
+### Datenschutz
 
-- **Personal Information**: Only exposed in detail view with proper authentication
-- **Soft Deletes**: Sensitive data is soft deleted, not permanently removed
-- **API Access**: All endpoints require authentication via Sanctum tokens
-- **Authorization**: Uses Laravel Policies for fine-grained access control
+- **Persönliche Informationen**: Nur in Detailansicht mit ordnungsgemässer Authentifizierung freigelegt
+- **Soft Deletes**: Sensible Daten werden soft gelöscht, nicht permanent entfernt
+- **API-Zugriff**: Alle Endpunkte erfordern Authentifizierung über Sanctum-Token
+- **Autorisierung**: Verwendet Laravel Policies für granulare Zugriffskontrolle
 
 ### Rate Limiting
 
-Consider implementing rate limiting for API endpoints:
+Erwägen Sie die Implementierung von Rate Limiting für API-Endpunkte:
 
 ```php
 // In routes/api.php
@@ -1122,21 +1072,21 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
 });
 ```
 
-## Performance Considerations
+## Performance-Überlegungen
 
-### Database Optimization
+### Datenbankoptimierung
 
-- **Indexing**: Ensure proper indexes on frequently queried fields
-- **Pagination**: API responses are paginated to prevent large data transfers
-- **Soft Deletes**: Use `withTrashed()` when querying to include deleted records
-- **MongoDB**: Leverages MongoDB's flexible schema and indexing capabilities
+- **Indizierung**: Stellen Sie ordnungsgemässe Indizes auf häufig abgefragten Feldern sicher
+- **Paginierung**: API-Antworten sind paginiert, um grosse Datenübertragungen zu verhindern
+- **Soft Deletes**: Verwenden Sie `withTrashed()` beim Abfragen, um gelöschte Datensätze einzuschliessen
+- **MongoDB**: Nutzt MongoDBs flexible Schema- und Indizierungsfähigkeiten
 
 ### Caching
 
-Consider implementing caching for frequently accessed prospect data:
+Erwägen Sie die Implementierung von Caching für häufig abgerufene Prospektdaten:
 
 ```php
-// Example caching implementation
+// Beispiel Caching-Implementierung
 public function index(): ResourceCollection
 {
     return Cache::remember('prospects.page.' . request()->get('page', 1), 300, function () {
@@ -1145,11 +1095,11 @@ public function index(): ResourceCollection
 }
 ```
 
-## Testing
+## Testen
 
-### Unit Tests
+### Unit-Tests
 
-Create tests for individual components:
+Erstellen Sie Tests für individuelle Komponenten:
 
 ```php
 // tests/Unit/ProspectTest.php
@@ -1158,7 +1108,7 @@ class ProspectTest extends TestCase
     public function test_prospect_can_be_created(): void
     {
         $prospect = Prospect::factory()->create();
-        
+
         $this->assertDatabaseHas('prospects', [
             'id' => $prospect->id,
         ]);
@@ -1166,9 +1116,9 @@ class ProspectTest extends TestCase
 }
 ```
 
-### Feature Tests
+### Feature-Tests
 
-Test API endpoints:
+Testen Sie API-Endpunkte:
 
 ```php
 // tests/Feature/ProspectApiTest.php
@@ -1178,52 +1128,52 @@ class ProspectApiTest extends TestCase
     {
         $user = User::factory()->create();
         $token = $user->createToken('test')->plainTextToken;
-        
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->get('/api/prospects');
-        
+
         $response->assertStatus(200);
     }
 }
 ```
 
-## Troubleshooting
+## Problembehandlung
 
-### Common Issues
+### Häufige Probleme
 
-1. **Import Failures**: Check external API availability and configuration
-2. **Data Validation Errors**: Review DTO mapping for source-specific fields
-3. **Authentication Issues**: Verify Sanctum token configuration
-4. **MongoDB Connection**: Ensure MongoDB is running and accessible
-5. **Filter Errors**: Check filter parameter syntax and supported attributes
+1. **Import-Fehler**: Prüfen Sie externe API-Verfügbarkeit und Konfiguration
+2. **Datenvalidierungsfehler**: Überprüfen Sie DTO-Mapping für quellenspezifische Felder
+3. **Authentifizierungsprobleme**: Verifizieren Sie Sanctum-Token-Konfiguration
+4. **MongoDB-Verbindung**: Stellen Sie sicher, dass MongoDB läuft und erreichbar ist
+5. **Filter-Fehler**: Prüfen Sie Filter-Parameter-Syntax und unterstützte Attribute
 
 ### Debugging
 
-Enable detailed logging for import operations:
+Aktivieren Sie detailliertes Logging für Import-Operationen:
 
 ```php
 // In .env
 LOG_LEVEL=debug
 ```
 
-Check logs for detailed error information:
+Prüfen Sie Logs für detaillierte Fehlerinformationen:
 
 ```bash
 tail -f storage/logs/laravel.log
 ```
 
-## Future Enhancements
+## Zukünftige Verbesserungen
 
-### Potential Improvements
+### Potenzielle Verbesserungen
 
-1. **Search and Filtering**: Enhanced search capabilities with full-text search
-2. **Bulk Operations**: Support for bulk prospect operations
-3. **Data Validation**: Enhanced validation rules for prospect data
-4. **Audit Logging**: Track changes to prospect records
-5. **Export Functionality**: Export prospects to various formats
-6. **Real-time Updates**: WebSocket support for real-time data updates
-7. **Advanced Analytics**: Prospect interaction and engagement tracking
-8. **Machine Learning**: Predictive analytics for prospect behavior
-9. **Integration APIs**: Additional external data source integrations
-10. **Performance Monitoring**: Real-time performance metrics and alerts
+1. **Such- und Filterfunktionen**: Erweiterte Suchfähigkeiten mit Volltext-Suche
+2. **Bulk-Operationen**: Unterstützung für Bulk-Prospekt-Operationen
+3. **Datenvalidierung**: Erweiterte Validierungsregeln für Prospektdaten
+4. **Audit-Logging**: Verfolgung von Änderungen an Prospekt-Datensätzen
+5. **Export-Funktionalität**: Export von Prospekten in verschiedene Formate
+6. **Echtzeit-Updates**: WebSocket-Unterstützung für Echtzeit-Daten-Updates
+7. **Erweiterte Analytik**: Prospekt-Interaktions- und Engagement-Tracking
+8. **Machine Learning**: Prädiktive Analytik für Prospekt-Verhalten
+9. **Integrations-APIs**: Zusätzliche externe Datenquellen-Integrationen
+10. **Performance-Monitoring**: Echtzeit-Performance-Metriken und Warnungen

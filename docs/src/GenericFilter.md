@@ -1,35 +1,35 @@
-# GenericFilter System Documentation
+# GenericFilter System Dokumentation
 
-## Overview
+## Überblick
 
-The GenericFilter system is a flexible, reusable filtering solution for Laravel applications that provides dynamic filtering capabilities across different models. It consists of a trait (`HasFilterable`), a controller (`GenericFilterController`), and supporting infrastructure that allows models to be easily made filterable with minimal configuration.
+Das GenericFilter-System ist eine flexible, wiederverwendbare Filterlösung für Laravel-Anwendungen, die dynamische Filterfähigkeiten über verschiedene Models hinweg bereitstellt. Es besteht aus einem Trait (`HasFilterable`), einem Controller (`GenericFilterController`) und unterstützender Infrastruktur, die es ermöglicht, Models mit minimaler Konfiguration einfach filterbar zu machen.
 
-The system is specifically designed to work with MongoDB using the `mongodb/laravel` package and provides comprehensive filtering capabilities for both simple and complex data structures.
+Das System ist speziell für die Arbeit mit MongoDB unter Verwendung des `mongodb/laravel` Pakets konzipiert und bietet umfassende Filterfähigkeiten für sowohl einfache als auch komplexe Datenstrukturen.
 
-## System Architecture
+## System-Architektur
 
 ```mermaid
 graph TB
-    subgraph "Client Layer"
+    subgraph "Client-Schicht"
         Client[API Client]
     end
-    
-    subgraph "API Layer"
+
+    subgraph "API-Schicht"
         Route[Route: /api/{model}/filter]
         Controller[GenericFilterController]
     end
-    
-    subgraph "Model Layer"
+
+    subgraph "Model-Schicht"
         Model[Filterable Model]
         Trait[HasFilterable Trait]
         Casts[Model Casts]
     end
-    
-    subgraph "Database Layer"
+
+    subgraph "Datenbank-Schicht"
         MongoDB[(MongoDB)]
         Indexes[Database Indexes]
     end
-    
+
     Client --> Route
     Route --> Controller
     Controller --> Model
@@ -37,13 +37,13 @@ graph TB
     Model --> Casts
     Trait --> MongoDB
     MongoDB --> Indexes
-    
+
     style Controller fill:#e1f5fe
     style Trait fill:#f3e5f5
     style MongoDB fill:#e8f5e8
 ```
 
-## Filter Processing Flow
+## Filter-Verarbeitungs-Flow
 
 ```mermaid
 sequenceDiagram
@@ -56,17 +56,17 @@ sequenceDiagram
 
     Client->>Route: GET /api/{model}/filter?gender=male&min_age=25
     Route->>Controller: filter($model)
-    
+
     Controller->>Controller: resolveModel($model)
-    Note over Controller: Validates model exists and is filterable
-    
+    Note over Controller: Validiert, dass Model existiert und filterbar ist
+
     Controller->>Model: scopeApplyFilters($query, $filters)
     Model->>Trait: scopeApplyFilters()
-    
-    loop For each filter parameter
-        Trait->>Trait: Parse filter type
-        Note over Trait: Determine if enum, range, or array filter
-        
+
+    loop Für jeden Filter-Parameter
+        Trait->>Trait: Analysiere Filter-Typ
+        Note over Trait: Bestimme ob enum, range oder array Filter
+
         alt Enum Filter
             Trait->>DB: where(field, '=', value)
         else Range Filter (min_)
@@ -79,16 +79,16 @@ sequenceDiagram
             Trait->>DB: whereNotIn(field, values)
         end
     end
-    
-    Trait->>DB: Execute query with pagination
-    DB-->>Trait: Filtered results
-    Trait-->>Model: Query with filters applied
-    Model-->>Controller: Paginated collection
-    Controller-->>Route: JSON response with data
-    Route-->>Client: 200 OK + filtered data
+
+    Trait->>DB: Führe Abfrage mit Paginierung aus
+    DB-->>Trait: Gefilterte Ergebnisse
+    Trait-->>Model: Abfrage mit angewandten Filtern
+    Model-->>Controller: Paginierte Collection
+    Controller-->>Route: JSON-Antwort mit Daten
+    Route-->>Client: 200 OK + gefilterte Daten
 ```
 
-## Search Criteria Generation Flow
+## Suchkriterien-Generierungs-Flow
 
 ```mermaid
 sequenceDiagram
@@ -101,70 +101,70 @@ sequenceDiagram
 
     Client->>Route: GET /api/{model}/search-criteria
     Route->>Controller: searchCriteria($model)
-    
+
     Controller->>Controller: resolveModel($model)
     Controller->>Model: searchCriteria()
     Model->>Trait: searchCriteria()
-    
+
     Trait->>Trait: getFilterableAttributes()
-    Note over Trait: Get filter configuration from model
-    
-    loop For each filterable attribute
-        Trait->>Trait: Determine filter type
-        
+    Note over Trait: Hole Filter-Konfiguration vom Model
+
+    loop Für jedes filterbare Attribut
+        Trait->>Trait: Bestimme Filter-Typ
+
         alt Enum Filter
             Trait->>DB: distinct(field)
-            DB-->>Trait: Unique values
-            Trait->>Trait: Format as array
+            DB-->>Trait: Eindeutige Werte
+            Trait->>Trait: Formatiere als Array
         else Range Filter
             Trait->>DB: min(field), max(field)
-            DB-->>Trait: Min/max values
-            Trait->>Trait: Format as {min: x, max: y}
+            DB-->>Trait: Min/Max-Werte
+            Trait->>Trait: Formatiere als {min: x, max: y}
         end
     end
-    
-    Trait-->>Model: Complete search criteria
-    Model-->>Controller: Search criteria object
-    Controller-->>Route: JSON response
-    Route-->>Client: 200 OK + search criteria
+
+    Trait-->>Model: Vollständige Suchkriterien
+    Model-->>Controller: Suchkriterien-Objekt
+    Controller-->>Route: JSON-Antwort
+    Route-->>Client: 200 OK + Suchkriterien
 ```
 
-## Enhanced Array Support
+## Erweiterte Array-Unterstützung
 
-The system now supports multiple ways to pass array values for filtering:
+Das System unterstützt nun mehrere Wege, Array-Werte für die Filterung zu übergeben:
 
-1. **Traditional PHP Array Format**: `?field_in[]=value1&field_in[]=value2`
-2. **Direct Array Detection**: When a parameter value is detected as an array, it automatically uses the 'IN' operator
-3. **JSON Array Format**: `?field=["value1","value2"]` (when parsed as array by client)
+1. **Traditionelles PHP Array-Format**: `?field_in[]=value1&field_in[]=value2`
+2. **Direkte Array-Erkennung**: Wenn ein Parameter-Wert als Array erkannt wird, verwendet es automatisch den 'IN'-Operator
+3. **JSON Array-Format**: `?field=["value1","value2"]` (wenn vom Client als Array geparst)
 
-This enhancement provides greater flexibility for API consumers and automatically handles array values regardless of how they're passed.
+Diese Verbesserung bietet grössere Flexibilität für API-Verbraucher und behandelt Array-Werte automatisch, unabhängig davon, wie sie übergeben werden.
 
-## Filter Types and Operations
+## Filter-Typen und Operationen
 
 ```mermaid
 graph LR
-    subgraph "Filter Types"
-        Enum[Enum Filters]
-        Range[Range Filters]
-        Array[Array Filters]
+    subgraph "Filter-Typen"
+        Enum[Enum Filter]
+        Range[Bereichs-Filter]
+        Array[Array-Filter]
     end
-    
-    subgraph "Enum Operations"
-        E1[= Exact Match]
-        E2[in Multiple Values]
-        E3[not_in Exclude Values]
+
+    subgraph "Enum-Operationen"
+        E1[= Exakte Übereinstimmung]
+        E2[in Mehrere Werte]
+        E3[not_in Werte ausschliessen]
     end
-    
-    subgraph "Range Operations"
-        R1[min_ >= Value]
-        R2[max_ <= Value]
+
+    subgraph "Bereichs-Operationen"
+        R1[min_ >= Wert]
+        R2[max_ <= Wert]
     end
-    
-    subgraph "Array Operations"
-        A1[_in Include Array]
-        A2[_not_in Exclude Array]
+
+    subgraph "Array-Operationen"
+        A1[_in Array einschliessen]
+        A2[_not_in Array ausschliessen]
     end
-    
+
     Enum --> E1
     Enum --> E2
     Enum --> E3
@@ -172,13 +172,13 @@ graph LR
     Range --> R2
     Array --> A1
     Array --> A2
-    
+
     style Enum fill:#e3f2fd
     style Range fill:#f1f8e9
     style Array fill:#fff3e0
 ```
 
-## Model Integration Example
+## Model-Integrations-Beispiel
 
 ```mermaid
 classDiagram
@@ -200,60 +200,60 @@ classDiagram
         +scopeApplyFilters() void
         +searchCriteria() array
     }
-    
+
     class HasFilterable {
         <<trait>>
         +scopeApplyFilters($query, $filters) void
         +searchCriteria() array
         -castFilterValue($field, $value) mixed
     }
-    
+
     class GenericFilterController {
         +filter($model) ResourceCollection
         +searchCriteria($model) JsonResponse
         -resolveModel($slug) string
     }
-    
+
     class MongoDB {
         <<database>>
         +prospects collection
         +personal_access_tokens collection
         +users collection
     }
-    
-    Prospect --> HasFilterable : uses
-    GenericFilterController --> Prospect : filters
-    Prospect --> MongoDB : stores data
+
+    Prospect --> HasFilterable : verwendet
+    GenericFilterController --> Prospect : filtert
+    Prospect --> MongoDB : speichert Daten
 ```
 
-## Data Flow for Complex Filtering
+## Datenfluss für komplexe Filterung
 
 ```mermaid
 flowchart TD
-    A[Client Request] --> B{Parse Query Parameters}
-    B --> C[Extract Filters]
-    C --> D[Validate Model]
-    D --> E{Model Exists?}
-    
-    E -->|No| F[Return 404 Error]
-    E -->|Yes| G[Get Filterable Attributes]
-    
-    G --> H[Process Each Filter]
-    H --> I{Filter Type?}
-    
-    I -->|Enum| J[Apply Enum Filter]
-    I -->|Range| K[Apply Range Filter]
-    I -->|Array| L[Apply Array Filter]
-    
-    J --> M[Build Query]
+    A[Client-Anfrage] --> B{Parse Query-Parameter}
+    B --> C[Extrahiere Filter]
+    C --> D[Validiere Model]
+    D --> E{Model existiert?}
+
+    E -->|Nein| F[Gib 404-Fehler zurück]
+    E -->|Ja| G[Hole filterbare Attribute]
+
+    G --> H[Verarbeite jeden Filter]
+    H --> I{Filter-Typ?}
+
+    I -->|Enum| J[Wende Enum-Filter an]
+    I -->|Range| K[Wende Bereichs-Filter an]
+    I -->|Array| L[Wende Array-Filter an]
+
+    J --> M[Erstelle Abfrage]
     K --> M
     L --> M
-    
-    M --> N[Execute MongoDB Query]
-    N --> O[Apply Pagination]
-    O --> P[Format Response]
-    P --> Q[Return JSON]
-    
+
+    M --> N[Führe MongoDB-Abfrage aus]
+    N --> O[Wende Paginierung an]
+    O --> P[Formatiere Antwort]
+    P --> Q[Gib JSON zurück]
+
     style A fill:#e8f5e8
     style F fill:#ffebee
     style Q fill:#e8f5e8
@@ -262,60 +262,60 @@ flowchart TD
     style L fill:#fff3e0
 ```
 
-## Architecture
+## Architektur
 
-### Core Components
+### Kernkomponenten
 
 1. **HasFilterable Trait** (`app/Traits/HasFilterable.php`)
-   - Provides the core filtering functionality
-   - Implements `scopeApplyFilters()` method for query filtering
-   - Implements `searchCriteria()` method for getting available filter options
-   - Handles automatic value casting based on model casts
-   - Supports MongoDB-specific query building
-   - Includes dot notation support for nested fields
-   - Prevents range operators on enum fields
+   - Stellt die zentrale Filterfunktionalität bereit
+   - Implementiert `scopeApplyFilters()`-Methode für Abfrage-Filterung
+   - Implementiert `searchCriteria()`-Methode für verfügbare Filter-Optionen
+   - Behandelt automatisches Werte-Casting basierend auf Model-Casts
+   - Unterstützt MongoDB-spezifische Abfrage-Erstellung
+   - Beinhaltet Punkt-Notation-Unterstützung für verschachtelte Felder
+   - Verhindert Bereichs-Operatoren auf Enum-Feldern
 
 2. **GenericFilterController** (`app/Http/Controllers/Api/GenericFilterController.php`)
-   - Provides REST API endpoints for filtering
-   - Handles model resolution and validation
-   - Returns paginated results using Laravel's Resource Collections
-   - Implements proper error handling for non-existent or non-filterable models
-   - Uses Laravel's Gate authorization system
-   - Supports only the `prospects` model currently
+   - Stellt REST-API-Endpunkte für Filterung bereit
+   - Behandelt Model-Auflösung und Validierung
+   - Gibt paginierte Ergebnisse mit Laravels Resource Collections zurück
+   - Implementiert ordnungsgemässe Fehlerbehandlung für nicht existierende oder nicht filterbare Models
+   - Verwendet Laravels Gate-Autorisierungssystem
+   - Unterstützt derzeit nur das `prospects`-Model
 
-3. **Model Integration**
-   - Models use the `HasFilterable` trait
-   - Define filterable attributes via `getFilterableAttributes()` method
-   - Support for different filter types (enum, range)
-   - Currently only the `Prospect` model implements filtering
+3. **Model-Integration**
+   - Models verwenden das `HasFilterable` Trait
+   - Definieren filterbare Attribute über die `getFilterableAttributes()`-Methode
+   - Unterstützung für verschiedene Filter-Typen (enum, range)
+   - Derzeit implementiert nur das `Prospect`-Model Filterung
 
-## Filter Types
+## Filter-Typen
 
-### Enum Filters
-- Used for fields with predefined sets of values
-- Supports exact matching `=` and `in`/`not_in` operations
-- Automatically generates available values from existing data
-- Ideal for categorical data like gender, source, blood_group, etc.
-- Range operators (`>=`, `<=`) are automatically skipped for enum fields
+### Enum-Filter
+- Verwendet für Felder mit vordefinierten Wertesätzen
+- Unterstützt exakte Übereinstimmung `=` und `in`/`not_in` Operationen
+- Generiert automatisch verfügbare Werte aus existierenden Daten
+- Ideal für kategorische Daten wie Geschlecht, Quelle, Blutgruppe, etc.
+- Bereichs-Operatoren (`>=`, `<=`) werden automatisch für Enum-Felder übersprungen
 
-### Range Filters
-- Used for numeric and date fields
-- Supports `>=` (min_) and `<=` (max_) operations
-- Automatically calculates min/max values from existing data
-- Perfect for age, dates, measurements, and coordinates
+### Bereichs-Filter
+- Verwendet für numerische und Datumsfelder
+- Unterstützt `>=` (min_) und `<=` (max_) Operationen
+- Berechnet automatisch Min/Max-Werte aus existierenden Daten
+- Perfekt für Alter, Daten, Messungen und Koordinaten
 
-## API Endpoints
+## API-Endpunkte
 
-### Filter Data
+### Daten filtern
 ```
 GET /api/{model}/filter
 ```
 
-**Parameters:**
-- Query parameters for filtering (see Filter Syntax below)
-- Standard Laravel pagination parameters (`page`, `per_page`)
+**Parameter:**
+- Query-Parameter für Filterung (siehe Filter-Syntax unten)
+- Standard Laravel-Paginierungs-Parameter (`page`, `per_page`)
 
-**Response:**
+**Antwort:**
 ```json
 {
   "data": [
@@ -348,12 +348,12 @@ GET /api/{model}/filter
 }
 ```
 
-### Get Search Criteria
+### Suchkriterien abrufen
 ```
 GET /api/{model}/search-criteria
 ```
 
-**Response:**
+**Antwort:**
 ```json
 {
   "source": ["erp", "kueba"],
@@ -395,27 +395,27 @@ GET /api/{model}/search-criteria
 }
 ```
 
-## Filter Syntax
+## Filter-Syntax
 
-### Basic Equality
+### Grundlegende Gleichheit
 ```
 ?field=value
 ```
 
-**Examples:**
+**Beispiele:**
 ```
 ?gender=male
 ?source=erp
 ?blood_group=A+
 ```
 
-### Range Filters
+### Bereichs-Filter
 ```
 ?min_field=value    // >= value
 ?max_field=value    // <= value
 ```
 
-**Examples:**
+**Beispiele:**
 ```
 ?min_age=25
 ?max_age=40
@@ -423,33 +423,33 @@ GET /api/{model}/search-criteria
 ?max_weight=80
 ```
 
-### Array Filters
+### Array-Filter
 ```
-?field_in[]=value1&field_in[]=value2    // IN array (PHP array format)
-?field_not_in[]=value1&field_not_in[]=value2    // NOT IN array (PHP array format)
-?field=["value1","value2"]    // IN array (JSON array format)
+?field_in[]=value1&field_in[]=value2    // IN Array (PHP Array-Format)
+?field_not_in[]=value1&field_not_in[]=value2    // NOT IN Array (PHP Array-Format)
+?field=["value1","value2"]    // IN Array (JSON Array-Format)
 ```
 
-**Examples:**
+**Beispiele:**
 ```
 ?gender_in[]=male&gender_in[]=female
 ?source_not_in[]=erp
 ?blood_group_in[]=A+&blood_group_in[]=O+
-?gender=["male","female"]    // Direct array value support
+?gender=["male","female"]    // Direkte Array-Wert-Unterstützung
 ```
 
-### Dot Notation Support
-The system supports both underscore and dot notation for nested fields:
+### Punkt-Notation-Unterstützung
+Das System unterstützt sowohl Unterstrich- als auch Punkt-Notation für verschachtelte Felder:
 ```
-?address_city=London    // address.city field
-?address.city=London    // Same field, dot notation
+?address_city=London    // address.city Feld
+?address.city=London    // Gleiches Feld, Punkt-Notation
 ```
 
-**Note:** PHP automatically converts dots to underscores in query parameters, so both notations work seamlessly. The system intelligently converts underscores back to dots when matching against filterable attributes.
+**Hinweis:** PHP konvertiert automatisch Punkte zu Unterstrichen in Query-Parametern, daher funktionieren beide Notationen nahtlos. Das System konvertiert intelligent Unterstriche zurück zu Punkten beim Abgleich mit filterbaren Attributen.
 
-## Implementation Example
+## Implementierungs-Beispiel
 
-### Making a Model Filterable
+### Ein Model filterbar machen
 
 ```php
 <?php
@@ -517,7 +517,7 @@ final class Prospect extends Model
         'birth_date' => 'date',
         'height' => 'float',
         'weight' => 'float',
-        // 'address' => 'array', // Laravel Serializes to JSON string and breaks dot "." notation
+        // 'address' => 'array', // Laravel serialisiert zu JSON-String und bricht Punkt-Notation "."
         'address.latitude' => 'float',
         'address.longitude' => 'float',
         'source' => ProspectDataSource::class,
@@ -552,7 +552,7 @@ final class Prospect extends Model
 }
 ```
 
-### Adding Model to Controller
+### Model zum Controller hinzufügen
 
 ```php
 private function resolveModel(string $slug): string
@@ -563,59 +563,59 @@ private function resolveModel(string $slug): string
 }
 ```
 
-## Usage Examples
+## Verwendungsbeispiele
 
-### Basic Filtering
+### Grundlegende Filterung
 ```
 GET /api/prospects/filter?gender=male&source=erp
 ```
 
-### Range Filtering
+### Bereichs-Filterung
 ```
 GET /api/prospects/filter?min_age=25&max_age=40
 ```
 
-### Multiple Values
+### Mehrere Werte
 ```
 GET /api/prospects/filter?gender_in[]=male&gender_in[]=female
 GET /api/prospects/filter?gender=["male","female"]
 ```
 
-### Complex Filtering
+### Komplexe Filterung
 ```
 GET /api/prospects/filter?source=erp&min_age=25&max_age=40&address_city=London
 ```
 
-### Pagination
+### Paginierung
 ```
 GET /api/prospects/filter?gender=male&page=2&per_page=20
 ```
 
-### Nested Field Filtering
+### Verschachtelte Feld-Filterung
 ```
 GET /api/prospects/filter?address_country=UK&min_address_latitude=50.0&max_address_latitude=60.0
 ```
 
-### Combined Filters
+### Kombinierte Filter
 ```
 GET /api/prospects/filter?source=kueba&min_age=30&max_age=50&blood_group_in[]=A+&blood_group_in[]=O+&address_city=Berlin
 GET /api/prospects/filter?source=kueba&min_age=30&max_age=50&blood_group=["A+","O+"]&address_city=Berlin
 ```
 
-## Value Casting
+## Werte-Casting
 
-The system automatically casts filter values based on the model's `$casts` property:
+Das System castet automatisch Filter-Werte basierend auf der `$casts`-Eigenschaft des Models:
 
-- **integer/int**: Numeric values cast to integers
-- **float/double**: Numeric values cast to floats
-- **boolean/bool**: String values cast to booleans
-- **date/datetime**: String/numeric values parsed to Carbon instances
-- **Enums**: Values cast using the enum's `from()` method
+- **integer/int**: Numerische Werte zu Ganzzahlen gecastet
+- **float/double**: Numerische Werte zu Gleitkommazahlen gecastet
+- **boolean/bool**: String-Werte zu Booleans gecastet
+- **date/datetime**: String/numerische Werte zu Carbon-Instanzen geparst
+- **Enums**: Werte mit der `from()`-Methode des Enums gecastet
 
-### Casting Examples
+### Casting-Beispiele
 
 ```php
-// In the model's $casts property
+// In der $casts-Eigenschaft des Models
 protected $casts = [
     'age' => 'integer',
     'birth_date' => 'date',
@@ -626,30 +626,30 @@ protected $casts = [
     'source' => ProspectDataSource::class,
 ];
 
-// Filter values are automatically cast
-?age=25          // Cast to integer
-?birth_date=1990-01-01  // Cast to Carbon date
-?height=175.5    // Cast to float
-?source=erp      // Cast to ProspectDataSource enum
+// Filter-Werte werden automatisch gecastet
+?age=25          // Zu Integer gecastet
+?birth_date=1990-01-01  // Zu Carbon-Datum gecastet
+?height=175.5    // Zu Float gecastet
+?source=erp      // Zu ProspectDataSource Enum gecastet
 ```
 
-## Security Features
+## Sicherheitsfeatures
 
-- **Model Validation**: Only models that exist and implement the required methods are accessible
-- **Attribute Validation**: Only fields defined in `getFilterableAttributes()` are processed
-- **Type Safety**: Automatic casting prevents type-related issues
-- **Authentication**: All endpoints require authentication via Laravel Sanctum
-- **Authorization**: Uses Laravel's Gate system for model-level authorization
-- **Input Sanitization**: Query parameters are properly handled and validated
+- **Model-Validierung**: Nur Models, die existieren und die erforderlichen Methoden implementieren, sind zugänglich
+- **Attribut-Validierung**: Nur in `getFilterableAttributes()` definierte Felder werden verarbeitet
+- **Typsicherheit**: Automatisches Casting verhindert typ-bezogene Probleme
+- **Authentifizierung**: Alle Endpunkte erfordern Authentifizierung über Laravel Sanctum
+- **Autorisierung**: Verwendet Laravels Gate-System für Model-Level-Autorisierung
+- **Input-Sanitisierung**: Query-Parameter werden ordnungsgemäss behandelt und validiert
 
-## Error Handling
+## Fehlerbehandlung
 
-- **404 Not Found**: When model doesn't exist or isn't filterable
-- **403 Forbidden**: When user doesn't have permission to access the model
-- **400 Bad Request**: When filter syntax is invalid
-- **500 Internal Server Error**: When casting fails or other internal errors occur
+- **404 Not Found**: Wenn Model nicht existiert oder nicht filterbar ist
+- **403 Forbidden**: Wenn Benutzer keine Berechtigung hat, auf das Model zuzugreifen
+- **400 Bad Request**: Wenn Filter-Syntax ungültig ist
+- **500 Internal Server Error**: Wenn Casting fehlschlägt oder andere interne Fehler auftreten
 
-### Error Response Examples
+### Fehler-Antwort-Beispiele
 
 ```json
 {
@@ -657,18 +657,18 @@ protected $casts = [
 }
 ```
 
-## Performance Considerations
+## Performance-Überlegungen
 
-- **Indexing**: Ensure filterable fields are properly indexed in MongoDB
-- **Pagination**: Results are automatically paginated to prevent large result sets
-- **Query Optimization**: The system uses Laravel's query builder for efficient database queries
-- **Resource Collections**: Uses Laravel's Resource Collections for consistent API responses
+- **Indizierung**: Stellen Sie sicher, dass filterbare Felder in MongoDB ordnungsgemäss indiziert sind
+- **Paginierung**: Ergebnisse werden automatisch paginiert, um grosse Ergebnismengen zu verhindern
+- **Abfrage-Optimierung**: Das System verwendet Laravels Query Builder für effiziente Datenbankabfragen
+- **Resource Collections**: Verwendet Laravels Resource Collections für konsistente API-Antworten
 
-## Extending the System
+## Systemerweiterung
 
-### Adding New Filter Types
+### Neue Filter-Typen hinzufügen
 
-To add new filter types, extend the `scopeApplyFilters()` method in the `HasFilterable` trait:
+Um neue Filter-Typen hinzuzufügen, erweitern Sie die `scopeApplyFilters()`-Methode im `HasFilterable` Trait:
 
 ```php
 switch (true) {
@@ -696,16 +696,16 @@ switch (true) {
 }
 ```
 
-### Adding New Models
+### Neue Models hinzufügen
 
-1. Add the `HasFilterable` trait to your model
-2. Implement `getFilterableAttributes()` method
-3. Add the model to the `resolveModel()` method in `GenericFilterController`
-4. Ensure proper casts are defined
-5. Create appropriate MongoDB indexes
-6. Implement the required policy for authorization
+1. Fügen Sie das `HasFilterable` Trait zu Ihrem Model hinzu
+2. Implementieren Sie die `getFilterableAttributes()`-Methode
+3. Fügen Sie das Model zur `resolveModel()`-Methode in `GenericFilterController` hinzu
+4. Stellen Sie sicher, dass ordnungsgemässe Casts definiert sind
+5. Erstellen Sie entsprechende MongoDB-Indizes
+6. Implementieren Sie die erforderliche Policy für Autorisierung
 
-### Example: Adding a Movie Model
+### Beispiel: Ein Movie-Model hinzufügen
 
 ```php
 <?php
@@ -743,7 +743,7 @@ final class Movie extends Model
 }
 ```
 
-Then add to the controller:
+Dann zum Controller hinzufügen:
 
 ```php
 private function resolveModel(string $slug): string
@@ -758,82 +758,82 @@ private function resolveModel(string $slug): string
 
 ## Best Practices
 
-1. **Define Clear Filter Types**: Use appropriate filter types (enum vs range) for your data
-2. **Index Filterable Fields**: MongoDB indexes improve query performance significantly
-3. **Validate Input**: The system handles basic validation, but consider additional validation for complex scenarios
-4. **Document Available Filters**: Provide clear documentation of available filter options for API consumers
-5. **Test Thoroughly**: Ensure all filter combinations work as expected
-6. **Use Proper Casting**: Define appropriate casts for all filterable fields
-7. **Optimize Queries**: Use compound indexes for frequently combined filters
-8. **Monitor Performance**: Track query performance and optimize as needed
-9. **Implement Policies**: Ensure proper authorization policies are in place for new models
+1. **Klare Filter-Typen definieren**: Verwenden Sie angemessene Filter-Typen (enum vs range) für Ihre Daten
+2. **Filterbare Felder indizieren**: MongoDB-Indizes verbessern die Abfrage-Performance erheblich
+3. **Input validieren**: Das System behandelt grundlegende Validierung, aber erwägen Sie zusätzliche Validierung für komplexe Szenarien
+4. **Verfügbare Filter dokumentieren**: Stellen Sie klare Dokumentation verfügbarer Filter-Optionen für API-Verbraucher bereit
+5. **Gründlich testen**: Stellen Sie sicher, dass alle Filter-Kombinationen wie erwartet funktionieren
+6. **Ordnungsgemässes Casting verwenden**: Definieren Sie angemessene Casts für alle filterbaren Felder
+7. **Abfragen optimieren**: Verwenden Sie zusammengesetzte Indizes für häufig kombinierte Filter
+8. **Performance überwachen**: Verfolgen Sie Abfrage-Performance und optimieren Sie nach Bedarf
+9. **Policies implementieren**: Stellen Sie sicher, dass ordnungsgemässe Autorisierungs-Policies für neue Models vorhanden sind
 
-## Troubleshooting
+## Problembehandlung
 
-### Common Issues
+### Häufige Probleme
 
-1. **Filter Not Working**: Check if the field is defined in `getFilterableAttributes()`
-2. **Type Casting Errors**: Verify the model's `$casts` property is correctly configured
-3. **Dot Notation Issues**: Ensure the field exists in the database and is properly cast
-4. **Performance Issues**: Check MongoDB indexes on filterable fields
-5. **Authentication Errors**: Ensure proper Sanctum token is provided
-6. **Authorization Errors**: Check if the user has permission to access the model
+1. **Filter funktioniert nicht**: Prüfen Sie, ob das Feld in `getFilterableAttributes()` definiert ist
+2. **Type-Casting-Fehler**: Überprüfen Sie, ob die `$casts`-Eigenschaft des Models korrekt konfiguriert ist
+3. **Punkt-Notation-Probleme**: Stellen Sie sicher, dass das Feld in der Datenbank existiert und ordnungsgemäss gecastet ist
+4. **Performance-Probleme**: Prüfen Sie MongoDB-Indizes auf filterbaren Feldern
+5. **Authentifizierungsfehler**: Stellen Sie sicher, dass ein ordnungsgemässer Sanctum-Token bereitgestellt wird
+6. **Autorisierungsfehler**: Prüfen Sie, ob der Benutzer Berechtigung hat, auf das Model zuzugreifen
 
 ### Debugging
 
-Enable Laravel's query logging to see the generated MongoDB queries:
+Aktivieren Sie Laravels Query-Logging, um die generierten MongoDB-Abfragen zu sehen:
 
 ```php
 DB::enableQueryLog();
-// ... perform filter operation
+// ... Filter-Operation durchführen
 dd(DB::getQueryLog());
 ```
 
-### Common Debugging Scenarios
+### Häufige Debugging-Szenarien
 
 ```php
-// Check if model is filterable
+// Prüfen Sie, ob Model filterbar ist
 $modelClass = Prospect::class;
 $isFilterable = method_exists($modelClass, 'scopeApplyFilters');
-dd($isFilterable); // Should return true
+dd($isFilterable); // Sollte true zurückgeben
 
-// Check available filterable attributes
+// Verfügbare filterbare Attribute prüfen
 $attributes = Prospect::getFilterableAttributes();
 dd($attributes);
 
-// Check search criteria
+// Suchkriterien prüfen
 $criteria = Prospect::searchCriteria();
 dd($criteria);
 ```
 
-## API Testing
+## API-Testing
 
-### Using Postman
+### Postman verwenden
 
-The system includes a Postman collection (`docs/APDE.postman_collection.json`) with examples for testing the GenericFilter endpoints.
+Das System beinhaltet eine Postman-Collection (`docs/APDE.postman_collection.json`) mit Beispielen zum Testen der GenericFilter-Endpunkte.
 
-### Example cURL Commands
+### Beispiel cURL-Befehle
 
 ```bash
-# Get search criteria
+# Suchkriterien abrufen
 curl -X GET "http://localhost:8000/api/prospects/search-criteria" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Accept: application/json"
 
-# Filter prospects
+# Prospekte filtern
 curl -X GET "http://localhost:8000/api/prospects/filter?gender=male&min_age=25" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Accept: application/json"
 
-# Complex filtering with pagination
+# Komplexe Filterung mit Paginierung
 curl -X GET "http://localhost:8000/api/prospects/filter?source=erp&min_age=30&max_age=50&page=1&per_page=20" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Accept: application/json"
 ```
 
-## Version Compatibility
+## Versions-Kompatibilität
 
-- **Laravel**: 10.x or higher
-- **MongoDB**: 4.4 or higher
-- **PHP**: 8.1 or higher
-- **Package**: `mongodb/laravel`
+- **Laravel**: 10.x oder höher
+- **MongoDB**: 4.4 oder höher
+- **PHP**: 8.1 oder höher
+- **Paket**: `mongodb/laravel`

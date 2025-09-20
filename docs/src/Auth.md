@@ -1,16 +1,16 @@
-# Authentication Documentation
+# Authentifizierungs-Dokumentation
 
-This document describes the authentication system implemented in the APDE backend application, which supports both token-based and cookie/session-based authentication methods.
+Diese Dokumentation beschreibt das Authentifizierungssystem der APDE Backend-Anwendung, das sowohl token-basierte als auch cookie-/sitzungsbasierte Authentifizierungsmethoden unterstützt.
 
-## Overview
+## Überblick
 
-The application uses Laravel Sanctum for API authentication, supporting two authentication methods:
-1. **Token-based authentication** - For traditional API clients
-2. **Cookie/Session-based authentication** - For Single Page Applications (SPAs)
+Die Anwendung verwendet Laravel Sanctum für die API-Authentifizierung und unterstützt zwei Authentifizierungsmethoden:
+1. **Token-basierte Authentifizierung** - Für traditionelle API-Clients
+2. **Cookie-/Sitzungsbasierte Authentifizierung** - Für Single Page Applications (SPAs)
 
-## Authentication Flows
+## Authentifizierungs-Flows
 
-### Token-Based Authentication Flow
+### Token-basierter Authentifizierungs-Flow
 
 ```mermaid
 sequenceDiagram
@@ -22,30 +22,30 @@ sequenceDiagram
 
     Client->>API: POST /api/login
     Note over Client,API: {email, password}
-    
+
     API->>Auth: login()
     Auth->>DB: Auth::attempt(credentials)
-    DB-->>Auth: User validation result
-    
-    alt Valid credentials
+    DB-->>Auth: Benutzervalidierung
+
+    alt Gültige Anmeldedaten
         Auth->>Token: createToken('authToken', ['*'], 120min)
         Token-->>Auth: plainTextToken
         Auth-->>API: {token: "1|abc123..."}
         API-->>Client: 200 OK + token
-        Note over Client: Store token for future requests
-        
+        Note over Client: Token für zukünftige Anfragen speichern
+
         Client->>API: GET /api/prospects
         Note over Client,API: Authorization: Bearer 1|abc123...
         API->>Auth: auth:sanctum middleware
-        Auth-->>API: Authenticated user
-        API-->>Client: 200 OK + data
-    else Invalid credentials
+        Auth-->>API: Authentifizierter Benutzer
+        API-->>Client: 200 OK + Daten
+    else Ungültige Anmeldedaten
         Auth-->>API: 401 Unauthorized
-        API-->>Client: 401 + error message
+        API-->>Client: 401 + Fehlermeldung
     end
 ```
 
-### Cookie/Session-Based Authentication Flow
+### Cookie-/Sitzungsbasierter Authentifizierungs-Flow
 
 ```mermaid
 sequenceDiagram
@@ -57,58 +57,58 @@ sequenceDiagram
 
     SPA->>Web: POST /login
     Note over SPA,Web: {email, password}<br/>credentials: 'include'
-    
+
     Web->>Auth: login()
     Auth->>Session: Auth::attempt(credentials)
-    Session-->>Auth: User validation result
-    
-    alt Valid credentials
+    Session-->>Auth: Benutzervalidierung
+
+    alt Gültige Anmeldedaten
         Auth->>Session: session()->regenerate()
-        Session-->>Auth: New session created
-        Auth-->>Web: 200 OK + success message
-        Web-->>SPA: 200 OK + cookies set
-        Note over SPA: Cookies automatically included in future requests
-        
+        Session-->>Auth: Neue Sitzung erstellt
+        Auth-->>Web: 200 OK + Erfolgsmeldung
+        Web-->>SPA: 200 OK + Cookies gesetzt
+        Note over SPA: Cookies automatisch in zukünftigen Anfragen eingeschlossen
+
         SPA->>API: GET /api/prospects
-        Note over SPA,API: credentials: 'include'<br/>Cookies sent automatically
+        Note over SPA,API: credentials: 'include'<br/>Cookies automatisch gesendet
         API->>Auth: statefulApi() middleware
-        Auth-->>API: Authenticated user from session
-        API-->>SPA: 200 OK + data
-    else Invalid credentials
+        Auth-->>API: Authentifizierter Benutzer aus Sitzung
+        API-->>SPA: 200 OK + Daten
+    else Ungültige Anmeldedaten
         Auth-->>Web: 401 Unauthorized
-        Web-->>SPA: 401 + error message
+        Web-->>SPA: 401 + Fehlermeldung
     end
 ```
 
-## Configuration
+## Konfiguration
 
-### Sanctum Configuration
+### Sanctum Konfiguration
 
-The application is configured to support stateful API authentication for SPAs. This is configured in `bootstrap/app.php`:
+Die Anwendung ist konfiguriert, um stateful API-Authentifizierung für SPAs zu unterstützen. Dies wird in `bootstrap/app.php` konfiguriert:
 
 ```php
 $middleware->statefulApi();
 ```
 
-This configuration allows cookie/session-based authentication to work with `/api` endpoints, which is essential for SPA applications that need to maintain authentication state across requests.
+Diese Konfiguration ermöglicht es, dass cookie-/sitzungsbasierte Authentifizierung mit `/api`-Endpunkten funktioniert, was für SPA-Anwendungen essentiell ist, die den Authentifizierungsstatus über Anfragen hinweg beibehalten müssen.
 
-### Sanctum Settings
+### Sanctum Einstellungen
 
-Key configuration in `config/sanctum.php`:
+Wichtige Konfiguration in `config/sanctum.php`:
 
-- **Stateful Domains**: Configured to allow stateful authentication from localhost and development domains
-- **Guard**: Uses the 'web' guard for session-based authentication
-- **Token Expiration**: Set to `null` (no expiration by default)
-- **Middleware**: Includes session authentication, cookie encryption, and CSRF validation
+- **Stateful Domains**: Konfiguriert für stateful Authentifizierung von localhost und Entwicklungsdomänen
+- **Guard**: Verwendet den 'web' Guard für sitzungsbasierte Authentifizierung
+- **Token Expiration**: Auf `null` gesetzt (standardmässig kein Ablauf)
+- **Middleware**: Beinhaltet Sitzungsauthentifizierung, Cookie-Verschlüsselung und CSRF-Validierung
 
-## Authentication Methods
+## Authentifizierungsmethoden
 
-### 1. Token-Based Authentication
+### 1. Token-basierte Authentifizierung
 
-#### Login Endpoint
+#### Login-Endpunkt
 - **URL**: `POST /api/login`
 - **Controller**: `App\Http\Controllers\Api\AuthController`
-- **Method**: `login()`
+- **Methode**: `login()`
 
 **Request Body:**
 ```json
@@ -125,23 +125,40 @@ Key configuration in `config/sanctum.php`:
 }
 ```
 
-**Implementation Details:**
-- Uses `Auth::attempt()` to validate credentials
-- Creates a Sanctum token with all abilities (`*`)
-- Token expires in 120 minutes
-- Returns the plain text token for API clients
+**Implementierungsdetails:**
+- Verwendet `Auth::attempt()` zur Validierung der Anmeldedaten
+- Erstellt einen Sanctum-Token mit allen Fähigkeiten (`*`)
+- Token läuft in 120 Minuten ab
+- Gibt den Klartext-Token für API-Clients zurück
 
-#### Using the Token
-Include the token in the Authorization header:
+#### Token verwenden
+Token im Authorization-Header einschliessen:
 ```
 Authorization: Bearer 1|abc123def456...
 ```
 
-#### Logout Endpoint
-- **URL**: `POST /api/logout`
-- **Authentication**: Required (Bearer token)
+#### User-Endpunkt
+- **URL**: `GET /api/user`
+- **Authentication**: Erforderlich (Bearer token)
 - **Controller**: `App\Http\Controllers\Api\AuthController`
-- **Method**: `logout()`
+- **Methode**: `user()`
+
+**Response:**
+```json
+{
+    "id": "507f1f77bcf86cd799439011",
+    "name": "John Doe",
+    "email": "user@example.com",
+    "created_at": "2023-01-01T00:00:00.000000Z",
+    "updated_at": "2023-01-01T00:00:00.000000Z"
+}
+```
+
+#### Logout-Endpunkt
+- **URL**: `POST /api/logout`
+- **Authentication**: Erforderlich (Bearer token)
+- **Controller**: `App\Http\Controllers\Api\AuthController`
+- **Methode**: `logout()`
 
 **Response:**
 ```json
@@ -150,16 +167,16 @@ Authorization: Bearer 1|abc123def456...
 }
 ```
 
-**Implementation Details:**
-- Deletes the current access token
-- Requires authentication middleware (`auth:sanctum`)
+**Implementierungsdetails:**
+- Löscht das aktuelle Access-Token
+- Benötigt Authentifizierungs-Middleware (`auth:sanctum`)
 
-### 2. Cookie/Session-Based Authentication
+### 2. Cookie-/Sitzungsbasierte Authentifizierung
 
-#### Login Endpoint
+#### Login-Endpunkt
 - **URL**: `POST /login`
 - **Controller**: `App\Http\Controllers\AuthController`
-- **Method**: `login()`
+- **Methode**: `login()`
 
 **Request Body:**
 ```json
@@ -176,17 +193,17 @@ Authorization: Bearer 1|abc123def456...
 }
 ```
 
-**Implementation Details:**
-- Uses `Auth::attempt()` to validate credentials
-- Regenerates session for security
-- Sets authentication cookies automatically
-- Works with both web and API routes due to `statefulApi()` configuration
+**Implementierungsdetails:**
+- Verwendet `Auth::attempt()` zur Validierung der Anmeldedaten
+- Regeneriert Sitzung aus Sicherheitsgründen
+- Setzt Authentifizierungs-Cookies automatisch
+- Funktioniert sowohl mit web- als auch API-Routen aufgrund der `statefulApi()`-Konfiguration
 
-#### Logout Endpoint
+#### Logout-Endpunkt
 - **URL**: `POST /logout`
-- **Authentication**: Required (session)
+- **Authentication**: Erforderlich (Sitzung)
 - **Controller**: `App\Http\Controllers\AuthController`
-- **Method**: `logout()`
+- **Methode**: `logout()`
 
 **Response:**
 ```json
@@ -195,27 +212,33 @@ Authorization: Bearer 1|abc123def456...
 }
 ```
 
-**Implementation Details:**
-- Logs out the user
-- Invalidates and regenerates session
-- Clears authentication cookies
+**Implementierungsdetails:**
+- Meldet den Benutzer ab
+- Invalidiert und regeneriert Sitzung
+- Löscht Authentifizierungs-Cookies
 
-## Protected Routes
+## Geschützte Routen
 
-### API Routes (Token-based)
-All API routes are protected with the `auth:sanctum` middleware:
+### API-Routen (Token-basiert)
+Alle API-Routen sind mit der `auth:sanctum`-Middleware geschützt:
 
 ```php
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/{model}/filter', [GenericFilterController::class, 'filter']);
     Route::get('/{model}/search-criteria', [GenericFilterController::class, 'searchCriteria']);
     Route::apiResource('prospects', ProspectController::class)->only(['index', 'show']);
+    Route::apiResource('campaigns', CampaignController::class);
+    Route::apiResource('landingpages', LandingpageController::class);
+    Route::get('/campaigns/{campaign}/analytics', [CampaignAnalyticsController::class, 'show']);
+    Route::get('/campaigns/{campaign}/send-emails/sent', [CampaignAnalyticsController::class, 'emailStatistics']);
+    Route::post('/campaigns/{campaign}/send-emails', [CampaignEmailController::class, 'send']);
 });
 ```
 
-### Web Routes (Session-based)
-Web routes are protected with the `web` and `auth` middleware:
+### Web-Routen (Sitzungsbasiert)
+Web-Routen sind mit der `web`- und `auth`-Middleware geschützt:
 
 ```php
 Route::middleware(['web', 'auth'])->group(function () {
@@ -226,52 +249,52 @@ Route::middleware(['web', 'auth'])->group(function () {
 });
 ```
 
-## Token Abilities
+## Token-Fähigkeiten
 
-The application supports token abilities for fine-grained access control:
+Die Anwendung unterstützt Token-Fähigkeiten für granulare Zugriffskontrolle:
 
-### Example: CP-Cookie Endpoint
+### Beispiel: CP-Cookie-Endpunkt
 ```php
 Route::get('/cp-cookie', function () {
     return response()->json(App\Models\Campaign::all());
 })->middleware(['abilities:view-cp']);
 ```
 
-This endpoint requires a token with the `view-cp` ability or the global `*` ability.
+Dieser Endpunkt benötigt einen Token mit der `view-cp`-Fähigkeit oder der globalen `*`-Fähigkeit.
 
 ## Models
 
 ### User Model
-- **Location**: `app/Models/User.php`
-- **Traits**: Uses `HasApiTokens` for Sanctum functionality
-- **Database**: MongoDB (extends `MongoDB\Laravel\Auth\User`)
-- **Hidden Fields**: `password`, `remember_token`
+- **Standort**: `app/Models/User.php`
+- **Traits**: Verwendet `HasApiTokens` für Sanctum-Funktionalität
+- **Datenbank**: MongoDB (erweitert `MongoDB\Laravel\Auth\User`)
+- **Versteckte Felder**: `password`, `remember_token`
 
 ### Personal Access Token Model
-- **Location**: `app/Models/PersonalAccessToken.php`
-- **Database**: MongoDB
-- **Key Type**: String (MongoDB ObjectId)
+- **Standort**: `app/Models/PersonalAccessToken.php`
+- **Datenbank**: MongoDB
+- **Schlüsseltyp**: String (MongoDB ObjectId)
 
-## SPA Configuration
+## SPA-Konfiguration
 
-The `statefulApi()` middleware configuration in `bootstrap/app.php` is crucial for SPA applications:
+Die `statefulApi()`-Middleware-Konfiguration in `bootstrap/app.php` ist entscheidend für SPA-Anwendungen:
 
-- Allows cookie/session authentication to work with `/api` endpoints
-- Enables seamless authentication for frontend applications
-- Maintains session state across API requests
-- Supports both authentication methods simultaneously
+- Ermöglicht, dass Cookie-/Sitzungsauthentifizierung mit `/api`-Endpunkten funktioniert
+- Ermöglicht nahtlose Authentifizierung für Frontend-Anwendungen
+- Behält Sitzungsstatus über API-Anfragen hinweg bei
+- Unterstützt beide Authentifizierungsmethoden gleichzeitig
 
-## Security Features
+## Sicherheitsfeatures
 
-1. **Session Regeneration**: Sessions are regenerated on login to prevent session fixation attacks
-2. **CSRF Protection**: Enabled for stateful authentication
-3. **Cookie Encryption**: All cookies are encrypted
-4. **Token Expiration**: Configurable token expiration (default: 120 minutes)
-5. **Ability-based Access**: Fine-grained permissions through token abilities
+1. **Sitzungsregeneration**: Sitzungen werden beim Login regeneriert, um Session-Fixation-Angriffe zu verhindern
+2. **CSRF-Schutz**: Aktiviert für stateful Authentifizierung
+3. **Cookie-Verschlüsselung**: Alle Cookies sind verschlüsselt
+4. **Token-Ablauf**: Konfigurierbare Token-Ablaufzeit (Standard: 120 Minuten)
+5. **Fähigkeitsbasierter Zugriff**: Feinabgestimmte Berechtigungen durch Token-Fähigkeiten
 
-## Error Responses
+## Fehler-Responses
 
-### Authentication Errors
+### Authentifizierungsfehler
 ```json
 {
     "message": "Invalid login credentials"
@@ -279,7 +302,7 @@ The `statefulApi()` middleware configuration in `bootstrap/app.php` is crucial f
 ```
 **Status Code**: 401
 
-### Validation Errors
+### Validierungsfehler
 ```json
 {
     "message": "The given data was invalid.",
@@ -291,9 +314,9 @@ The `statefulApi()` middleware configuration in `bootstrap/app.php` is crucial f
 ```
 **Status Code**: 422
 
-## Usage Examples
+## Verwendungsbeispiele
 
-### Frontend SPA (Session-based)
+### Frontend SPA (Sitzungsbasiert)
 ```javascript
 // Login
 const response = await fetch('/login', {
@@ -302,20 +325,20 @@ const response = await fetch('/login', {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
     },
-    credentials: 'include', // Important for cookies
+    credentials: 'include', // Wichtig für Cookies
     body: JSON.stringify({
         email: 'user@example.com',
         password: 'password'
     })
 });
 
-// API calls (cookies automatically included)
+// API-Aufrufe (Cookies automatisch eingeschlossen)
 const data = await fetch('/api/prospects', {
     credentials: 'include'
 });
 ```
 
-### API Client (Token-based)
+### API Client (Token-basiert)
 ```javascript
 // Login
 const response = await fetch('/api/login', {
@@ -332,20 +355,29 @@ const response = await fetch('/api/login', {
 
 const { token } = await response.json();
 
-// API calls with token
+// API-Aufrufe mit Token
 const data = await fetch('/api/prospects', {
     headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
     }
 });
+
+// Benutzerinformationen abrufen
+const userResponse = await fetch('/api/user', {
+    headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+    }
+});
+const user = await userResponse.json();
 ```
 
-## Environment Variables
+## Umgebungsvariablen
 
-The following environment variables can be configured:
+Die folgenden Umgebungsvariablen können konfiguriert werden:
 
-- `SANCTUM_STATEFUL_DOMAINS`: Comma-separated list of domains for stateful authentication
-- `SANCTUM_TOKEN_PREFIX`: Prefix for generated tokens
-- `AUTH_GUARD`: Default authentication guard (default: 'web')
-- `AUTH_MODEL`: User model class (default: 'App\Models\User')
+- `SANCTUM_STATEFUL_DOMAINS`: Kommagetrennte Liste von Domains für stateful Authentifizierung
+- `SANCTUM_TOKEN_PREFIX`: Präfix für generierte Token
+- `AUTH_GUARD`: Standard-Authentifizierungs-Guard (Standard: 'web')
+- `AUTH_MODEL`: User-Model-Klasse (Standard: 'App\Models\User')
