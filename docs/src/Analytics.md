@@ -1,47 +1,47 @@
-# Campaign Analytics API
+# Kampagnen-Analytics API
 
-## Endpoint
+## Endpunkt
 
 `GET /api/campaigns/{campaign}/analytics`
 
-- **Example:** `/api/campaigns/686a3affca7748f6b807cbee/analytics`
+- **Beispiel:** `/api/campaigns/686a3affca7748f6b807cbee/analytics`
 
-## Description
+## Beschreibung
 
-Returns analytics data for a specific campaign. This endpoint provides aggregated statistics and insights about the campaign's performance, such as visits, conversions, and other tracked metrics.
+Gibt Analytics-Daten für eine spezifische Kampagne zurück. Dieser Endpunkt stellt aggregierte Statistiken und Einblicke in die Kampagnen-Performance bereit, wie Besuche, Konversionen und andere verfolgte Metriken.
 
-## Authorization
+## Autorisierung
 
-- Requires authentication.
-- User must have permission to view analytics for the specified campaign (policy: `viewAnalytics`).
+- Erfordert Authentifizierung.
+- Benutzer muss die Berechtigung haben, Analytics für die angegebene Kampagne einzusehen (Policy: `viewAnalytics`).
 
-## Request
+## Anfrage
 
-- **Method:** `GET`
-- **URL Params:**
-  - `campaign` (string, required): The campaign's unique identifier (UUID).
+- **Methode:** `GET`
+- **URL-Parameter:**
+  - `campaign` (string, erforderlich): Der eindeutige Identifier der Kampagne (UUID).
 
-## Response
+## Antwort
 
 - **Status:** `200 OK`
-- **Content:** JSON object containing analytics data for the campaign.
+- **Inhalt:** JSON-Objekt mit Analytics-Daten für die Kampagne.
 
-## Errors
+## Fehler
 
-- `403 Forbidden`: If the user is not authorized to view analytics for the campaign.
-- `404 Not Found`: If the campaign does not exist.
+- `403 Forbidden`: Wenn der Benutzer nicht autorisiert ist, Analytics für die Kampagne einzusehen.
+- `404 Not Found`: Wenn die Kampagne nicht existiert.
 
-## Example Request
+## Beispiel-Anfrage
 
-```
+```bash
 curl -X GET \
   -H "Authorization: Bearer <token>" \
   {{URL}}/api/campaigns/686a3affca7748f6b807cbee/analytics
 ```
 
-## Example Response
+## Beispiel-Antwort
 
-```
+```json
 {
     "campaign_overview": {
         "campaign_id": "686a3affca7748f6b807cbee",
@@ -104,74 +104,74 @@ curl -X GET \
 }
 ```
 
-## Response Structure
+## Antwort-Struktur
 
-### Campaign Overview
-- `campaign_id`: The unique identifier of the campaign
-- `campaign_title`: The title of the campaign
-- `status`: Current status of the campaign (draft, active, paused, completed)
-- `start_date`: Campaign start date in ISO format
-- `end_date`: Campaign end date in ISO format
+### Kampagnen-Übersicht
+- `campaign_id`: Der eindeutige Identifier der Kampagne
+- `campaign_title`: Der Titel der Kampagne
+- `status`: Aktueller Status der Kampagne (draft, active, paused, completed)
+- `start_date`: Kampagnen-Startdatum im ISO-Format
+- `end_date`: Kampagnen-Enddatum im ISO-Format
 
-### Visits
-- `total`: Total number of page visits
-- `unique_ip`: Number of unique IP addresses that visited
-- `total_unique`: Number of unique visitors (deduplicated by IP + user agent)
+### Besuche
+- `total`: Gesamtanzahl der Seitenbesuche
+- `unique_ip`: Anzahl der eindeutigen IP-Adressen, die besucht haben
+- `total_unique`: Anzahl der eindeutigen Besucher (dedupliziert durch IP + User Agent)
 
-### Statistics
-- `total_prospects_notified`: Total number of prospects that have been sent emails for this campaign
-- `unique_prospect_visits`: Number of unique prospects who clicked through to the landing page
-- `email_cta_click_rate`: Click-through rate percentage (calculated as: unique_prospect_visits / total_prospects_notified × 100)
+### Statistiken
+- `total_prospects_notified`: Gesamtanzahl der Prospects, die E-Mails für diese Kampagne erhalten haben
+- `unique_prospect_visits`: Anzahl der eindeutigen Prospects, die zur Landing Page durchgeklickt haben
+- `email_cta_click_rate`: Click-Through-Rate in Prozent (berechnet als: unique_prospect_visits / total_prospects_notified × 100)
 
-### Device & Browser Breakdown
-- `device_types`: Distribution of device types (desktop, mobile, tablet)
-- `browsers`: Browser usage statistics
-- `operating_systems`: Operating system distribution
-- `languages`: Language preferences of visitors
+### Geräte- & Browser-Aufschlüsselung
+- `device_types`: Verteilung der Gerätetypen (desktop, mobile, tablet)
+- `browsers`: Browser-Nutzungsstatistiken
+- `operating_systems`: Betriebssystem-Verteilung
+- `languages`: Sprachpräferenzen der Besucher
 
-### UTM Sources
-- `source`: Traffic sources breakdown
-- `medium`: Marketing medium breakdown
+### UTM-Quellen
+- `source`: Traffic-Quellen-Aufschlüsselung
+- `medium`: Marketing-Medium-Aufschlüsselung
 
-## How Analytics Data is Created
+## Wie Analytics-Daten erstellt werden
 
-Campaign analytics are generated from tracking data that is automatically collected when users visit campaign landing pages. This section explains the data collection process and how analytics are calculated.
+Kampagnen-Analytics werden aus Tracking-Daten generiert, die automatisch gesammelt werden, wenn Benutzer Kampagnen-Landing Pages besuchen. Dieser Abschnitt erklärt den Datensammlungsprozess und wie Analytics berechnet werden.
 
-### Data Collection Flow
+### Datensammlungsablauf
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Frontend as Frontend/Email
+    participant User as Benutzer
+    participant Frontend as Frontend/E-Mail
     participant API as API (/cp/{slug})
     participant Controller as CampaignController
     participant TrackingService as CampaignTrackingService
-    participant DB as Database
+    participant DB as Datenbank
 
-    User->>Frontend: Clicks email link or visits landing page
-    Frontend->>API: GET /cp/{campaign-slug}?utm_params
-    API->>Controller: Route to showLandingpage()
+    User->>Frontend: Klickt E-Mail-Link oder besucht Landing Page
+    Frontend->>API: GET /cp/{kampagnen-slug}?utm_params
+    API->>Controller: Route zu showLandingpage()
     Controller->>TrackingService: trackLandingPageVisit(request, campaign)
-    TrackingService->>DB: Create CampaignTracking record
-    Controller->>User: Return landing page content
-    
-    Note over TrackingService,DB: Tracking data includes:<br/>- IP address<br/>- User agent<br/>- UTM parameters<br/>- Device/browser info<br/>- Prospect ID (if from email)
+    TrackingService->>DB: Erstellt CampaignTracking-Datensatz
+    Controller->>User: Gibt Landing Page-Inhalt zurück
+
+    Note over TrackingService,DB: Tracking-Daten enthalten:<br/>- IP-Adresse<br/>- User Agent<br/>- UTM-Parameter<br/>- Geräte/Browser-Info<br/>- Prospect-ID (wenn von E-Mail)
 ```
 
-### 1. Automatic Tracking on Landing Page Visits
+### 1. Automatisches Tracking bei Landing Page-Besuchen
 
-When a user visits a campaign landing page via `/api/cp/{identifier}`, the following tracking data is automatically collected:
+Wenn ein Benutzer eine Kampagnen-Landing Page über `/api/cp/{identifier}` besucht, werden automatisch folgende Tracking-Daten gesammelt:
 
-#### Basic Tracking Information
+#### Grundlegende Tracking-Informationen
 ```php
 CampaignTracking::create([
     'campaign_id' => $campaign->id,
     'landingpage_id' => $campaign->landingpage?->id,
-    'prospect_id' => $request->get('prospect'), // From email links
+    'prospect_id' => $request->get('prospect'), // Von E-Mail-Links
     'ip_address' => $request->ip(),
     'user_agent' => $request->userAgent(),
     'referrer' => $request->header('referer'),
-    // UTM parameters from URL
+    // UTM-Parameter aus URL
     'utm_source' => $request->get('utm_source'),
     'utm_medium' => $request->get('utm_medium'),
     'utm_campaign' => $request->get('utm_campaign'),
@@ -183,22 +183,22 @@ CampaignTracking::create([
 ]);
 ```
 
-#### Enhanced Tracking Data
-The `tracking_data` field contains additional parsed information:
+#### Erweiterte Tracking-Daten
+Das `tracking_data`-Feld enthält zusätzliche geparste Informationen:
 ```php
 [
     'language' => $request->getPreferredLanguage(),
     'timezone' => $request->header('timezone'),
     'screen_resolution' => $request->get('screen_resolution'),
-    'device_type' => 'desktop|mobile|tablet', // Parsed from user agent
-    'browser' => 'Chrome|Firefox|Safari|Edge|Other', // Parsed from user agent
-    'os' => 'Windows|macOS|Linux|Android|iOS|Other', // Parsed from user agent
+    'device_type' => 'desktop|mobile|tablet', // Geparst aus User Agent
+    'browser' => 'Chrome|Firefox|Safari|Edge|Other', // Geparst aus User Agent
+    'os' => 'Windows|macOS|Linux|Android|iOS|Other', // Geparst aus User Agent
 ]
 ```
 
-### 2. Email Campaign Tracking
+### 2. E-Mail-Kampagnen-Tracking
 
-When emails are sent through the campaign system, special tracking URLs are generated:
+Wenn E-Mails über das Kampagnensystem gesendet werden, werden spezielle Tracking-URLs generiert:
 
 ```php
 // CampaignTrackingService::generateCampaignEmailUrl()
@@ -209,26 +209,26 @@ $params = [
     'utm_campaign' => $campaign->title,
 ];
 
-$baseUrl = config('app.spa_url');
+$baseUrl = config()->string('app.spa_url');
 $identifier = $campaign->slug;
 $queryString = http_build_query($params);
 return "{$baseUrl}/cp/{$identifier}?{$queryString}";
 ```
 
-This creates URLs like: `https://app.example.com/cp/summer-sale-campaign?prospect=123&utm_source=mail&utm_medium=web&utm_campaign=Summer%20Sale`
+Dies erstellt URLs wie: `https://app.example.com/cp/summer-sale-campaign?prospect=123&utm_source=mail&utm_medium=web&utm_campaign=Summer%20Sale`
 
-### 3. Analytics Calculation Methods
+### 3. Analytics-Berechnungsmethoden
 
-The `CampaignAnalyticsService` processes the raw tracking data to generate meaningful analytics:
+Der `CampaignAnalyticsService` verarbeitet die Roh-Tracking-Daten, um aussagekräftige Analytics zu generieren:
 
-#### Visit Metrics
+#### Besuchs-Metriken
 ```php
 private function getVisits(Campaign $campaign): array
 {
     $totalVisits = $campaign->trackings()->count();
     $totalUniqueVisitsIP = $campaign->trackings()->distinct('ip_address')->count();
-    
-    // Unique visits by IP + User Agent combination
+
+    // Eindeutige Besuche nach IP + User Agent-Kombination
     $totalUniqueVisits = $campaign->trackings()
         ->whereNotNull('ip_address')
         ->get(['ip_address', 'user_agent'])
@@ -244,19 +244,19 @@ private function getVisits(Campaign $campaign): array
 }
 ```
 
-#### Campaign Performance Statistics
+#### Kampagnen-Performance-Statistiken
 ```php
 private function getStatistics(Campaign $campaign): array
 {
-    // Count prospects who were sent emails for this campaign
+    // Zähle Prospects, die E-Mails für diese Kampagne erhalten haben
     $totalProspectsNotified = $campaign->campaignProspects()->pluck('prospect_id')->unique()->count();
-    
-    // Count unique prospects who actually visited the landing page
+
+    // Zähle eindeutige Prospects, die tatsächlich die Landing Page besucht haben
     $uniqueProspectVisits = $campaign->trackings()->whereNotNull('prospect_id')->distinct('prospect_id')->count();
-    
-    // Calculate click-through rate
-    $emailCtaClickRate = $uniqueProspectVisits > 0 && $totalProspectsNotified > 0 
-        ? round(($uniqueProspectVisits / $totalProspectsNotified) * 100, 2) 
+
+    // Berechne Click-Through-Rate
+    $emailCtaClickRate = $uniqueProspectVisits > 0 && $totalProspectsNotified > 0
+        ? round(($uniqueProspectVisits / $totalProspectsNotified) * 100, 2)
         : 0;
 
     return [
@@ -267,7 +267,7 @@ private function getStatistics(Campaign $campaign): array
 }
 ```
 
-#### Device and Browser Analytics
+#### Geräte- und Browser-Analytics
 ```php
 private function getDeviceBrowserBreakdown(Campaign $campaign): array
 {
@@ -292,7 +292,7 @@ private function createBreakdown(Collection $trackingData, string $key): array
 }
 ```
 
-#### UTM Source Analysis
+#### UTM-Quellen-Analyse
 ```php
 private function getUtmSourceBreakdown(Campaign $campaign): array
 {
@@ -307,10 +307,10 @@ private function getUtmSourceBreakdown(Campaign $campaign): array
 }
 ```
 
-### 4. Data Models and Relationships
+### 4. Datenmodelle und Beziehungen
 
-#### CampaignTracking Model
-The core tracking data is stored in the `campaign_trackings` collection with the following structure:
+#### CampaignTracking-Modell
+Die Kern-Tracking-Daten werden in der `campaign_trackings`-Collection mit folgender Struktur gespeichert:
 
 ```php
 /**
@@ -334,32 +334,42 @@ The core tracking data is stored in the `campaign_trackings` collection with the
  */
 ```
 
-#### Relationships
-- `Campaign` hasMany `CampaignTracking` records
+#### Beziehungen
+- `Campaign` hasMany `CampaignTracking`-Datensätze
 - `CampaignTracking` belongsTo `Campaign`
 - `CampaignTracking` belongsTo `Landingpage`
-- `CampaignTracking` belongsTo `Prospect` (when visit comes from email)
+- `CampaignTracking` belongsTo `Prospect` (wenn Besuch von E-Mail kommt)
 
-### 5. User Agent Parsing
+### 5. User-Agent-Parsing
 
-The system automatically parses user agents to extract device and browser information:
+Das System parst automatisch User Agents, um Geräte- und Browser-Informationen zu extrahieren:
 
 ```php
-// Device type detection
+// Gerätetyp-Erkennung
 private function detectDeviceType(?string $userAgent): ?string
 {
+    if ($userAgent === null || $userAgent === '' || $userAgent === '0') {
+        return null;
+    }
+
     if (preg_match('/Mobile|Android|iPhone|iPad/', $userAgent)) {
         return 'mobile';
     }
+
     if (preg_match('/Tablet|iPad/', $userAgent)) {
         return 'tablet';
     }
+
     return 'desktop';
 }
 
-// Browser detection
+// Browser-Erkennung
 private function detectBrowser(?string $userAgent): ?string
 {
+    if ($userAgent === null || $userAgent === '' || $userAgent === '0') {
+        return null;
+    }
+
     if (preg_match('/Chrome/', $userAgent)) return 'Chrome';
     if (preg_match('/Firefox/', $userAgent)) return 'Firefox';
     if (preg_match('/Safari/', $userAgent)) return 'Safari';
@@ -367,9 +377,13 @@ private function detectBrowser(?string $userAgent): ?string
     return 'Other';
 }
 
-// Operating system detection
+// Betriebssystem-Erkennung
 private function detectOS(?string $userAgent): ?string
 {
+    if ($userAgent === null || $userAgent === '' || $userAgent === '0') {
+        return null;
+    }
+
     if (preg_match('/Windows/', $userAgent)) return 'Windows';
     if (preg_match('/Mac/', $userAgent)) return 'macOS';
     if (preg_match('/Linux/', $userAgent)) return 'Linux';
@@ -379,23 +393,56 @@ private function detectOS(?string $userAgent): ?string
 }
 ```
 
-### 6. Privacy and Data Handling
+### 6. Datenschutz und Datenbehandlung
 
-- **IP Address Storage**: IP addresses are stored for uniqueness calculations but should be handled according to privacy regulations
-- **User Agent Storage**: Full user agents are stored for detailed device/browser analysis
-- **Prospect Tracking**: Only linked to prospects when visits come from authenticated email links
-- **UTM Parameter Preservation**: All UTM parameters are preserved for marketing attribution analysis
+- **IP-Adressen-Speicherung**: IP-Adressen werden für Eindeutigkeitsberechnungen gespeichert, sollten aber gemäß Datenschutzbestimmungen behandelt werden
+- **User-Agent-Speicherung**: Vollständige User Agents werden für detaillierte Geräte-/Browser-Analyse gespeichert
+- **Prospect-Tracking**: Nur verknüpft mit Prospects, wenn Besuche von authentifizierten E-Mail-Links kommen
+- **UTM-Parameter-Bewahrung**: Alle UTM-Parameter werden für Marketing-Attributionsanalyse bewahrt
 
-### 7. Performance Considerations
+### 7. Performance-Überlegungen
 
-- Analytics calculations are performed on-demand when the analytics endpoint is accessed
-- For high-traffic campaigns, consider implementing caching for analytics data
-- The unique visitor calculation uses IP + User Agent combination which provides a reasonable balance between accuracy and privacy
-- Database indexes on `campaign_id`, `prospect_id`, and tracking timestamps can improve query performance
+- Analytics-Berechnungen werden on-demand durchgeführt, wenn der Analytics-Endpunkt aufgerufen wird
+- Für hochfrequentierte Kampagnen sollte Caching für Analytics-Daten in Betracht gezogen werden
+- Die Eindeutige-Besucher-Berechnung verwendet IP + User Agent-Kombination, was ein vernünftiges Gleichgewicht zwischen Genauigkeit und Datenschutz bietet
+- Datenbank-Indizes auf `campaign_id`, `prospect_id` und Tracking-Zeitstempel können die Query-Performance verbessern
 
-### 8. Data Retention
+### 8. Datenaufbewahrung
 
-Consider implementing data retention policies for tracking data:
-- Keep detailed tracking data for active analysis periods
-- Aggregate older data to preserve trends while reducing storage
-- Comply with privacy regulations regarding data retention periods
+Überlegungen zur Implementierung von Datenaufbewahrungsrichtlinien für Tracking-Daten:
+- Detaillierte Tracking-Daten für aktive Analysezeiträume aufbewahren
+- Ältere Daten aggregieren, um Trends zu bewahren und gleichzeitig den Speicherplatz zu reduzieren
+- Datenschutzbestimmungen bezüglich Datenaufbewahrungszeiten einhalten
+
+## Implementierungsdetails
+
+### Kernkomponenten für Analytics
+
+1. **CampaignAnalyticsController** (`app/Http/Controllers/Api/CampaignAnalyticsController.php`)
+   - **Analytics-Endpunkt:** `GET /api/campaigns/{campaign}/analytics`
+   - **Autorisierung:** Gate::authorize('viewAnalytics', $campaign)
+   - **Funktionalität:** Delegiert an CampaignAnalyticsService für umfassende Analytics
+
+2. **CampaignAnalyticsService** (`app/Services/CampaignAnalyticsService.php`)
+   - **Hauptmethode:** `getAnalyticsData()` - Orchestriert alle Analytics-Berechnungen
+   - **Besuchs-Analytics:** Berechnet total, unique_ip und total_unique Besuche
+   - **Performance-Statistiken:** E-Mail-CTR, Prospect-Besuche, Benachrichtigungen
+   - **Geräte-Breakdown:** Analysiert tracking_data für Geräte, Browser, OS
+   - **UTM-Analyse:** Gruppiert Traffic nach Quellen und Medien
+
+3. **CampaignTrackingService** (`app/Services/CampaignTrackingService.php`)
+   - **URL-Generierung:** `generateCampaignEmailUrl()` mit automatischen UTM-Parametern
+   - **Besuchs-Tracking:** `trackLandingPageVisit()` sammelt alle relevanten Daten
+   - **User-Agent-Parsing:** Automatische Erkennung von Geräte, Browser und OS
+   - **Erweiterte Daten:** Extrahiert Sprache, Timezone, Screen Resolution
+
+4. **CampaignTracking-Modell** (`app/Models/CampaignTracking.php`)
+   - **MongoDB-Collection:** Speichert alle Tracking-Events
+   - **Relationships:** BelongsTo Campaign, Landingpage, Prospect
+   - **UTM-Helper:** `getUtmParameters()` für strukturierte UTM-Daten
+   - **Datenfelder:** IP, User Agent, UTM-Parameter, Tracking-Metadaten
+
+5. **CampaignController** (`app/Http/Controllers/Api/CampaignController.php`)
+   - **Landing Page-Route:** `showLandingpage()` triggert automatisches Tracking
+   - **Kampagnen-Validierung:** Prüft ACTIVE-Status und Datumsbereich
+   - **Tracking-Integration:** Ruft CampaignTrackingService für jeden Besuch auf

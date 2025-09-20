@@ -1,27 +1,27 @@
-# Authorization Documentation
+# Autorisierungs-Dokumentation
 
-This document explains the authorization system implemented in the APDE backend application and why it's essential even with Sanctum authentication.
+Diese Dokumentation erklärt das Autorisierungssystem der APDE Backend-Anwendung und warum es auch bei Sanctum-Authentifizierung essentiell ist.
 
-## Why Authorization is Needed
+## Warum Autorisierung benötigt wird
 
-### Authentication vs Authorization
+### Authentifizierung vs. Autorisierung
 
-- **Authentication** (Sanctum): "Who are you?" - Verifies user identity
-- **Authorization** (Policies): "What are you allowed to do?" - Controls access to resources
+- **Authentifizierung** (Sanctum): „Wer sind Sie?" - Verifiziert die Benutzeridentität
+- **Autorisierung** (Policies): „Was dürfen Sie tun?" - Kontrolliert den Zugriff auf Ressourcen
 
-### Security Risks Without Authorization
+### Sicherheitsrisiken ohne Autorisierung
 
-Without proper authorization, any authenticated user could:
-- Create, update, or delete campaigns (even with `GUEST` role)
-- Access all prospects data without restrictions
-- Modify landing pages
-- Perform administrative actions
+Ohne ordnungsgemässe Autorisierung könnte jeder authentifizierte Benutzer:
+- Kampagnen erstellen, aktualisieren oder löschen (auch mit `GUEST`-Rolle)
+- Auf alle Prospekt-Daten ohne Einschränkungen zugreifen
+- Landing Pages modifizieren
+- Administrative Aktionen durchführen
 
-## Authorization Architecture
+## Autorisierungs-Architektur
 
-The application uses a **policy-based authorization system** with `Gate::authorize()` for maximum flexibility and maintainability:
+Die Anwendung verwendet ein **policy-basiertes Autorisierungssystem** mit `Gate::authorize()` für maximale Flexibilität und Wartbarkeit:
 
-### 1. Policy-Based Authorization (Primary Layer)
+### 1. Policy-basierte Autorisierung (Primäre Schicht)
 
 ```php
 // app/Policies/CampaignPolicy.php
@@ -33,26 +33,26 @@ public function create(User $user): bool
     ]);
 }
 
-// app/Policies/ProspectPolicy.php (SuperAdmin only)
+// app/Policies/ProspectPolicy.php (Nur SuperAdmin)
 public function viewAny(User $user): bool
 {
     return $user->role === UserRole::SUPER_ADMIN;
 }
 ```
 
-### 2. Controller-Level Authorization Checks (Gate Facade)
+### 2. Controller-Level Autorisierungsprüfungen (Gate Facade)
 
 ```php
 // app/Http/Controllers/Api/CampaignController.php
 public function store(CampaignRequest $request): JsonResource
 {
     Gate::authorize('create', Campaign::class);
-    
+
     return Campaign::create($request->validated())->toResource();
 }
 ```
 
-### 3. Route-Level Authentication (Sanctum)
+### 3. Route-Level Authentifizierung (Sanctum)
 
 ```php
 // routes/api.php
@@ -63,23 +63,23 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 ```
 
-## Why Gate::authorize() Approach?
+## Warum Gate::authorize() Ansatz?
 
-### Advantages of Gate::authorize() Over Other Methods
+### Vorteile von Gate::authorize() gegenüber anderen Methoden
 
-1. **Explicit and Clear**: `Gate::authorize()` makes authorization intentions explicit
-2. **Consistent**: Same approach used throughout the application
-3. **Automatic Exception Handling**: Throws `AuthorizationException` automatically
-4. **Available Everywhere**: Can be used in any context, not just controllers
-5. **Laravel Standard**: Follows Laravel's recommended patterns
+1. **Explizit und klar**: `Gate::authorize()` macht Autorisierungsabsichten explizit
+2. **Konsistent**: Gleicher Ansatz in der gesamten Anwendung verwendet
+3. **Automatische Ausnahmebehandlung**: Wirft `AuthorizationException` automatisch
+4. **Überall verfügbar**: Kann in jedem Kontext verwendet werden, nicht nur in Controllern
+5. **Laravel-Standard**: Folgt Laravels empfohlenen Patterns
 
-### Example: Different Rules for Different Actions
+### Beispiel: Verschiedene Regeln für verschiedene Aktionen
 
 ```php
 // CampaignPolicy.php
 public function viewAny(User $user): bool
 {
-    // All authenticated users can view campaigns
+    // Alle authentifizierten Benutzer können Kampagnen anzeigen
     return in_array($user->role, [
         UserRole::USER,
         UserRole::ADMIN,
@@ -89,7 +89,7 @@ public function viewAny(User $user): bool
 
 public function create(User $user): bool
 {
-    // Only admins can create campaigns
+    // Nur Admins können Kampagnen erstellen
     return in_array($user->role, [
         UserRole::ADMIN,
         UserRole::SUPER_ADMIN
@@ -98,48 +98,47 @@ public function create(User $user): bool
 
 public function forceDelete(User $user, Campaign $campaign): bool
 {
-    // Only super admins can permanently delete
+    // Nur Super-Admins können permanent löschen
     return $user->role === UserRole::SUPER_ADMIN;
 }
 ```
 
-## User Roles and Permissions
+## Benutzerrollen und Berechtigungen
 
-### Role Hierarchy
+### Rollen-Hierarchie
 
 ```php
 enum UserRole: string
 {
-    case GUEST = 'guest';        // Limited read access
-    case USER = 'user';          // Standard user access
-    case ADMIN = 'admin';        // Administrative access
-    case SUPER_ADMIN = 'super_admin'; // Full system access
+    case GUEST = 'guest';        // Eingeschränkter Lesezugriff
+    case USER = 'user';          // Standard-Benutzerzugriff
+    case ADMIN = 'admin';        // Administrativer Zugriff
+    case SUPER_ADMIN = 'super_admin'; // Vollständiger Systemzugriff
 }
 ```
 
-### Permission Matrix
+### Berechtigungs-Matrix
 
-| Action | GUEST | USER | ADMIN | SUPER_ADMIN |
+| Aktion | GUEST | USER | ADMIN | SUPER_ADMIN |
 |--------|-------|------|-------|-------------|
-| View Prospects | ❌ | ❌ | ✅ | ✅ |
-| View Campaigns | ❌ | ✅ | ✅ | ✅ |
-| View Landing Pages | ❌ | ✅ | ✅ | ✅ |
-| View LP (public) | ✅ | ✅ | ✅ | ✅ |
-| Create Prospects | ❌ | ❌ | ❌ | ✅ |
-| Create Campaigns | ❌ | ❌ | ✅ | ✅ |
-| Create Landing Pages | ❌ | ❌ | ✅ | ✅ |
-| Update Prospects | ❌ | ❌ | ❌ | ✅ |
-| Update Campaigns | ❌ | ❌ | ✅ | ✅ |
-| Update Landing Pages | ❌ | ❌ | ✅ | ✅ |
-| Delete Prospects | ❌ | ❌ | ❌ | ✅ |
-| Delete Campaigns | ❌ | ❌ | ✅ | ✅ |
-| Delete Landing Pages | ❌ | ❌ | ✅ | ✅ |
-| Force Delete | ❌ | ❌ | ❌ | ✅ |
+| Prospekte anzeigen | ❌ | ❌ | ✅ | ✅ |
+| Kampagnen anzeigen | ❌ | ✅ | ✅ | ✅ |
+| Landing Pages anzeigen | ❌ | ✅ | ✅ | ✅ |
+| LP anzeigen (öffentlich) | ✅ | ✅ | ✅ | ✅ |
+| Prospekte erstellen | ❌ | ❌ | ❌ | ✅ |
+| Kampagnen erstellen | ❌ | ❌ | ✅ | ✅ |
+| Landing Pages erstellen | ❌ | ❌ | ✅ | ✅ |
+| Prospekte aktualisieren | ❌ | ❌ | ❌ | ✅ |
+| Kampagnen aktualisieren | ❌ | ❌ | ✅ | ✅ |
+| Landing Pages aktualisieren | ❌ | ❌ | ✅ | ✅ |
+| Prospekte löschen | ❌ | ❌ | ❌ | ✅ |
+| Kampagnen löschen | ❌ | ❌ | ✅ | ✅ |
+| Landing Pages löschen | ❌ | ❌ | ✅ | ✅ |
+| Permanent löschen | ❌ | ❌ | ❌ | ✅ |
 
+## Implementierungsdetails
 
-## Implementation Details
-
-### Policy Registration
+### Policy-Registrierung
 
 ```php
 // app/Models/Campaign.php
@@ -155,7 +154,7 @@ final class Campaign extends Model
 }
 ```
 
-### Controller Authorization (Gate Facade)
+### Controller-Autorisierung (Gate Facade)
 
 ```php
 // app/Http/Controllers/Api/CampaignController.php
@@ -166,27 +165,27 @@ final class CampaignController extends Controller
     public function store(CampaignRequest $request): JsonResource
     {
         Gate::authorize('create', Campaign::class);
-        
+
         return Campaign::create($request->validated())->toResource();
     }
 }
 ```
 
-### Form Request Authorization
+### Form Request Autorisierung
 
 ```php
 // app/Http/Requests/CampaignRequest.php
 public function authorize(): bool
 {
-    return Auth::check(); // Just check authentication, policies handle authorization
+    return Auth::check(); // Nur Authentifizierung prüfen, Policies handhaben Autorisierung
 }
 ```
 
-## Strict Prospect Security
+## Strenge Prospekt-Sicherheit
 
-### SuperAdmin-Only Access
+### Nur-SuperAdmin-Zugriff
 
-Prospects contain sensitive personal data and are restricted to SuperAdmin access only:
+Prospekte enthalten sensible persönliche Daten und sind nur für SuperAdmin-Zugriff beschränkt:
 
 ```php
 // app/Policies/ProspectPolicy.php
@@ -202,51 +201,51 @@ final class ProspectPolicy
         return $user->role === UserRole::SUPER_ADMIN;
     }
 
-    // All other methods also return $user->role === UserRole::SUPER_ADMIN
+    // Alle anderen Methoden geben ebenfalls $user->role === UserRole::SUPER_ADMIN zurück
 }
 ```
 
-### Generic Filter Authorization
+### Generische Filter-Autorisierung
 
-Even the generic filter endpoints enforce prospect authorization:
+Sogar die generischen Filter-Endpunkte erzwingen Prospekt-Autorisierung:
 
 ```php
 // app/Http/Controllers/Api/GenericFilterController.php
 public function filter(Request $request, string $model): ResourceCollection
 {
     $modelClass = $this->resolveModel($model);
-    
-    // Authorize access to the model
+
+    // Zugriff auf das Model autorisieren
     Gate::authorize('viewAny', $modelClass);
-    
-    // ... rest of the method
+
+    // ... Rest der Methode
 }
 ```
 
-## Token Abilities (Sanctum)
+## Token-Fähigkeiten (Sanctum)
 
-For fine-grained permissions beyond roles, use Sanctum token abilities:
+Für granulare Berechtigungen jenseits von Rollen verwenden Sie Sanctum-Token-Fähigkeiten:
 
 ```php
-// Create token with specific abilities
+// Token mit spezifischen Fähigkeiten erstellen
 $token = $user->createToken('api-token', ['view-prospects', 'create-campaigns']);
 
-// Check abilities in routes
+// Fähigkeiten in Routen prüfen
 Route::get('/cp-cookie', function () {
     return response()->json(App\Models\Campaign::all());
 })->middleware(['abilities:view-cp']);
 ```
 
-## Error Responses
+## Fehler-Responses
 
-### 401 Unauthorized
+### 401 Nicht authentifiziert
 ```json
 {
     "message": "Unauthenticated."
 }
 ```
 
-### 403 Forbidden
+### 403 Verboten
 ```json
 {
     "message": "This action is unauthorized."
@@ -255,45 +254,45 @@ Route::get('/cp-cookie', function () {
 
 ## Best Practices
 
-### 1. Single Source of Truth
-- Use policies as the primary authorization mechanism
-- Use `Gate::authorize()` consistently throughout the application
-- Keep authorization rules centralized in policies
+### 1. Einzige Quelle der Wahrheit
+- Verwenden Sie Policies als primären Autorisierungsmechanismus
+- Verwenden Sie `Gate::authorize()` konsistent in der gesamten Anwendung
+- Halten Sie Autorisierungsregeln in Policies zentralisiert
 
-### 2. Principle of Least Privilege
-- Grant minimum necessary permissions
-- Start with restrictive policies
-- Add permissions as needed
+### 2. Prinzip der geringsten Berechtigung
+- Gewähren Sie nur minimal notwendige Berechtigungen
+- Beginnen Sie mit restriktiven Policies
+- Fügen Sie Berechtigungen nach Bedarf hinzu
 
-### 3. Policy Organization
-- One policy per model
-- Clear method names (viewAny, view, create, update, delete)
-- Consistent role checking patterns
+### 3. Policy-Organisation
+- Eine Policy pro Model
+- Klare Methodennamen (viewAny, view, create, update, delete)
+- Konsistente Rollen-Prüfungsmuster
 
-### 4. Testing
-- Test policies independently
-- Test authorization in feature tests
-- Mock authorization in unit tests
+### 4. Testen
+- Testen Sie Policies unabhängig
+- Testen Sie Autorisierung in Feature-Tests
+- Mocken Sie Autorisierung in Unit-Tests
 
-## Testing Authorization
+## Autorisierung testen
 
-### Policy Tests
+### Policy-Tests
 ```php
 public function test_user_cannot_create_campaign()
 {
     $user = User::factory()->create(['role' => UserRole::USER]);
     $policy = new CampaignPolicy();
-    
+
     $this->assertFalse($policy->create($user));
 }
 ```
 
-### Feature Tests
+### Feature-Tests
 ```php
 public function test_super_admin_can_view_prospects()
 {
     $user = User::factory()->create(['role' => UserRole::SUPER_ADMIN]);
-    
+
     $this->actingAs($user)
         ->getJson('/api/prospects')
         ->assertStatus(200);
@@ -302,45 +301,45 @@ public function test_super_admin_can_view_prospects()
 public function test_admin_cannot_view_prospects()
 {
     $user = User::factory()->create(['role' => UserRole::ADMIN]);
-    
+
     $this->actingAs($user)
         ->getJson('/api/prospects')
         ->assertStatus(403);
 }
 ```
 
-## Security Considerations
+## Sicherheitsüberlegungen
 
-### 1. Policy Security
-- Validate all policy methods
-- Test edge cases
-- Audit policy changes
+### 1. Policy-Sicherheit
+- Validieren Sie alle Policy-Methoden
+- Testen Sie Grenzfälle
+- Auditieren Sie Policy-Änderungen
 
-### 2. Token Security
-- Use short-lived tokens
-- Implement token rotation
-- Monitor token usage
+### 2. Token-Sicherheit
+- Verwenden Sie kurzlebige Token
+- Implementieren Sie Token-Rotation
+- Überwachen Sie Token-Nutzung
 
-### 3. Role Management
-- Validate role assignments
-- Implement role inheritance
-- Audit role changes
+### 3. Rollen-Management
+- Validieren Sie Rollenzuweisungen
+- Implementieren Sie Rollen-Vererbung
+- Auditieren Sie Rollen-Änderungen
 
-### 4. Monitoring
-- Log authorization failures
-- Monitor privilege escalation
-- Track unusual access patterns
+### 4. Überwachung
+- Protokollieren Sie Autorisierungsfehler
+- Überwachen Sie Privilege-Escalation
+- Verfolgen Sie ungewöhnliche Zugriffsmuster
 
-## Conclusion
+## Fazit
 
-The policy-based authorization system with `Gate::authorize()` provides:
+Das policy-basierte Autorisierungssystem mit `Gate::authorize()` bietet:
 
-1. **Clean Architecture**: Single responsibility for authorization logic
-2. **Consistency**: Same authorization approach throughout the application
-3. **Flexibility**: Easy to modify permissions without changing routes
-4. **Testability**: Policies are easy to unit test
-5. **Maintainability**: Centralized authorization rules
-6. **Scalability**: Easy to add new models and policies
-7. **Security**: Strict access control for sensitive data like prospects
+1. **Saubere Architektur**: Einzelne Verantwortlichkeit für Autorisierungslogik
+2. **Konsistenz**: Gleicher Autorisierungsansatz in der gesamten Anwendung
+3. **Flexibilität**: Einfache Änderung von Berechtigungen ohne Routen-Änderungen
+4. **Testbarkeit**: Policies sind einfach zu unit-testen
+5. **Wartbarkeit**: Zentralisierte Autorisierungsregeln
+6. **Skalierbarkeit**: Einfaches Hinzufügen neuer Models und Policies
+7. **Sicherheit**: Strenge Zugriffskontrolle für sensible Daten wie Prospekte
 
-This approach follows Laravel best practices and provides a robust foundation for authorization that scales with your application's needs. 
+Dieser Ansatz folgt Laravel Best Practices und bietet eine robuste Grundlage für Autorisierung, die mit den Anforderungen Ihrer Anwendung skaliert.
